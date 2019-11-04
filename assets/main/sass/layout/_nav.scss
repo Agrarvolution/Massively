@@ -24,6 +24,7 @@
 		width: calc(100% - #{_size(padding) * 2});
 		max-width: _size(wrapper);
 		z-index: 2;
+		backdrop-filter: blur(2px);
 
 		ul {
 			&.links {
