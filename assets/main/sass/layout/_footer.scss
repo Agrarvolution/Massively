@@ -196,7 +196,7 @@
 		width: calc(100% - #{_size(padding) * 2});
 		max-width: _size(wrapper);
 		z-index: 2;
-		background-color: hsla(0,0,16%,0.25);
+		background-color: hsla(0,0,16%,0.5);
 		backdrop-filter: blur(5px);
 		padding-top: 10px;
 		padding-bottom: 10px;
