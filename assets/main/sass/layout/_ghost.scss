@@ -23,7 +23,11 @@
 }
 
 .content {
-    max-width: 700px;
+    max-width: 1000px;
+    @include breakpoint('<=xlarge') {
+        max-width: 720px;
+    }
+
     margin: 0 auto;
 }
 
