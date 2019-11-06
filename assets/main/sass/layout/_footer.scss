@@ -182,6 +182,9 @@
 
 	#copyright {
 		@include color-typography(invert);
+		@include vendor('backdrop-filter', (
+			'blur(5px)'
+		));
 		position: relative;
 		color: transparentize(_palette(invert, fg), 0.75);
 		cursor: default;
@@ -197,7 +200,6 @@
 		max-width: _size(wrapper);
 		z-index: 2;
 		background-color: hsla(0,0,16%,0.5);
-		backdrop-filter: blur(5px);
 		padding-top: 10px;
 		padding-bottom: 10px;
 

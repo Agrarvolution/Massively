@@ -14,6 +14,9 @@
 			'transform 1s ease',
 			'opacity 1s ease'
 		));
+		@include vendor('backdrop-filter', (
+			'blur(2px)'
+		));
 		background: rgba(255,255,255,0.175);
 		height: 4rem;
 		line-height: 4rem;
@@ -24,7 +27,6 @@
 		width: calc(100% - #{_size(padding) * 2});
 		max-width: _size(wrapper);
 		z-index: 2;
-		backdrop-filter: blur(2px);
 
 		ul {
 			&.links {
