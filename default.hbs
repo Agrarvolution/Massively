@@ -13,6 +13,7 @@
 
     {{!-- Styles'n'Scripts --}}
     <link rel="stylesheet" type="text/css" href="{{asset "main/css/main.css"}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset "main/css/cookieconsent.min.css"}}" />
     <noscript><link rel="stylesheet" href="{{asset "main/css/noscript.css"}}" /></noscript>
 
     {{!-- This tag outputs SEO meta+structured data and other important settings --}}
@@ -81,6 +82,28 @@
     <script src="{{asset "main/js/breakpoints.min.js"}}"></script>
     <script src="{{asset "main/js/util.js"}}"></script>
     <script src="{{asset "main/js/main.js"}}"></script>
+    <script src="{{asset "main/js/cookieconsent.min.js"}}" data-cfasync="false"></script>
+    <script>
+        window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+            "background": "#eaf7f7",
+            "text": "#5c7291"
+            },
+            "button": {
+            "background": "#8ec760",
+            "text": "#ffffff"
+            }
+        },
+        "theme": "edgeless",
+        "content": {
+            "message": "Diese Webseite verwendet Cookies, um die bestmöglich Nutzererfahrung ermöglichen zu können.",
+            "dismiss": "Verstanden!",
+            "link": "Mehr erfahren",
+            "href": "localhost:2368/datenschutzerklarung/"
+        }
+        });
+    </script>
 
     {{!-- Ghost outputs important scripts & data with the {ghost_foot} tag
     it should always be the very last thing before the closing body tag --}}
