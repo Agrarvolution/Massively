@@ -47,7 +47,7 @@
 		}
 
 		if (!intensity)
-			intensity = 0.25;
+			intensity = 0.1;
 
 		$this.each(function() {
 
@@ -83,21 +83,21 @@
 
 			};
 
-			// Disable parallax on ..
+			/*// Disable parallax on ..
 				if (browser.name == 'ie'			// IE
 				||	browser.name == 'edge'			// Edge
 				||	window.devicePixelRatio > 1		// Retina/HiDPI (= poor performance)
-				||	browser.mobile)					// Mobile devices
+				||	browser.mobile)					// Mobile devices*/
 					off();
 
 			// Enable everywhere else.
+			/*
 				else {
 
 					breakpoints.on('>large', on);
 					breakpoints.on('<=large', off);
 
-				}
-
+				}*/
 		});
 
 		$window
@@ -136,9 +136,11 @@
 					bottom: '5vh',
 					enter: function() {
 						$navPanelToggle.removeClass('alt');
+						$nav.removeClass('alt')
 					},
 					leave: function() {
 						$navPanelToggle.addClass('alt');
+						$nav.addClass('alt');
 					}
 				});
 
