@@ -257,4 +257,92 @@
 
 		}
 
+	//video auto resolution
+	var video = $('video');
+	var videoSizes = {'small': '/content/images/videos/360/',
+					'medium': '/content/images/videos/480/',
+					'large': '/content/images/videos/720/',
+					'xlarge': '/content/images/videos/1080/'};
+	var i = 0;
+	breakpoints.on('<=small', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'small', video.children('source')[0].src);
+		}
+	});
+	breakpoints.on('>small', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'medium', video.children('source')[0].src);
+		}
+	});
+	breakpoints.on('<=medium', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'medium', video.children('source')[0].src);
+		}
+	});
+	breakpoints.on('>medium', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'large', video.children('source')[0].src);
+		}
+	});
+	breakpoints.on('<=xlarge', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'large', video.children('source')[0].src);
+		}
+	});
+	breakpoints.on('>xlarge', function() {
+		for (i = 0; i < video.length; i++) {
+			video.children('source')[0].src = replacemp4Link(videoSizes, 'xlarge', video.children('source')[0].src);
+		}
+	});
+
+	function replacemp4Link (links, size, currentLink) {
+		console.log(links[size] + currentLink.match(/[\d\w]+(\.mp4)$/gm));
+		return links[size] + currentLink.match(/[\d\w]+(\.mp4)$/gm);
+	}
+
+	//video consent
+	function setCookie(name,value,days) {
+		var expires = "";
+		if (days) {
+			var date = new Date();
+			date.setTime(date.getTime() + (days*24*60*60*1000));
+			expires = "; expires=" + date.toUTCString();
+		}
+		document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+	}
+	function getCookie(name) {
+		var nameEQ = name + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0;i < ca.length;i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1,c.length);
+			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+		}
+		return null;
+	}
+	if (getCookie('youtube-is-allowed') === null) {
+		var consent = $('.videoConsent');
+		consent.css('display', 'flex');
+		
+		$('.allowYT').click(function () {
+			consent.css('display', 'none');
+			enableYoutube()
+			setCookie('youtube-is-allowed', 1, 30)
+		});
+		$('.disableYT').click(function() {
+			consent.css('display', 'none');
+		})
+	}
+	else 
+	{
+		enableYoutube();
+	}
+
+	function enableYoutube() {
+		var youtubeVideos = $('iframe');
+		for (i = 0; i < youtubeVideos.length; i++) {
+			youtubeVideos[i].src = youtubeVideos[i].title
+		}
+		video.remove();
+	}
 })(jQuery);
