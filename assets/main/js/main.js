@@ -345,4 +345,11 @@
 		}
 		video.remove();
 	}
+
+	//make figure images clickable
+	$('body').on('click','img', function() {
+		if (this.parentNode.tagName === 'FIGURE' || this.parentNode.classList.contains('kg-gallery-image')) {
+			window.open(this.src);
+		}
+	})
 })(jQuery);

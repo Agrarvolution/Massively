@@ -473,6 +473,10 @@
     }
 }
 
+.kg-gallery-image img:hover, figure img:hover {
+    cursor: pointer;
+}
+
 .videoConsent {
     font-size: 0.8rem;
     position: fixed;
