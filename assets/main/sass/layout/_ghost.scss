@@ -204,25 +204,9 @@
 
 .kg-width-wide {
     position: relative;
-    margin-left: -6rem;
-    margin-right: -6rem;
-    width: calc(100% + 12rem);
-
-    @include breakpoint('<=large') {
-        margin-left: -4rem;
-        margin-right: -4rem;
-        width: calc(100% + 8rem);
-    }
-    @include breakpoint('<=medium') {
-        margin-left: -2rem;
-        margin-right: -2rem;
-        width: calc(100% + 4rem);
-    }
-    @include breakpoint('<=small') {
-        margin-left: 0;
-        margin-right: 0;
-        width: 100%;
-    }
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
 }
 
 .kg-width-full {
@@ -248,29 +232,40 @@
     }
 }
 
+.kg-card.kg-gallery-card.kg-width-wide {
+    @include breakpoint('<=medium') {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+}
+
+.kg-card.kg-gallery-card.kg-width-wide:not(:last-of-type) {
+    margin-bottom: 0.5vw;
+
+    @include breakpoint('<=medium') {
+        margin-bottom: 0;
+    }
+}
+
 .kg-gallery-container {
     display: flex;
     flex-direction: column;
-    margin-left: -6rem;
-    margin-right: -6rem;
-    width: calc(100% + 12rem);
-
-    /*@include breakpoint('<=xlarge') {
-        margin-left: -2.9rem;
-        margin-right: -2.9rem;
-        width: calc(100% + 6rem);
-    }*/
-    @include breakpoint('<=large') {
-        margin-left: -2rem;
-        margin-right: -2rem;
-        width: calc(100% + 4rem);
-    }
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
 }
+
 
 .kg-gallery-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
+
+    @include breakpoint('<=medium') {
+        flex-direction: column;
+        margin: 0 !important;
+    }
 }
 
 .kg-gallery-image img {
@@ -281,18 +276,23 @@
 }
 
 .kg-gallery-row:not(:first-of-type) {
-    margin: 1vw 0 0 0;
+    margin: 0.5vw 0 0 0;
 }
 
 .kg-gallery-image:not(:first-of-type) {
-    margin: 0 0 0 1vw;
+    margin: 0 0 0 0.5vw;
+}
+
+.kg-gallery-image {
+    @include breakpoint('<=medium') {
+        margin: 1em 0 0 0 !important;
+    }
 }
 
 .kg-gallery-card + .kg-image-card.kg-width-wide,
-.kg-gallery-card + .kg-gallery-card,
 .kg-image-card.kg-width-wide + .kg-gallery-card,
 .kg-image-card.kg-width-wide + .kg-image-card.kg-width-wide {
-    margin: -2.25em 0 3em;
+    margin: 1em 0 3em;
 }
 
 .kg-gallery-card figcaption {
