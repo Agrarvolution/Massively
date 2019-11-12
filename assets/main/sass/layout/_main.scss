@@ -135,7 +135,7 @@
 					height: 25em;
 
 					@include breakpoint('>large') {
-						height: 45em;
+						height: 35em;
 					}
 					@include breakpoint('<=medium') {
 						margin-top: -9.1em;
