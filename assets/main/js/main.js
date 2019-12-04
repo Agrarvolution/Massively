@@ -386,7 +386,7 @@
 	}
 
 	function replaceImageLink (newPath, currentLink) {
-		var regex = /(?<path>\d+\/\d+\/)(?<filename>[\d\w\-_+\s]+)(?<fileending>\.[A-Za-z]+)$/g;
+		var regex = /(\d+\/\d+\/)([\d\w\-_+\s]+)(\.[A-Za-z]+)$/g;
 		var imageData = regex.exec(currentLink);
 		console.log(newPath + imageData[0]);
 		return newPath + imageData[0];
