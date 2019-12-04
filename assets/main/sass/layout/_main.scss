@@ -148,6 +148,7 @@
 					}
 					@include breakpoint('<=xsmall') {
 						margin-top: -10.8em;
+						
 					}
 
 					img {
@@ -156,6 +157,15 @@
 						object-fit: cover;
 						object-position: top;
 					}
+				}
+				@include breakpoint('<=xsmall') {
+					&:not(:first-of-type) {
+						>a {
+							margin-top: -8.25em;
+						}
+					}
+
+					margin-bottom: 3.5rem;
 				}
 			}
 
