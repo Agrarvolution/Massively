@@ -88,6 +88,10 @@
 				padding: 0 !important; 
 				margin-bottom: 5rem;
 
+				@include breakpoint('>small') {
+					margin-bottom: 2rem;
+				}
+
 				> :last-child {
 					margin-bottom: 0;
 				}
