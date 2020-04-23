@@ -1,3 +1,4 @@
+'use strict';
 /*
 	Massively by HTML5 UP
 	html5up.net | @ajlkn
@@ -265,39 +266,35 @@
 					'xlarge': '/content/images/videos/1080/'};
 	var i = 0;
 	breakpoints.on('<=small', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'small', video.children('source')[0].src);
-		}
-	});
-	breakpoints.on('>small', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'medium', video.children('source')[0].src);
-		}
-	});
-	breakpoints.on('<=medium', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'medium', video.children('source')[0].src);
-		}
-	});
-	breakpoints.on('>medium', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'large', video.children('source')[0].src);
-		}
-	});
-	breakpoints.on('<=xlarge', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'large', video.children('source')[0].src);
-		}
-	});
-	breakpoints.on('>xlarge', function() {
-		for (i = 0; i < video.length; i++) {
-			video.children('source')[0].src = replacemp4Link(videoSizes, 'xlarge', video.children('source')[0].src);
-		}
+		reloadVideosOnSizeUpdate('small');
 	});
 
+	breakpoints.on('<=medium', function() {
+		reloadVideosOnSizeUpdate('medium');
+	});
+
+	breakpoints.on('<=xlarge', function() {
+		reloadVideosOnSizeUpdate('large');
+	});
+	breakpoints.on('>small', function() {
+		reloadVideosOnSizeUpdate('medium');
+	});	
+	breakpoints.on('>medium', function() {
+		reloadVideosOnSizeUpdate('large');
+	});
+	breakpoints.on('>xlarge', function() {
+		reloadVideosOnSizeUpdate('xlarge');
+	});
+
+	function reloadVideosOnSizeUpdate (size) {
+		for (i = 0; i < video.length; i++) {
+			video[i].children[0].src = replacemp4Link(videoSizes, size, video[i].children[0].src);
+			video[i].load();
+		}
+	}
+
 	function replacemp4Link (links, size, currentLink) {
-		console.log(links[size] + currentLink.match(/[\d\w]+(\.mp4)$/gm));
-		return links[size] + currentLink.match(/[\d\w]+(\.mp4)$/gm);
+		return links[size] + currentLink.match(/[\d\w+-]+(\.mp4)$/gm);
 	}
 
 	//video consent
@@ -354,9 +351,9 @@
 
 	var imageLinks = [
 		'/content/images/',
-		'/content/images/size/w2000/',
-		'/content/images/size/w1000/',
-		'/content/images/size/w600/'
+		'/content/images/size_optimization/w2000/',
+		'/content/images/size_optimization/w1000/',
+		'/content/images/size_optimization/w600/'
 	];
 	replaceImage($('figure').children('img'), imageLinks, 2);
 	replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 3);
