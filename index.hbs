@@ -14,7 +14,18 @@ into the {body} of the default.hbs template --}}
                 <h2><a href="{{url}}">{{title}}</a></h2>
             </header>
             {{#if feature_image}}
-            <a href="{{url}}" class="image fit"><img src="{{img_url feature_image}}" alt="{{title}}" /></a>
+            <a href="{{url}}" class="image fit"><img src="{{img_url feature_image size="xl"}}"
+                srcset="{{img_url feature_image size="s"}} 300w,
+                        {{img_url feature_image size="sm"}} 400w,
+                        {{img_url feature_image size="m"}} 500w,
+                        {{img_url feature_image size="xm"}} 600w,
+                        {{img_url feature_image size="l"}} 750w,
+                        {{img_url feature_image size="xl"}} 1000w,
+                        {{img_url feature_image size="xxl"}} 1200w,
+                        {{img_url feature_image size="xxxl"}} 1500w,
+                        {{img_url feature_image size="xxxxl"}} 1750w,
+                        {{img_url feature_image size="xxxxxl"}} 2000w"
+                alt="{{title}}" /></a>
             {{/if}}
             <p>{{excerpt words="33"}}</p>
             <ul class="actions special">

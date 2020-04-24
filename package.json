@@ -60,6 +60,44 @@
         "node-sass": "^4.10.0"
     },
     "config": {
-        "posts_per_page": 12
+        "posts_per_page": 12,
+        "image_sizes": {
+            "xxs": {
+                "width": 30
+            },
+            "xs": {
+                "width": 100
+            },
+            "s": {
+                "width": 300
+            },
+            "sm": {
+                "width": 400
+            },
+            "m": {
+                "width": 500
+            },
+            "xm": {
+                "width": 600
+            },
+            "l": {
+                "width": 750
+            },
+            "xl": {
+                "width": 1000
+            },
+            "xxl": {
+                "width": 1200
+            },
+            "xxxl": {
+                "width": 1500
+            },
+            "xxxxl": {
+                "width": 1750
+            },
+            "xxxxxl": {
+                "width": 2000
+            }
+        }
     }
 }

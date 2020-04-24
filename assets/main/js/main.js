@@ -348,7 +348,7 @@
 	for (i = 0; i < images.length; i++) {
 		images[i].setAttribute('data-link', images[i].src);
 	}
-
+/*
 	var imageLinks = [
 		'/content/images/',
 		'/content/images/size_optimization/w2000/',
@@ -387,7 +387,7 @@
 		var imageData = regex.exec(currentLink);
 		console.log(newPath + imageData[0]);
 		return newPath + imageData[0];
-	}
+	}*/
 	//make figure images clickable
 	$('body').on('click','img', function() {
 		if (this.parentNode.tagName === 'FIGURE' || this.parentNode.classList.contains('kg-gallery-image')) {
