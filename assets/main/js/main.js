@@ -348,46 +348,6 @@
 	for (i = 0; i < images.length; i++) {
 		images[i].setAttribute('data-link', images[i].src);
 	}
-/*
-	var imageLinks = [
-		'/content/images/',
-		'/content/images/size_optimization/w2000/',
-		'/content/images/size_optimization/w1000/',
-		'/content/images/size_optimization/w600/'
-	];
-	replaceImage($('figure').children('img'), imageLinks, 2);
-	replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 3);
-	breakpoints.on('<=medium', function() {
-		replaceImage($('a').children('img'), imageLinks, 2);
-		replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 2);
-	});
-	breakpoints.on('<=small', function () {
-		replaceImage($('a').children('img'), imageLinks, 3);
-		replaceImage($('figure').children('img'), imageLinks, 3);
-		replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 3);
-	});
-	breakpoints.on('>small', function () {
-		replaceImage($('a').children('img'), imageLinks, 2);
-		replaceImage($('figure').children('img'), imageLinks, 2);
-		replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 2);
-	});
-	breakpoints.on('>medium', function() {
-		replaceImage($('a').children('img'), imageLinks, 1);
-		replaceImage($('div.kg-gallery-image').children('img'), imageLinks, 3);
-	});
-
-	function replaceImage(currentImages, imageLinks, size) {
-		for (var i=0; i < currentImages.length; i++) {
-			currentImages[i].src = replaceImageLink(imageLinks[size], currentImages[i].src);
-		}	
-	}
-
-	function replaceImageLink (newPath, currentLink) {
-		var regex = /(\d+\/\d+\/)([\d\w\-_+\s]+)(\.[A-Za-z]+)$/g;
-		var imageData = regex.exec(currentLink);
-		console.log(newPath + imageData[0]);
-		return newPath + imageData[0];
-	}*/
 	//make figure images clickable
 	$('body').on('click','img', function() {
 		if (this.parentNode.tagName === 'FIGURE' || this.parentNode.classList.contains('kg-gallery-image')) {
