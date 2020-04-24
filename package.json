@@ -80,8 +80,14 @@
             "xm": {
                 "width": 600
             },
+            "xxm": {
+                "width": 700
+            },
+            "xxxm": {
+                "width": 800
+            },
             "l": {
-                "width": 750
+                "width": 900
             },
             "xl": {
                 "width": 1000
@@ -90,12 +96,9 @@
                 "width": 1200
             },
             "xxxl": {
-                "width": 1500
+                "width": 1600
             },
             "xxxxl": {
-                "width": 1750
-            },
-            "xxxxxl": {
                 "width": 2000
             }
         }

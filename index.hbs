@@ -19,12 +19,16 @@ into the {body} of the default.hbs template --}}
                         {{img_url feature_image size="sm"}} 400w,
                         {{img_url feature_image size="m"}} 500w,
                         {{img_url feature_image size="xm"}} 600w,
-                        {{img_url feature_image size="l"}} 750w,
+                        {{img_url feature_image size="xxm"}} 700w,
+                        {{img_url feature_image size="xxxm"}} 800w,
+                        {{img_url feature_image size="l"}} 900w,
                         {{img_url feature_image size="xl"}} 1000w,
                         {{img_url feature_image size="xxl"}} 1200w,
-                        {{img_url feature_image size="xxxl"}} 1500w,
-                        {{img_url feature_image size="xxxxl"}} 1750w,
-                        {{img_url feature_image size="xxxxxl"}} 2000w"
+                        {{img_url feature_image size="xxxl"}} 1600w"
+                sizes = "(min-width: 1680px) 1500px,
+                    (min-width: 1280px) 1100px,
+                    (min-width: 480px) 94wv,
+                    100wv"
                 alt="{{title}}" /></a>
             {{/if}}
             <p>{{excerpt words="33"}}</p>
