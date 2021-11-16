@@ -6,7 +6,7 @@ into the {body} of the default.hbs template --}}
 <main id="main">
 
     {{!-- Posts --}}
-    <section class="posts">
+    <div class="posts">
 
         {{#foreach posts}}
         <article>
@@ -39,7 +39,7 @@ into the {body} of the default.hbs template --}}
         </article>
         {{/foreach}}
 
-    </section>
+    </div>
 
     {{!-- Pagination --}}
     {{pagination}}
