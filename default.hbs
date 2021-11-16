@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{@site.lang}}">
+<html lang="{{@site.locale}}">
 <head>
 
     {{!-- Document Settings --}}
@@ -13,7 +13,6 @@
 
     {{!-- Styles'n'Scripts --}}
     <link rel="stylesheet" type="text/css" href="{{asset "main/css/main.css"}}" />
-    <link rel="stylesheet" type="text/css" href="{{asset "main/css/cookieconsent.min.css"}}" />
     <noscript><link rel="stylesheet" href="{{asset "main/css/noscript.css"}}" /></noscript>
 
     {{!-- This tag outputs SEO meta+structured data and other important settings --}}
@@ -40,13 +39,7 @@
         {{/is}}
 
         {{!-- Header --}}
-        <header id="header">
-            {{#if @site.logo}}
-                <a href="{{@site.url}}" class="logo image"><img src="{{@site.logo}}" alt="{{@site.title}}" width="75px" height="75px" /></a>
-            {{else}}
-                <a href="{{@site.url}}" class="logo">{{@site.title}}</a>
-            {{/if}}
-        </header>
+        {{> "header"}}
 
         {{!-- Nav --}}
         {{#if @site.navigation}}
@@ -57,22 +50,7 @@
         {{{body}}}
 
         {{!-- The footer at the very bottom of the screen --}}
-        <div id="copyright">
-            <ul>
-                <li>&copy; {{@site.title}}</li>
-                <li>Kilian Johannes Hartinger</li>
-                <li>Filmproduktion</li>
-                <li>Niederbrunn 8 ∙ 4912 Neuhofen / Innkreis </li>
-            </ul>
-            <ul>
-                <li><a href="{{@site.url}}/offenlegung/">Offenlegung</a></li>
-                <li><a href="{{@site.url}}/datenschutzerklarung/">Datenschutzerklärung</a></li>
-            </ul>
-            <ul>                            
-                <li>Design by <a href="https://html5up.net">HTML5 UP</a></li>
-                <li>Published with <a href="https://ghost.org">Ghost</a></li>
-            </ul>
-        </div>
+        {{> "footer"}}
 
     </div>
 
@@ -85,28 +63,6 @@
     <script src="{{asset "main/js/breakpoints.min.js"}}"></script>
     <script src="{{asset "main/js/util.js"}}"></script>
     <script src="{{asset "main/js/main.js"}}"></script>
-    <script src="{{asset "main/js/cookieconsent.min.js"}}" data-cfasync="false"></script>
-    <script>
-        window.cookieconsent.initialise({
-        "palette": {
-            "popup": {
-            "background": "#eee",
-            "text": "rgb(33, 41, 49)"
-            },
-            "button": {
-            "background": "#18bfef",
-            "text": "#ffffff"
-            }
-        },
-        "theme": "edgeless",
-        "content": {
-            "message": "Diese Webseite verwendet Cookies, um die bestmöglich Nutzererfahrung ermöglichen zu können.",
-            "dismiss": "Verstanden!",
-            "link": "Mehr erfahren",
-            "href": "localhost:2368/datenschutzerklarung/"
-        }
-        });
-    </script>
 
     {{!-- Ghost outputs important scripts & data with the {ghost_foot} tag
     it should always be the very last thing before the closing body tag --}}
