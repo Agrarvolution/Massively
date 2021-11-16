@@ -28,8 +28,8 @@ into the {body} of the default.hbs template --}}
                         {{img_url feature_image size="xxxxl"}} 1600w"
                 sizes = "(min-width: 1680px) 1500px,
                     (min-width: 1280px) 1100px,
-                    (min-width: 480px) 94wv,
-                    100wv"
+                    (min-width: 480px) 94vw,
+                    100vw"
                 alt="{{title}}" /></a>
             {{/if}}
             <p>{{excerpt words="33"}}</p>
@@ -43,5 +43,5 @@ into the {body} of the default.hbs template --}}
 
     {{!-- Pagination --}}
     {{pagination}}
-
+    {{> "pagination_fix"}}
 </main>

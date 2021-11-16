@@ -1,0 +1,7 @@
+<header id="header">
+    {{#if @site.logo}}
+        <a href="{{@site.url}}" class="logo image"><img src="{{@site.logo}}" alt="{{@site.title}}" width="75" height="75" /></a>
+    {{else}}
+        <a href="{{@site.url}}" class="logo">{{@site.title}}</a>
+    {{/if}}
+</header>
