@@ -22,14 +22,9 @@ You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in 
 
 <body class="error-template">
     <div id="wrapper">
-
-        <header id="header">
-            {{#if @site.logo}}
-            <a href="{{@site.url}}" class="logo image"><img src="{{@site.logo}}" alt="{{@site.title}}" /></a>
-            {{else}}
-            <a href="{{@site.url}}" class="logo">{{@site.title}}</a>
-            {{/if}}
-        </header>
+        
+        {{!-- Header --}}
+        {{> "header"}}
 
         {{!-- Nav --}}
         {{#if @site.navigation}}
@@ -67,23 +62,7 @@ You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in 
         </main>
 
         {{!-- The footer at the very bottom of the screen --}}
-        <div id="copyright">
-            <ul>
-                <li>&copy; {{@site.title}}</li>
-                <li>Hartinger Johannes Kilian</li>
-                <li>Filmproduktion</li>
-                <li>Niederbrunn 8 ∙ 4912 Neuhofen / Innkreis </li>
-            </ul>
-            <ul>
-                <li><a href="{{@site.url}}/offenlegung/">Offenlegung</a></li>
-                <li><a href="{{@site.url}}/datenschutzerklarung/">datenschutzerklarung</a></li>
-            </ul>
-            <ul>                            
-                <li>Design by <a href="https://html5up.net">HTML5 UP</a></li>
-                <li>Published with <a href="https://ghost.org">Ghost</a></li>
-            </ul>
-        </div>
-
+        {{> "footer"}}
 
     </div>
 </body>

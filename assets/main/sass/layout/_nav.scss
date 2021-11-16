@@ -86,6 +86,9 @@
 							color: inherit !important;
 							background-color: transparentize(_palette(invert, fg), 0.9);
 						}
+						&:focus, &:focus-visible {
+							background-color: transparentize(_palette(invert, fg), 0.5);
+						}
 					}
 
 					&.active {
@@ -97,8 +100,13 @@
 							&:hover {
 								color: _palette(invert, accent) !important;
 							}
+							&:focus, &:focus-visible {
+								background-color: darken(_palette(invert, fg), 20%);
+							}
 						}
 					}
+
+					
 				}
 			}
 
