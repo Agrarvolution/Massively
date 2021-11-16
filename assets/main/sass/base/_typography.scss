@@ -9,7 +9,6 @@
 
 	html {
 		font-size: 16pt;
-		font-display: swap;
 		
 		@include breakpoint('<=xlarge') {
 			font-size: 12pt;
