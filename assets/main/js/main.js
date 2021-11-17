@@ -285,6 +285,7 @@
 		}
 		return null;
 	}
+	/*
 	if (getCookie('youtube-is-allowed') === null) {
 		var consent = $('.videoConsent');
 		consent.css('display', 'flex');
@@ -301,7 +302,13 @@
 	else 
 	{
 		enableYoutube();
-	}
+	}*/
+
+	//get all iframes
+	var iframes = $('iframe');
+
+	//get all youtube video iframes
+	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']");
 
 	function enableYoutube() {
 		var youtubeVideos = $('iframe');
