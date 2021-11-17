@@ -1,0 +1,49 @@
+/**
+* Instagram
+*/
+iframe.instagram-media {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/**
+* Video / Youtube Embed
+*/
+.kg-video {
+    position:relative;
+	padding-bottom:56.25%;
+	height:0;
+    overflow:hidden;
+    width: 100%;
+    
+    iframe, object, embed, video {
+        position:absolute;
+	    top:0;
+	    left:0;
+	    width:100%;
+	    height:100%;
+    }
+
+    video {
+        z-index: 5;
+    }
+}
+
+.kg-video + figcaption {
+    margin-top: 1em;
+}
+
+//Fallback with embed only
+.content > iframe[allowfullscreen]:not(.instagram-media) {
+    width: 100%;
+    height: 100%;
+}
+
+/**
+* Flicker
+*/
+iframe.flickr-embed-frame {
+    width: 100% !important;
+    height: fit-content !important;
+    aspect-ratio: 1;
+}

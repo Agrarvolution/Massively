@@ -355,5 +355,47 @@
 		}
 	})
 
+	/**
+	 * Viewport width without scrollbar varaible for css
+	 */
+	let scroller = document.scrollingElement;
+
+	// Force scrollbars to display
+	scroller.style.setProperty('overflow', 'scroll');
+
+	function updateScrollbarCSS() {
+		// Wait for next from so scrollbars appear
+		requestAnimationFrame(()=>{
+	
+			// True width of the viewport, minus scrollbars
+			scroller.style
+				.setProperty(
+				'--vw', 
+				scroller.clientWidth / 100 + "px"
+				);
+			scroller.style
+				.setProperty(
+				'--viewport-width', 
+				scroller.clientWidth + "px"
+				);
+
+			// Width of the scrollbar
+			scroller.style
+				.setProperty(
+				'--scrollbar-width', 
+				window.innerWidth - scroller.clientWidth + "px"
+				);
+
+			// Reset overflow
+			scroller.style
+				.setProperty(
+				'overflow', 
+				''
+				);
+		});
+		return true;
+	}
+	$(window).on('resize', updateScrollbarCSS);
+	updateScrollbarCSS();
 
 })(jQuery);

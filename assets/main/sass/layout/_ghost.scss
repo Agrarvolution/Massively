@@ -200,6 +200,7 @@
 
 .kg-image {
     width: 100%;
+    height: 100%;
 }
 
 .kg-card figcaption {
@@ -217,19 +218,21 @@
 
 .kg-width-full {
     position: relative;
-    margin-left: -14.1rem;
-    margin-right: -14.1rem;
-    width: calc(100% + 28.25rem);
+    margin-left: calc(calc(calc(1000px - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
+    width: calc(100vw - 4rem);
+    
+    max-width: 72rem;
 
+    @include breakpoint('<=xlarge') {
+        margin-left: calc(calc(calc(720px - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
+    }
     @include breakpoint('<=large') {
-        margin-left: -8rem;
-        margin-right: -8rem;
-        width: calc(100% + 16rem);
+        width: calc(var(--viewport-width, 100vw) - 4rem);
+        margin-left: calc(calc(calc(720px - var(--viewport-width, 100vw)) / 2) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), 72rem)) / 2));
     }
     @include breakpoint('<=medium') {
-        margin-left: -4rem;
-        margin-right: -4rem;
-        width: calc(100% + 8rem);
+        margin-left: calc(min(calc(calc(720px - 100vw) / 2), -6rem) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
+        margin-left: calc(min(calc(calc(720px - var(--viewport-width, 100vw)) / 2), -6rem) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), 72rem)) / 2));   
     }
     @include breakpoint('<=small') {
         margin-left: -2rem;
@@ -289,15 +292,20 @@
     margin: 0 0 0 0.5vw;
 }
 
-.kg-gallery-image {
-    @include breakpoint('<=medium') {
-        margin: 1em 0 0 0 !important;
+@include breakpoint('<=medium') {
+    .kg-gallery-image:not(:first-of-type) {
+        margin: 1vw 0 0 0;
+    }
+    .kg-gallery-image:first-of-type {
+        margin: 0;
+    }
+    .kg-gallery-image:last-of-type{
+        margin: 1vw 0 ;
     }
 }
 
-.kg-gallery-card + .kg-image-card.kg-width-wide,
-.kg-image-card.kg-width-wide + .kg-gallery-card,
-.kg-image-card.kg-width-wide + .kg-image-card.kg-width-wide {
+.kg-gallery-card + .kg-image-card,
+.kg-image-card + .kg-gallery-card {
     margin: 1em 0 3em;
 }
 
@@ -453,29 +461,6 @@
     border-bottom: none;
 }
 
-.kg-video {
-    position:relative;
-	padding-bottom:56.25%;
-	height:0;
-    overflow:hidden;
-    width: 100%;
-    
-    iframe, object, embed, video {
-        position:absolute;
-	    top:0;
-	    left:0;
-	    width:100%;
-	    height:100%;
-    }
-
-    video {
-        z-index: 5;
-    }
-}
-
-.kg-video + figcaption {
-    margin-top: 1em;
-}
 
 .kg-gallery-image img:hover, figure img:hover {
     cursor: pointer;
