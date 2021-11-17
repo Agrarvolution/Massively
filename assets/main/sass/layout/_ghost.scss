@@ -466,6 +466,33 @@
     cursor: pointer;
 }
 
+.kg-card.kg-width-half {
+    width: 50%;
+    min-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.kg-card.kg-float-right {
+    float: right;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    margin-right: 0;
+}
+.kg-card.kg-float-left {
+    float: left;
+    margin-left: 0;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+@include breakpoint('<medium') {
+    .kg-card.kg-float-left, .kg-card.kg-float-right {
+        float: none;
+        margin: 0 0 2rem 0;
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
 .videoConsent {
     font-size: 0.8rem;
     position: fixed;
