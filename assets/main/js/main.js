@@ -265,6 +265,8 @@
 		return links[size] + currentLink.match(/[\d\w+-]+(\.mp4)$/gm);
 	}
 
+	var cookieValue = 1;
+	var cookieDaysAlive = 365;
 	//video consent
 	function setCookie(name,value,days) {
 		var expires = "";
@@ -285,24 +287,7 @@
 		}
 		return null;
 	}
-	/*
-	if (getCookie('youtube-is-allowed') === null) {
-		var consent = $('.videoConsent');
-		consent.css('display', 'flex');
-		
-		$('.allowYT').click(function () {
-			consent.css('display', 'none');
-			enableYoutube()
-			setCookie('youtube-is-allowed', 1, 30)
-		});
-		$('.disableYT').click(function() {
-			consent.css('display', 'none');
-		})
-	}
-	else 
-	{
-		enableYoutube();
-	}*/
+
 
 	//get all iframes
 
@@ -328,26 +313,50 @@
 	console.log(instagram);*/
 	//get all youtube video iframes
 	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
-		.add(youtubeLinks)
 		.each(updateYoutubeLink);
-	if (!getCookie(youtubeCookie)) {
-		youtube.each(disableiFrame);
-		createConsentButtonListener('youtube');
-	}
-		
 	
+	console.log(youtube, iframes);
+	updateService('youtube');
+		
+	function parseExtraData(nextSibling) {
+		if (nextSibling) {
+			var textContent = nextSibling.textContent;
 
-	//block external sources from loading -> setup for consent
-	function disableiFrame () {
-		$(this)[0].setAttribute('data-src', $(this)[0].src);
-		$(this)[0].src = '';
-		$(this).before(generateEmbedConsentText('Youtube', $(this)[0].getAttribute('data-src'), "/datenschutzerklarung/"))
+			var caption = textContent.match(/\[.+\]/gm);
+			if (caption && caption.length) {
+				caption = caption[0].replace(/[\[\]]/g, '').trim();
+			} else {
+				caption = '';
+			}
+			var classes = textContent.match(/{.+}/gm);
+			if (classes && classes.length) {
+				classes = classes[0].replace(/[{}]/g, '').trim();
+			} else {
+				classes = '';
+			}
+			var textContent = nextSibling.textContent = '';
+			return {classes: classes, caption: caption};
+		}
+
+		return {classes: '', caption: ''};
 	}
 
-	function generateEmbedFigure() {
-		return `<figure class="kg-card kg-embed-card"></figure>`;
+
+
+	/**
+	 * Common generation functions 
+	 */
+	function generateEmbedFigure(extraClasses) {
+		return `<figure class="kg-card kg-embed-card ${extraClasses}"></figure>`;
+	}
+	function generateFigureCaption(caption) {
+		return `<figcaption>${caption}</figcaption>`;
 	}
 
+	
+	/**
+	 * Consent functions
+	 */
 	//german for now
 	function generateEmbedConsentText(service, link, gdprLink) {
 		var lowerCaseService = service.toLowerCase();
@@ -358,43 +367,89 @@
 				<p>Beim Click auf den Anzeigen-Button stimmen Sie der <a href="${gdprLink}#${lowerCaseService}-datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> von ${service} zu, die Einstellung wird in einem Cookie gespeichert und seitenweit aktiviert. Die Einstellung kann in der <a href="${gdprLink}" target="_blank">Datenschutzerklärung</a> deaktiviert werden.</p>
 				<span class="kg-consent-interface">
 					<button class="consent-button" data-service="${lowerCaseService}">Inhalte anzeigen</button>
-					<a href="${link}" target="_blank"><button>${service} öffnen.</button></a>
+					<a href="${link}" target="_blank"><button>${service} öffnen</button></a>
 				</span>
 			</div>
 		</div>`;
 	}
 	
+
+	function createConsentButtonListener(service) {
+		$(".consent-button").on('click', consentGiven);
+	}
+	function consentGiven() {
+		updateService($(this)[0].getAttribute('data-service'));
+	}
+
+	function updateService(service) {	
+		if (getCookie(`${service}-allowed`)) {
+			switch (service) {
+				case 'youtube':
+					youtube.each(enableYoutube);
+					removeConsent(service);
+					setCookie('youtube-allowed', cookieValue, cookieDaysAlive);
+					break;
+				default:
+					break;
+			}
+		} else {
+			switch (service) {
+				case 'youtube':
+					youtube.each(disableYoutube);
+					createConsentButtonListener('youtube');
+					break;
+				default:
+					break;
+			}
+		}
+		
+
+	}
+	function removeConsent(service) {
+		$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
+	}
+
+	/** Youtube specific setup methods */
 	function enableYoutube() {
 		if ($(this)[0].hasAttribute('data-src')) {
 			$(this)[0].src = $(this)[0].getAttribute('data-src');
 		}
 	}
-	function createConsentButtonListener(service) {
-		$(".consent-button").on('click', consentGiven);
+	//block external sources from loading -> setup for consent
+	function disableYoutube () {
+		$(this)[0].setAttribute('data-src', $(this)[0].src);
+		$(this)[0].src = '';
+		console.log($(this)[0]);
+		$(this).before(generateEmbedConsentText('Youtube', unembedYoutubeLink($(this)[0].getAttribute('data-src')), "/datenschutzerklarung/"))
 	}
-	function consentGiven() {
-		var service = $(this)[0].getAttribute('data-service');
-		switch (service) {
-			case 'youtube':
-				youtube.each(enableYoutube);
-				removeConsent(service);
-				setCookie('youtube-allowed', 1, 365);
-				break;
-			default:
-				break;
-		}
-	}
-	function removeConsent(service) {
-		$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
-	}
-	/** Youtube specific setup methods */
+
 	function updateYoutubeLink() {
 		$(this)[0].src = generateNoCookieYoutubeLink($(this)[0].src);
 		if (!$(this).parent().is('figure')) {
-			$(this).wrap(generateEmbedFigure())
+			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes')))
 				.addClass('kg-video');
 		}		
 		$(this).parent().addClass('kg-video-card');
+
+		var caption = $(this)[0].getAttribute('data-figcaption')
+		if (caption) {
+			$(this).parent().append(generateFigureCaption(caption));
+		}
+	}
+	
+	function unembedYoutubeLink(href) {
+		if (href && href !== false) {
+			console.log(href);
+			var url = new URL(href);
+			url.host = 'www.youtube.com'		
+			var id = url.pathname.replace("/embed/", '');
+			url.pathname = "/watch";
+			url.search = "";
+			url.searchParams.set('v', id);
+
+			return (url.href);
+		}
+		return href;
 	}
 	function createYoutubeEmbedFromLink() {
 		var href = generateYoutubeEmbedLink($(this)[0].href);
@@ -402,11 +457,15 @@
 		if ($(this).parent().is('p')) {
 			$(this).unwrap();
 		}
+
+		var extraData = parseExtraData($(this)[0].nextSibling);
+
 		var newIFrame = `<iframe width="1920" height="1080" src="${href}" title="YouTube video player" frameborder="0" 
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-			allowfullscreen>
+			allowfullscreen data-figcaption="${extraData.caption}" data-classes="${extraData.classes}">
 		</iframe>`;
 		$(this).replaceWith(newIFrame);
+
 	}
 	function generateYoutubeEmbedLink(href) {
 		if (href === undefined || href == null) {
@@ -435,6 +494,36 @@
 		}
 		return url.href;
 	}
+
+
+	/**
+	 * Consent toggle
+	 */
+	var consentButtons = $('.kg-consent-option button').each(function() {
+		toggleConsent($(this), false);
+		$(this).on('click', toggleConsentListener);
+	});
+
+	function toggleConsentListener() {
+		toggleConsent($(this), true);
+	}
+	function toggleConsent(button, isEvent) {
+		var service = button[0].getAttribute('data-service');
+		var serviceText = service.charAt(0).toUpperCase() + service.slice(1);
+		
+		var cookie = getCookie(service + "-allowed");
+		console.log(isEvent, button.text(), serviceText);
+		if (cookie) {
+			button.html(`${serviceText} deaktivieren`);
+			isEvent ? setCookie(`${service}-allowed`, 0, -1) : '';
+		} else {
+			button.html(`${serviceText} aktivieren`);
+			isEvent ? setCookie(`${service}-allowed`, cookieValue, cookieDaysAlive) : '';
+		}
+		//rest webpage
+		isEvent ? location.reload(true) : '';
+	}
+
 
 	//auto image resolution
 	var images = $('img');
