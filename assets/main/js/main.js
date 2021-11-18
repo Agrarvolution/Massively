@@ -311,6 +311,8 @@
 	var youtubeLinks = links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
 		.each(createYoutubeEmbedFromLink);
 
+	var youtubeCookie = 'youtube-allowed';
+
 
 	var iframes = $('iframe');
 	var instagram = $('.instagram-media + script');
@@ -327,21 +329,19 @@
 	//get all youtube video iframes
 	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
 		.add(youtubeLinks)
-		.each(updateYoutubeLink)
-		.each(disableiFrame);
-	createConsentButtonListener('youtube');
+		.each(updateYoutubeLink);
+	if (!getCookie(youtubeCookie)) {
+		youtube.each(disableiFrame);
+		createConsentButtonListener('youtube');
+	}
+		
+	
 
 	//block external sources from loading -> setup for consent
 	function disableiFrame () {
 		$(this)[0].setAttribute('data-src', $(this)[0].src);
 		$(this)[0].src = '';
 		$(this).before(generateEmbedConsentText('Youtube', $(this)[0].getAttribute('data-src'), "/datenschutzerklarung/"))
-	}
-	function enableiFrame () {
-		if ($(this)[0].hasAttribute('data-src')) {
-			$(this)[0].src = $(this)[0].getAttribute('data-src');
-		}
-		$(this)[0].addClass('kg-consent');	
 	}
 
 	function generateEmbedFigure() {
@@ -377,11 +377,15 @@
 		switch (service) {
 			case 'youtube':
 				youtube.each(enableYoutube);
-				$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
+				removeConsent(service);
+				setCookie('youtube-allowed', 1, 365);
 				break;
 			default:
 				break;
 		}
+	}
+	function removeConsent(service) {
+		$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
 	}
 	/** Youtube specific setup methods */
 	function updateYoutubeLink() {

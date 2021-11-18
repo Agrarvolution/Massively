@@ -13,7 +13,6 @@
 */
 .kg-video {
     position:relative;
-	padding-bottom:56.25%;
 	height:0;
     overflow:hidden;
     width: 100%;
@@ -62,6 +61,10 @@ iframe.flickr-embed-frame {
 .kg-width-half .kg-consent {
     height: 100%;
 }
+
+/** 
+* Consent
+*/
 
 .kg-consent {
     width: 100%;
