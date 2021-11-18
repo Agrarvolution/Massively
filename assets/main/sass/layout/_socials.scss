@@ -2,10 +2,14 @@
 * Instagram
 */
 .instagram-media {
-    min-width: 100% !important;
+    min-width: 0% !important;
     max-width: 100% !important;
     width: 100% !important;
     margin-bottom: 2rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+
 }
 
 /**
@@ -60,41 +64,4 @@ iframe.flickr-embed-frame {
 
 .kg-width-half .kg-consent {
     height: 100%;
-}
-
-/** 
-* Consent
-*/
-
-.kg-consent {
-    width: 100%;
-    height:fit-content;
-    line-height: 1;
-    padding: 1rem 2rem;
-    overflow-y: auto;
-
-    strong {
-        text-align: center;
-        display: block;
-        margin-bottom: 1rem;
-    }
-
-    p {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .kg-consent-interface {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-
-        button {
-            margin-top: .25rem;
-        }
-    }
-}
-
-.kg-consent-container + iframe {
-    display: none;
 }
