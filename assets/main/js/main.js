@@ -305,17 +305,131 @@
 	}*/
 
 	//get all iframes
+
+	var links = $('.content > p a:only-child');
+	/* Setup unconverted Youtube-Links as iFrame */
+	var youtubeLinks = links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
+		.each(createYoutubeEmbedFromLink);
+
+
 	var iframes = $('iframe');
+	var instagram = $('.instagram-media + script');
+	var instaScriptPath = '';
 
+/*
+	instagram.each(function() {
+		instaScriptPath = $(this)[0].src;
+		$(this)[0].removeAttribute('src');
+
+		observer.observe($(this)[0].parentNode, {attributes: true, characterData: true, childList: true})
+	});
+	console.log(instagram);*/
 	//get all youtube video iframes
-	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']");
+	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
+		.add(youtubeLinks)
+		.each(updateYoutubeLink)
+		.each(disableiFrame);
+	createConsentButtonListener('youtube');
 
-	function enableYoutube() {
-		var youtubeVideos = $('iframe');
-		for (i = 0; i < youtubeVideos.length; i++) {
-			youtubeVideos[i].src = youtubeVideos[i].title
+	//block external sources from loading -> setup for consent
+	function disableiFrame () {
+		$(this)[0].setAttribute('data-src', $(this)[0].src);
+		$(this)[0].src = '';
+		$(this).before(generateEmbedConsentText('Youtube', $(this)[0].getAttribute('data-src'), "/datenschutzerklarung/"))
+	}
+	function enableiFrame () {
+		if ($(this)[0].hasAttribute('data-src')) {
+			$(this)[0].src = $(this)[0].getAttribute('data-src');
 		}
-		video.remove();
+		$(this)[0].addClass('kg-consent');	
+	}
+
+	function generateEmbedFigure() {
+		return `<figure class="kg-card kg-embed-card"></figure>`;
+	}
+
+	//german for now
+	function generateEmbedConsentText(service, link, gdprLink) {
+		var lowerCaseService = service.toLowerCase();
+		return `<div class="kg-consent-container">
+			<div class="kg-consent">
+				<strong>${service}-DSGVO Auswahl</strong>
+				<p>Diese Website verwendet ${service} um Medien einzubinden. Um Ihre Daten zu bestmöglich zu schützen ist die Anzeige standardmäßig deaktiviert.</p>
+				<p>Beim Click auf den Anzeigen-Button stimmen Sie der <a href="${gdprLink}#${lowerCaseService}-datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> von ${service} zu, die Einstellung wird in einem Cookie gespeichert und seitenweit aktiviert. Die Einstellung kann in der <a href="${gdprLink}" target="_blank">Datenschutzerklärung</a> deaktiviert werden.</p>
+				<span class="kg-consent-interface">
+					<button class="consent-button" data-service="${lowerCaseService}">Inhalte anzeigen</button>
+					<a href="${link}" target="_blank"><button>${service} öffnen.</button></a>
+				</span>
+			</div>
+		</div>`;
+	}
+	
+	function enableYoutube() {
+		if ($(this)[0].hasAttribute('data-src')) {
+			$(this)[0].src = $(this)[0].getAttribute('data-src');
+		}
+	}
+	function createConsentButtonListener(service) {
+		$(".consent-button").on('click', consentGiven);
+	}
+	function consentGiven() {
+		var service = $(this)[0].getAttribute('data-service');
+		switch (service) {
+			case 'youtube':
+				youtube.each(enableYoutube);
+				$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
+				break;
+			default:
+				break;
+		}
+	}
+	/** Youtube specific setup methods */
+	function updateYoutubeLink() {
+		$(this)[0].src = generateNoCookieYoutubeLink($(this)[0].src);
+		if (!$(this).parent().is('figure')) {
+			$(this).wrap(generateEmbedFigure())
+				.addClass('kg-video');
+		}		
+		$(this).parent().addClass('kg-video-card');
+	}
+	function createYoutubeEmbedFromLink() {
+		var href = generateYoutubeEmbedLink($(this)[0].href);
+		console.log(href);
+		if ($(this).parent().is('p')) {
+			$(this).unwrap();
+		}
+		var newIFrame = `<iframe width="1920" height="1080" src="${href}" title="YouTube video player" frameborder="0" 
+			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+			allowfullscreen>
+		</iframe>`;
+		$(this).replaceWith(newIFrame);
+	}
+	function generateYoutubeEmbedLink(href) {
+		if (href === undefined || href == null) {
+			return false;
+		}
+		var subpath = "/embed/";
+
+		var url = new URL(href);
+		console.log(url);
+		if (!url.pathname.match(subpath)) {
+			url.pathname = subpath + url.searchParams.get('v');
+			url.searchParams.delete('v');
+		}
+		return url.href;
+	}
+	function generateNoCookieYoutubeLink(src) {
+		if (src === undefined || src == null) {
+			return false;
+		}
+
+		var noCookieHost = "www.youtube-nocookie.com";
+		
+		var url = new URL(src);
+		if (url.host !== noCookieHost) {
+			url.host = noCookieHost;
+		}
+		return url.href;
 	}
 
 	//auto image resolution
@@ -373,4 +487,11 @@
 	$(window).on('resize', updateScrollbarCSS);
 	updateScrollbarCSS();
 
+
+    //quick fix for removed HTML entities in post headers
+    var headlines = $(".major>h1,.major>h2,.major>p.content, article>header>h2");
+
+    for (var i = 0; i < headlines.length; i++) {
+    	headlines[i].innerHTML = headlines[i].innerHTML.replace(/&amp;shy;/g,"&shy;");
+    }
 })(jQuery);

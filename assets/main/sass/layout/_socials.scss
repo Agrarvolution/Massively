@@ -1,7 +1,7 @@
 /**
 * Instagram
 */
-iframe.instagram-media {
+.instagram-media {
     min-width: 100% !important;
     max-width: 100% !important;
     width: 100% !important;
@@ -43,6 +43,7 @@ iframe.instagram-media {
     aspect-ratio: 16/9;
 }
 
+
 /**
 * Flicker
 */
@@ -50,4 +51,47 @@ iframe.flickr-embed-frame {
     width: 100% !important;
     height: fit-content !important;
     aspect-ratio: 1;
+}
+
+.kg-consent-container {
+    height: 100%;
+    box-shadow: inset 0 0 0 2px #eee;
+    border-radius: 3px;
+}
+
+.kg-width-half .kg-consent {
+    height: 100%;
+}
+
+.kg-consent {
+    width: 100%;
+    height:fit-content;
+    line-height: 1;
+    padding: 1rem 2rem;
+    overflow-y: auto;
+
+    strong {
+        text-align: center;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .kg-consent-interface {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+
+        button {
+            margin-top: .25rem;
+        }
+    }
+}
+
+.kg-consent-container + iframe {
+    display: none;
 }
