@@ -228,10 +228,37 @@
 
 	//video auto resolution
 	var video = $('video');
-	var videoSizes = {'small': '/content/images/videos/360/',
+	var videoSizes = {'xsmall': '/content/images/videos/225/',
+					'small': '/content/images/videos/360/',
 					'medium': '/content/images/videos/480/',
 					'large': '/content/images/videos/720/',
 					'xlarge': '/content/images/videos/1080/'};
+	var videoMimeTypes = {
+		'mp4': 'video/mp4',
+		'ogg': 'video/ogg',
+		'ogv': 'video/ogv',
+		'mov': 'video/quicktime',
+		'webm': 'video/webm'
+	};
+	var imageMimeTypes = {
+		'gif': 'image/gif',
+		'jpeg': 'image/jpeg',
+		'jpg': 'image/jpeg',
+		'jpe': 'image/jpeg',
+		'jfif': 'image/jpeg',
+		'png': 'image/png',
+		'svg': 'image/svg+xml',
+		'webp': 'image/webp',
+		'jxl': 'image/jxl',
+		'avif': 'image/avif'
+	}
+	var imageSizeAttribute = {
+		'normal': '(min-width 1680px) 1000px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
+		'gallery': '(min-width 1680px) 320px, (min-width 980px) 236px, (max-width 981px) 720px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
+		'bookmark': '(min-width 735px) 300px, (min-width 480px) 75vw, 90vw',
+		'full': '100%'
+	}
+
 	var i = 0;
 	breakpoints.on('<=small', function() {
 		reloadVideosOnSizeUpdate('small');
@@ -256,13 +283,16 @@
 
 	function reloadVideosOnSizeUpdate (size) {
 		for (i = 0; i < video.length; i++) {
-			video[i].children[0].src = replacemp4Link(videoSizes, size, video[i].children[0].src);
+			video[i].children[0].src = replaceLink(videoSizes, size, video[i].children[0].src);
 			video[i].load();
 		}
 	}
 
-	function replacemp4Link (links, size, currentLink) {
-		return links[size] + currentLink.match(/[\d\w+-]+(\.mp4)$/gm);
+	function replaceLink (links, size, currentLink) {
+		var path = currentLink.match(/[\d\w+-.]+$/g);
+		if (path !== undefined && path != null) {
+			return links[size] + path[0];
+		}
 	}
 
 	var cookieValue = 1;
@@ -288,6 +318,18 @@
 		return null;
 	}
 
+    function getFileType (href) {
+        if (href !== undefined || href !== '') {
+            var parsed = new URL(href);
+			var match = parsed.pathname.match(/\.([\w]){1,}$/gi);
+
+			if (match) {
+				return match[0].replace('.', '').trim();
+			}
+            return '';
+        }
+        return '';
+    }
 
 	//get all iframes
 
@@ -295,11 +337,46 @@
 	/* Setup unconverted Youtube-Links as iFrame */
 	links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
 		.each(createYoutubeEmbedFromLink);
-	/*Setup unconverted Instagram-Link as iFrame */
+	/*Setup unconverted Instagram-Link as Blockquote */
 	links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
 
-	var iframes = $('iframe');
+	/*Setup unembedded video links */
+	links.filter(function () {
+		switch (getFileType($(this)[0].href)) {
+			case 'mp4':
+			case 'mov':
+			case 'avi':
+			case 'webm':
+			case 'ogg':
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}).each(createVideoCard);
 
+	/*Setup umbedded image links */
+	links.filter(function () {
+		switch (getFileType($(this)[0].href)) {
+			case 'jpg':
+			case 'jpeg':
+			case 'jfif':
+			case 'png':
+			case 'avif':
+			case 'webp':
+			case 'gif':
+			case 'jxl':
+			case 'svg':
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}).each(createImageCard);
+
+	var iframes = $('iframe');
 	//get all youtube video iframes
 	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
 		.each(updateYoutubeLink);
@@ -309,26 +386,13 @@
 	updateService('instagram', getCookie(`instagram-allowed`), false);
 
 	function parseExtraData(nextSibling) {
-		if (nextSibling) {
-			var textContent = nextSibling.textContent;
-
-			var caption = textContent.match(/\[.+\]/gm);
-			if (caption && caption.length) {
-				caption = caption[0].replace(/[\[\]]/g, '').trim();
-			} else {
-				caption = '';
-			}
-			var classes = textContent.match(/{.+}/gm);
-			if (classes && classes.length) {
-				classes = classes[0].replace(/[{}]/g, '').trim();
-			} else {
-				classes = '';
-			}
-			var textContent = nextSibling.textContent = '';
-			return {classes: classes, caption: caption};
+		if (nextSibling !== '' && nextSibling !== undefined && nextSibling != null
+			&& nextSibling.nodeName === "#text") {
+			var parsed = JSON.parse(nextSibling.textContent);
+			nextSibling.remove();
+			return parsed;	
 		}
-
-		return {classes: '', caption: ''};
+		return {};
 	}
 
 
@@ -395,7 +459,6 @@
 					youtube.each(disableYoutube);
 					break;
 				case 'instagram':
-					console.log(instagram);
 					$('.instagram-media + script').remove();
 					instagram.each(disableInstagram);
 					break;
@@ -411,12 +474,105 @@
 		$(`[data-service="${service}"]`).parents('.kg-consent-container').remove();
 	}
 
-	/** Instagram specific setup methods */
-	function enableInstagram() {
-		if ($(this)[0].hasAttribute('data-src')) {
-			$(this)[0].setAttribute('data-instgrm-permalink', $(this)[0].getAttribute('data-src'));
+	/**
+	 * Create video card
+	 */
+	function createVideoCard() {
+		var href = $(this)[0].href;
+		if ($(this).parent().is('p')) {
+			$(this).unwrap();
 		}
+		var extraData = parseExtraData($(this)[0].nextSibling);
+		var fileType = getFileType(href);
+		
+		var source = videoSource(href, fileType);
+
+		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
+			var i = 0;
+			for (i = 0; i < extraData.alternativeFileTypes.length; i++) {
+				var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
+				if (fileType !== extraData.alternativeFileTypes[i]) {
+					source += videoSource(altHref, extraData.alternativeFileTypes[i]);
+				}
+			}
+		}
+		var style = '';
+		if (extraData.aspectRatio) {
+			var aspectRatio = extraData.aspectRatio.match(/^\d+\/\d+$/);
+			if (aspectRatio.length) {
+				aspectRatio = aspectRatio[0].split('/');
+				style += `padding-bottom:${aspectRatio[1]*100/aspectRatio[0]}%;`
+			}
+		}
+		style = style.replace(/\s/g, '');
+		
+		var loop = true;
+		if (extraData.loop && (extraData.loop === true || extraData.loop === false)) {
+			loop = extraData.loop;
+		}
+		var autoplay = true;
+		if (autoplay.loop && (autoplay.loop === true || autoplay.loop === false)) {
+			autoplay = autoplay.loop;
+		}
+		var muted = true;
+		if (muted.loop && (muted.loop === true || muted.loop === false)) {
+			muted = muted.loop;
+		}
+
+		var newBlockquote = `<figure class="kg-card kg-embed-card kg-video-card ${extraData.classes ? extraData.classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
+				<div class="kg-video" style="${style}">
+					<video ${autoplay ? "autoplay" : ''} ${muted ? "muted" : ''} ${loop ? "loop" : ''}>
+						${source}
+					</video>
+				</div>
+				${extraData.caption && extraData.caption !== '' ? generateFigureCaption(extraData.caption) : ''}
+			</figure>`;
+		
+		$(this).replaceWith(newBlockquote);
 	}
+	function videoSource (filePath, fileType) {
+		return `<source src="${filePath}" type="${videoMimeTypes[fileType]}">`; 
+	}
+	/**
+	 * Create image card
+	 */
+	 function createImageCard() {
+		var href = $(this)[0].href;
+		if ($(this).parent().is('p')) {
+			$(this).unwrap();
+		}
+		var extraData = parseExtraData($(this)[0].nextSibling);
+		var fileType = getFileType(href);
+
+		var source = videoSource(href, fileType);
+		
+		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
+			var i = 0;
+			for (i = 0; i < extraData.alternativeFileTypes.length; i++) {
+				var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
+				if (fileType !== extraData.alternativeFileTypes[i]) {
+					source += pictureSource(altHref, extraData.alternativeFileTypes[i]);
+				}
+			}
+		}
+
+		var caption = extraData.caption ? extraData.caption : '';
+
+		var newBlockquote = `<figure class="kg-card kg-image-card ${extraData.classes ? extraData.classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
+				<picture>
+					${source}
+					<img class="kg-image" src="${href}" alt="${caption !== '' ? caption : ''}">
+				</picture>
+				${caption !== '' ? generateFigureCaption(extraData.caption) : ''}
+			</figure>`;
+		
+		$(this).replaceWith(newBlockquote);
+	}
+
+	function pictureSource (filePath, fileType) {
+		return `<source src="${filePath}" type="${imageMimeTypes[fileType]}">`; 
+	}
+	/** Instagram specific setup methods */
 	function disableInstagram() {
 		$(this)[0].setAttribute('data-src', $(this)[0].getAttribute('data-instgrm-permalink'));
 		$(this)[0].setAttribute('data-instgrm-permalink', '');
@@ -430,14 +586,15 @@
 		}
 
 		var extraData = parseExtraData($(this)[0].nextSibling);
-		console.log(extraData, href);
-		var newBlockquote = `<figure class="kg-card kg-embed-card kg-instagram ${extraData.classes}">
+		var caption = extraData.caption ? extraData.caption : '';
+		var classes = extraData.classes ? extraData.classes : '';
+
+		var newBlockquote = `<figure class="kg-card kg-embed-card kg-instagram ${classes} ${caption !== '' ? "kg-card-hascaption" : ''}">
 				<blockquote class="instagram-media"
 					data-instgrm-permalink="${href}?utm_source=ig_embed&amp;utm_campaign=loading"
 					data-instgrm-version="13">
 				</blockquote>
-				<script async src="//www.instagram.com/embed.js"></script>
-				${extraData.caption !== '' ? generateFigureCaption(extraData.caption) : ''}
+				${caption !== '' ? generateFigureCaption(caption) : ''}
 			</figure>`;
 
 		$(this).replaceWith(newBlockquote);
@@ -471,14 +628,15 @@
 
 	function updateYoutubeLink() {
 		$(this)[0].src = generateNoCookieYoutubeLink($(this)[0].src);
+		var caption = $(this)[0].getAttribute('data-figcaption');
+		var captionClass = caption && caption !== '' ? "kg-card-hascaption" : '';
+
 		if (!$(this).parent().is('figure')) {
-			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes')))
+			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes') + captionClass))
 				.addClass('kg-video');
 		}		
 		$(this).parent().addClass('kg-video-card');
-
-		var caption = $(this)[0].getAttribute('data-figcaption')
-		if (caption) {
+		if (caption && caption !== '') {
 			$(this).parent().append(generateFigureCaption(caption));
 		}
 	}
@@ -503,11 +661,13 @@
 		}
 
 		var extraData = parseExtraData($(this)[0].nextSibling);
+		var caption = extraData.caption ? extraData.caption : '';
+		var classes = extraData.classes ? extraData.classes : '';
 
 		var newIFrame = `<iframe width="1920" height="1080" src="${href}" title="YouTube video player" frameborder="0" 
-			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-			allowfullscreen data-figcaption="${extraData.caption}" data-classes="${extraData.classes}">
-		</iframe>`;
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+				allowfullscreen data-figcaption="${caption}" data-classes="${classes}">
+			</iframe>`;
 		$(this).replaceWith(newIFrame);
 
 	}

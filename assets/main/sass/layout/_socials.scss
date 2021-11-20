@@ -8,8 +8,9 @@
     margin-bottom: 2rem !important;
     margin-left: auto !important;
     margin-right: auto !important;
-
-
+}
+figure > iframe.instagram-media {
+    margin-bottom: 0 !important;
 }
 
 /**
@@ -17,9 +18,10 @@
 */
 .kg-video {
     position:relative;
-	height:0;
+	height: 100%;
     overflow:hidden;
     width: 100%;
+    padding-bottom: 56.75%;
     
     iframe, object, embed, video {
         position:absolute;
@@ -36,6 +38,9 @@
 
 .kg-video + figcaption {
     margin-top: 1em;
+}
+.content > iframe[src*="youtube"] {
+    margin-bottom: 2rem;
 }
 
 //Fallback with embed only
