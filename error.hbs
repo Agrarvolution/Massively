@@ -14,7 +14,8 @@ You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in 
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="{{asset "main/css/main.css"}}" />
-
+    <noscript><link rel="stylesheet" href="{{asset "main/css/noscript.css"}}" /></noscript>
+    
     {{#if @site.cover_image}}
     <style>#wrapper>.bg {background-image: url({{asset "images/overlay.png"}}),linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.15)),url("{{img_url @site.cover_image}}") }</style>
     {{/if}}
