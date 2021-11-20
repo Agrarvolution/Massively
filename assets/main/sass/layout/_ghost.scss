@@ -242,7 +242,7 @@
 }
 
 .kg-card.kg-gallery-card.kg-width-wide {
-    @include breakpoint('<=medium') {
+    @include breakpoint('<medium') {
         margin-left: 0;
         margin-right: 0;
         width: 100%;
@@ -252,7 +252,7 @@
 .kg-card.kg-gallery-card.kg-width-wide:not(:last-of-type) {
     margin-bottom: 0.5vw;
 
-    @include breakpoint('<=medium') {
+    @include breakpoint('<medium') {
         margin-bottom: 0;
     }
 }
@@ -271,7 +271,7 @@
     flex-direction: row;
     justify-content: center;
 
-    @include breakpoint('<=medium') {
+    @include breakpoint('<medium') {
         flex-direction: column;
         margin: 0 !important;
     }
@@ -292,7 +292,7 @@
     margin: 0 0 0 0.5vw;
 }
 
-@include breakpoint('<=medium') {
+@include breakpoint('<medium') {
     .kg-gallery-image:not(:first-of-type) {
         margin: 1vw 0 0 0;
     }
