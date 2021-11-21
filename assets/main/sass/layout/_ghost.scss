@@ -201,6 +201,7 @@
 .kg-image {
     width: 100%;
     height: 100%;
+    display: block;
 }
 
 .kg-card figcaption {
@@ -306,7 +307,7 @@
 
 .kg-gallery-card + .kg-image-card,
 .kg-image-card + .kg-gallery-card {
-    margin: 1em 0 3em;
+    margin: 1em 0 2em;
 }
 
 .kg-gallery-card figcaption {
@@ -627,7 +628,7 @@
     }
 }
 
-.kg-consent-container + iframe, .kg-consent-container + blockquote {
+.kg-consent-container + iframe, .kg-consent-container + blockquote, .kg-consent-container + .kg-video {
     display: none;
 }
 
