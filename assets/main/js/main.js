@@ -386,11 +386,11 @@
 
 	}
 
-	var fallBackFormats = {'avif': 'jpeg'};
+	var fallBackFormats = {};
 
 	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').each(function() {
 		var fileType = getFileType(this.src);
-		console.log(fileType);
+
 		if (linkIsOnsite(this.src) && fileType !== 'svg') {
 			var parent = $(this).parents('figure.kg-card');
 			var type = 'normal';
@@ -415,7 +415,6 @@
 			}
 		}
 	});
-	console.log(kgImage);
 
 	//get all free links
 	var links = $('.content > p a:only-child');
@@ -437,9 +436,8 @@
 
 
 	/*Setup unembedded video links */
-	var currentBreakpoint = getCurrentBreakpoint();
 	links.filter(function () {
-		switch (getFileType($(this)[0].href)) {
+		switch (getFileType(this.href)) {
 			case 'mp4':
 			case 'mov':
 			case 'avi':
@@ -480,7 +478,7 @@
 
 	/*Setup umbedded image links */
 	links.filter(function () {
-		switch (getFileType($(this)[0].href)) {
+		switch (getFileType(this.href)) {
 			case 'jpg':
 			case 'jpeg':
 			case 'jfif':
@@ -533,7 +531,7 @@
 		$(`.consent-button[data-service="${service}"]`).on('click', consentGiven);
 	}
 	function consentGiven() {
-		updateService($(this)[0].getAttribute('data-service'), true, true);
+		updateService(this.getAttribute('data-service'), true, true);
 	}
 
 	function updateService(service, active, isEvent) {	
@@ -579,11 +577,12 @@
 	 * Create video card
 	 */
 	function createVideoCard() {
-		var href = $(this)[0].href;
-		if ($(this).parent().is('p')) {
-			$(this).unwrap();
+		var href = this.href;
+		var $this = $(this);
+		if ($this.parent().is('p')) {
+			$this.unwrap();
 		}
-		var extraData = parseExtraData($(this)[0].nextSibling);
+		var extraData = parseExtraData(this.nextSibling);
 		var fileType = getFileType(href);
 		
 		var source = videoSource(href, fileType);
@@ -644,11 +643,11 @@
 	 * Create image card
 	 */
 	 function createImageCard() {
-		var href = $(this)[0].href;
+		var href = this.href;
 		if ($(this).parent().is('p')) {
 			$(this).unwrap();
 		}
-		var extraData = parseExtraData($(this)[0].nextSibling);
+		var extraData = parseExtraData(this.nextSibling);
 		var fileType = getFileType(href);
 
 		
@@ -683,7 +682,7 @@
 		var source = '';
 		var img = '';
 		var srcset = '';
-		console.log(fileType);
+
 		if (isOnsite) {
 			srcset = generateSrcSet(href, type);
 			for (var format in extraFormats) {
@@ -752,18 +751,19 @@
 	 * Instagram specific setup methods 
 	 * */
 	function disableInstagram() {
-		$(this)[0].setAttribute('data-src', $(this)[0].getAttribute('data-instgrm-permalink'));
-		$(this)[0].setAttribute('data-instgrm-permalink', '');
-		$(this).before(generateEmbedConsentText('Instagram', unembedInstagramLink($(this)[0].getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
+		this.setAttribute('data-src', this.getAttribute('data-instgrm-permalink'));
+		this.setAttribute('data-instgrm-permalink', '');
+		$(this).before(generateEmbedConsentText('Instagram', unembedInstagramLink(this.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
 	}
 	
 	function createInstagramEmbedFromLink() {
-		var href = $(this)[0].href;
-		if ($(this).parent().is('p')) {
-			$(this).unwrap();
+		var href = this.href;
+		var $this = $(this);
+		if ($this.parent().is('p')) {
+			$this.unwrap();
 		}
 
-		var extraData = parseExtraData($(this)[0].nextSibling);
+		var extraData = parseExtraData(this.nextSibling);
 		var caption = extraData.caption ? extraData.caption : '';
 		var classes = extraData.classes ? extraData.classes : '';
 
@@ -775,12 +775,13 @@
 				${caption !== '' ? generateFigureCaption(caption) : ''}
 			</figure>`;
 
-		$(this).replaceWith(newBlockquote);
+			$this.replaceWith(newBlockquote);
 	}
 	function updateInstagramLink() {
-		if (!$(this).parent().is('figure')) {
-			var next = $(this).next('script');
-			$(this).add(next).wrapAll(generateEmbedFigure(''));
+		var $this = $(this);
+		if (!$this.parent().is('figure')) {
+			var next = $this.next('script');
+			$this.add(next).wrapAll(generateEmbedFigure(''));
 		}
 	}
 	function unembedInstagramLink(href) {
@@ -793,37 +794,38 @@
 	}
 	/** Youtube specific setup methods */
 	function enableYoutube() {
-		if ($(this)[0].hasAttribute('data-src')) {
-			$(this)[0].src = $(this)[0].getAttribute('data-src');
+		if (this.hasAttribute('data-src')) {
+			this.src = this.getAttribute('data-src');
 		}
 	}
 	//block external sources from loading -> setup for consent
 	function disableYoutube () {
-		$(this)[0].setAttribute('data-src', $(this)[0].src);
-		$(this)[0].src = '';
-		var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink($(this)[0].getAttribute('data-src')), "/datenschutzerklarung/");
-		if ($(this).parent().is('.kg-video')) {
-			$(this).parent().before(consent);
+		this.setAttribute('data-src', this.src);
+		this.src = '';
+		var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
+		if (this.parent().is('.kg-video')) {
+			this.parent().before(consent);
 		} else {
-			$(this).before(consent);
+			this.before(consent);
 		}
 	}
 
 	function updateYoutubeLink() {
-		$(this)[0].src = generateNoCookieYoutubeLink($(this)[0].src);
-		var caption = $(this)[0].getAttribute('data-figcaption');
+		this.src = generateNoCookieYoutubeLink(this.src);
+		var caption = this.getAttribute('data-figcaption');
 		var captionClass = caption && caption !== '' ? "kg-card-hascaption" : '';
+		var $this = $(this);
 
-		if (!$(this).parent().is('figure')) {
-			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes') + captionClass));
+		if (!$this.parent().is('figure')) {
+			$this.wrap(generateEmbedFigure(this.getAttribute('data-classes') + captionClass));
 		}		
-		$(this).parent().addClass('kg-video-card');
-		if (!$(this).parent().is('kg-video')) {
-			$(this).wrap('<div class="kg-video"</div>');
+		$this.parent().addClass('kg-video-card');
+		if (!$this.parent().is('kg-video')) {
+			$this.wrap('<div class="kg-video"</div>');
 		}
 
 		if (caption && caption !== '') {
-			$(this).parent().append(generateFigureCaption(caption));
+			$this.parent().append(generateFigureCaption(caption));
 		}
 	}
 	
@@ -841,12 +843,13 @@
 		return href;
 	}
 	function createYoutubeEmbedFromLink() {
-		var href = generateYoutubeEmbedLink($(this)[0].href);
-		if ($(this).parent().is('p')) {
-			$(this).unwrap();
+		var href = generateYoutubeEmbedLink(this.href);
+		var $this = $(this);
+		if ($this.parent().is('p')) {
+			$this.unwrap();
 		}
 
-		var extraData = parseExtraData($(this)[0].nextSibling);
+		var extraData = parseExtraData(this.nextSibling);
 		var caption = extraData.caption ? extraData.caption : '';
 		var classes = extraData.classes ? extraData.classes : '';
 
@@ -854,7 +857,7 @@
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
 				allowfullscreen data-figcaption="${caption}" data-classes="${classes}">
 			</iframe>`;
-		$(this).replaceWith(newIFrame);
+			$this.replaceWith(newIFrame);
 
 	}
 	function generateYoutubeEmbedLink(href) {
