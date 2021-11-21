@@ -27,7 +27,6 @@
 	}
 	breakpoints(breakPointSource);
 	
-
 	/**
 	 * Applies parallax scrolling to an element's background image.
 	 * @return {jQuery} jQuery object.
@@ -287,7 +286,7 @@
 		for (i = 0; i < video.length; i++) {
 			if (linkIsOnsite(video[i].children[0].src)) {
 				var layoutType = 'normal';
-				if (video[i].parentNode.parentNode.hasClass('kg-width-half')) {
+				if (video[i].parentNode.parentNode.classList.contains('kg-width-half')) {
 					layoutType = 'half'
 				}
 				video[i].children[0].src = replaceLink(videoSizes[layoutType], size, video[i].children[0].src);
@@ -773,7 +772,12 @@
 	function disableYoutube () {
 		$(this)[0].setAttribute('data-src', $(this)[0].src);
 		$(this)[0].src = '';
-		$(this).before(generateEmbedConsentText('Youtube', unembedYoutubeLink($(this)[0].getAttribute('data-src')), "/datenschutzerklarung/"));
+		var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink($(this)[0].getAttribute('data-src')), "/datenschutzerklarung/");
+		if ($(this).parent().is('.kg-video')) {
+			$(this).parent().before(consent);
+		} else {
+			$(this).before(consent);
+		}
 	}
 
 	function updateYoutubeLink() {
