@@ -266,18 +266,20 @@
 
 	var defaultImageLink = '/content/images/size/';
 	var imageMediaCalls = {
-		'normal': ['300', '400', '500', '600', '700', '800'],
+		'normal': ['300', '400', '500', '600', '700', '800', '1000'],
 		'half': ['300', '400', '500', '600'],
+		'gallery': ['200', '300', '400', '500', '600'],
 		'bookmark': ['300', '400', '500', '600'],
-		'full': ['400', '500', '600', '700', '800', '900', '1000'],
-		'partner': ['200', '300'],
+		'full': ['400', '500', '600', '700', '800', '900', '1000', '1150', '1500'],
+		'partner': ['200', '300', '400'],
 	};
 	var imageSizeAttribute = {
-		'normal': '(min-width 1680px) 1000px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
-		'gallery': '(min-width 1680px) 320px, (min-width 980px) 236px, (max-width 981px) 720px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
-		'bookmark': '(min-width 735px) 300px, (min-width 480px) 75vw, 90vw',
-		'full': '100%',
-		'partner': '(max-width: 560px) 200px, (max-width: 736px) 300px, (min-width: 737px) 200px, (min-width: 860px) 300px'
+		'normal': '(min-width: 1681px) 1000px, (min-width: 900px) 720px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'half': '(min-width: 1681px) 400px, (min-width: 900px) 300px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'gallery': '(min-width: 1681px) 500px, (min-width: 900px) 360px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'bookmark': '(min-width: 1681px) 400px, (min-width: 737px) 300px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'full': '(min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
+		'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
 	}
 
 	function reloadVideosOnSizeUpdate (size) {
@@ -384,8 +386,38 @@
 
 	}
 
-	//get all iframes
+	var fallBackFormats = {'avif': 'jpeg'};
 
+	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').each(function() {
+		var fileType = getFileType(this.src);
+		console.log(fileType);
+		if (linkIsOnsite(this.src) && fileType !== 'svg') {
+			var parent = $(this).parents('figure.kg-card');
+			var type = 'normal';
+
+			if (parent.is('.kg-width-full')) {
+				type = 'full';
+			} else if (parent.is('.kg-width-half')) {
+				type = 'half';
+			} else if (parent.is('.kg-gallery-card')) {
+				type = 'gallery';
+			} else if (parent.is('.kg-partner-card')) {
+				type = 'partner';
+			} else if (parent.is('.kg-bookmark-card')) {
+				type = 'bookmark';
+			}
+
+			if (fallBackFormats[fileType]) {
+				$(this).replaceWith(generatePictureElement(this.src, [fileType, fallBackFormats[fileType]], this.alt, type))
+			} else {
+				this.srcset = generateSrcSet(this.src, type);
+				this.sizes = imageSizeAttribute[type];
+			}
+		}
+	});
+	console.log(kgImage);
+
+	//get all free links
 	var links = $('.content > p a:only-child');
 	/* Setup unconverted Youtube-Links as iFrame */
 	links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
@@ -637,13 +669,11 @@
 			}
 		}
 		
-
 		var caption = extraData.caption ? extraData.caption : '';
 		var newBlockquote = `<figure class="kg-card kg-image-card ${extraData.classes ? extraData.classes : ''} ${caption !== '' ? "kg-card-hascaption" : ''}">
 				${generatePictureElement(href, altFileTypes, caption, type)}
 				${caption !== '' ? generateFigureCaption(caption) : ''}
 			</figure>`;
-		console.log(newBlockquote);
 		$(this).replaceWith(newBlockquote);
 	}
 
@@ -653,7 +683,7 @@
 		var source = '';
 		var img = '';
 		var srcset = '';
-
+		console.log(fileType);
 		if (isOnsite) {
 			srcset = generateSrcSet(href, type);
 			for (var format in extraFormats) {
