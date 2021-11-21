@@ -461,6 +461,9 @@
     border-bottom: none;
 }
 
+.kg-image-card picture, .kg-image-card picture>.kg-image {
+    display: block;
+}
 
 .kg-gallery-image img:hover, figure img:hover {
     cursor: pointer;
@@ -574,7 +577,7 @@
 
         
     }
-    @include breakpoint('>medium') {
+    @include breakpoint('>=medium') {
         a {
             width: 30%;
         }
