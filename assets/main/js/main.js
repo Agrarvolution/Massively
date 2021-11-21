@@ -16,22 +16,23 @@
 		$navPanelToggle, $navPanel, $navPanelInner;
 
 	// Breakpoints.
-		breakpoints({
-			default:   ['1681px',   null       ],
-			xlarge:    ['1281px',   '1680px'   ],
-			large:     ['981px',    '1280px'   ],
-			medium:    ['737px',    '980px'    ],
-			small:     ['481px',    '736px'    ],
-			xsmall:    ['361px',    '480px'    ],
-			xxsmall:   [null,       '360px'    ]
-		});
+	var breakPointSource = {
+		default:   ['1681px',   null       ],
+		xlarge:    ['1281px',   '1680px'   ],
+		large:     ['981px',    '1280px'   ],
+		medium:    ['737px',    '980px'    ],
+		small:     ['481px',    '736px'    ],
+		xsmall:    ['361px',    '480px'    ],
+		xxsmall:   [null,       '360px'    ]
+	}
+	breakpoints(breakPointSource);
+	
 
 	/**
 	 * Applies parallax scrolling to an element's background image.
 	 * @return {jQuery} jQuery object.
 	 */
 	$.fn._parallax = function(intensity) {
-
 		var	$window = $(window),
 			$this = $(this);
 
@@ -228,11 +229,19 @@
 
 	//video auto resolution
 	var video = $('video');
-	var videoSizes = {'xsmall': '/content/images/videos/225/',
+	var videoSizes = {'normal': {
+					'xsmall': '/content/images/videos/225/',
 					'small': '/content/images/videos/360/',
 					'medium': '/content/images/videos/480/',
 					'large': '/content/images/videos/720/',
-					'xlarge': '/content/images/videos/1080/'};
+					'xlarge': '/content/images/videos/1080/'},
+				'half': {
+					'xsmall': '/content/images/videos/225/',
+					'small': '/content/images/videos/360/',
+					'medium': '/content/images/videos/225/',
+					'large': '/content/images/videos/225/',
+					'xlarge': '/content/images/videos/225/'},
+				};
 	var videoMimeTypes = {
 		'mp4': 'video/mp4',
 		'ogg': 'video/ogg',
@@ -252,39 +261,38 @@
 		'jxl': 'image/jxl',
 		'avif': 'image/avif'
 	}
+	var fallbackImageType = [
+		'svg', 'jpeg', 'jpg', 'png', 'gif'
+	];
+
+	var defaultImageLink = '/content/images/size/';
+	var imageMediaCalls = {
+		'normal': ['300', '400', '500', '600', '700', '800'],
+		'half': ['300', '400', '500', '600'],
+		'bookmark': ['300', '400', '500', '600'],
+		'full': ['400', '500', '600', '700', '800', '900', '1000'],
+		'partner': ['200', '300'],
+	};
 	var imageSizeAttribute = {
 		'normal': '(min-width 1680px) 1000px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
 		'gallery': '(min-width 1680px) 320px, (min-width 980px) 236px, (max-width 981px) 720px, (min-width 900px) 720px, (min-width 480px) 75vw, 90vw',
 		'bookmark': '(min-width 735px) 300px, (min-width 480px) 75vw, 90vw',
-		'full': '100%'
+		'full': '100%',
+		'partner': '(max-width: 560px) 200px, (max-width: 736px) 300px, (min-width: 737px) 200px, (min-width: 860px) 300px'
 	}
 
 	var i = 0;
-	breakpoints.on('<=small', function() {
-		reloadVideosOnSizeUpdate('small');
-	});
-
-	breakpoints.on('<=medium', function() {
-		reloadVideosOnSizeUpdate('medium');
-	});
-
-	breakpoints.on('<=xlarge', function() {
-		reloadVideosOnSizeUpdate('large');
-	});
-	breakpoints.on('>small', function() {
-		reloadVideosOnSizeUpdate('medium');
-	});	
-	breakpoints.on('>medium', function() {
-		reloadVideosOnSizeUpdate('large');
-	});
-	breakpoints.on('>xlarge', function() {
-		reloadVideosOnSizeUpdate('xlarge');
-	});
 
 	function reloadVideosOnSizeUpdate (size) {
 		for (i = 0; i < video.length; i++) {
-			video[i].children[0].src = replaceLink(videoSizes, size, video[i].children[0].src);
-			video[i].load();
+			if (linkIsOnsite(video[i].children[0].src)) {
+				var layoutType = 'normal';
+				if (video[i].parentNode.parentNode.hasClass('kg-width-half')) {
+					layoutType = 'half'
+				}
+				video[i].children[0].src = replaceLink(videoSizes[layoutType], size, video[i].children[0].src);
+				video[i].load();
+			}
 		}
 	}
 
@@ -293,6 +301,7 @@
 		if (path !== undefined && path != null) {
 			return links[size] + path[0];
 		}
+		return currentLink;
 	}
 
 	var cookieValue = 1;
@@ -319,17 +328,63 @@
 	}
 
     function getFileType (href) {
-        if (href !== undefined || href !== '') {
-            var parsed = new URL(href);
-			var match = parsed.pathname.match(/\.([\w]){1,}$/gi);
+        try {
+			if (href !== undefined || href !== '') {
+				var parsed = new URL(href);
+				var match = parsed.pathname.match(/\.([\w]){1,}$/gi);
 
-			if (match) {
-				return match[0].replace('.', '').trim();
+				if (match) {
+					return match[0].replace('.', '').trim();
+				}
+				return '';
 			}
-            return '';
-        }
+		}
+		catch (e) {
+			console.log(e);
+		}
         return '';
     }
+
+	function linkIsOnsite(href) {
+		return isRelativLink(href) !== undefined;
+	}
+	function isRelativLink(href) {
+		if (href && href !== '') {
+			var fileLink = href.match(/^\/.+/g);
+			if (fileLink) {
+				return true;
+			}
+			try {
+				var url = new URL(href);
+				if (location.host === url.host) {
+					return false;
+				}
+			}
+			catch (e) {
+				console.log(e)
+			}
+		}
+		return undefined;
+	}
+
+	function parseExtraData(nextSibling) {
+		if (nextSibling !== '' && nextSibling !== undefined && nextSibling != null
+			&& nextSibling.nodeName === "#text") {
+			var parsed = JSON.parse(nextSibling.textContent);
+			nextSibling.remove();
+			return parsed;	
+		}
+		return {};
+	}
+
+	function getCurrentBreakpoint() {
+		for (var size in breakPointSource) {
+			if (breakpoints.active(size)) {
+				return size;
+			}
+		}
+
+	}
 
 	//get all iframes
 
@@ -340,7 +395,19 @@
 	/*Setup unconverted Instagram-Link as Blockquote */
 	links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
 
+
+	var iframes = $('iframe');
+	//get all youtube video iframes
+	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
+		.each(updateYoutubeLink);
+	updateService('youtube', getCookie(`youtube-allowed`), false);
+	//get all unactivated instagram embeds
+	var instagram = $('blockquote.instagram-media').each(updateInstagramLink);
+	updateService('instagram', getCookie(`instagram-allowed`), false);
+
+
 	/*Setup unembedded video links */
+	var currentBreakpoint = getCurrentBreakpoint();
 	links.filter(function () {
 		switch (getFileType($(this)[0].href)) {
 			case 'mp4':
@@ -349,12 +416,37 @@
 			case 'webm':
 			case 'ogg':
 				return true;
-				break;
 			default:
 				return false;
-				break;
 		}
 	}).each(createVideoCard);
+	video = $('video');
+
+	breakpoints.on('<=xsmall', function() {
+		reloadVideosOnSizeUpdate('xsmall');
+	});
+	breakpoints.on('<=small', function() {
+		reloadVideosOnSizeUpdate('small');
+	});
+	breakpoints.on('<=medium', function() {
+		reloadVideosOnSizeUpdate('medium');
+	});
+	breakpoints.on('<=xlarge', function() {
+		reloadVideosOnSizeUpdate('large');
+	});
+
+	breakpoints.on('>xsmall', function() {
+		reloadVideosOnSizeUpdate('small');
+	});
+	breakpoints.on('>small', function() {
+		reloadVideosOnSizeUpdate('medium');
+	});	
+	breakpoints.on('>medium', function() {
+		reloadVideosOnSizeUpdate('large');
+	});
+	breakpoints.on('>xlarge', function() {
+		reloadVideosOnSizeUpdate('xlarge');
+	});
 
 	/*Setup umbedded image links */
 	links.filter(function () {
@@ -369,31 +461,10 @@
 			case 'jxl':
 			case 'svg':
 				return true;
-				break;
 			default:
 				return false;
-				break;
 		}
 	}).each(createImageCard);
-
-	var iframes = $('iframe');
-	//get all youtube video iframes
-	var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
-		.each(updateYoutubeLink);
-	updateService('youtube', getCookie(`youtube-allowed`), false);
-	//get all unactivated instagram embeds
-	var instagram = $('blockquote.instagram-media').each(updateInstagramLink);
-	updateService('instagram', getCookie(`instagram-allowed`), false);
-
-	function parseExtraData(nextSibling) {
-		if (nextSibling !== '' && nextSibling !== undefined && nextSibling != null
-			&& nextSibling.nodeName === "#text") {
-			var parsed = JSON.parse(nextSibling.textContent);
-			nextSibling.remove();
-			return parsed;	
-		}
-		return {};
-	}
 
 
 
@@ -490,9 +561,11 @@
 		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
 			var i = 0;
 			for (i = 0; i < extraData.alternativeFileTypes.length; i++) {
-				var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
-				if (fileType !== extraData.alternativeFileTypes[i]) {
-					source += videoSource(altHref, extraData.alternativeFileTypes[i]);
+				if (videoMimeTypes[extraData.alternativeFileTypes[i]]) {
+					var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
+					if (fileType !== extraData.alternativeFileTypes[i]) {
+						source += videoSource(altHref, extraData.alternativeFileTypes[i]);
+					}
 				}
 			}
 		}
@@ -518,8 +591,12 @@
 		if (muted.loop && (muted.loop === true || muted.loop === false)) {
 			muted = muted.loop;
 		}
+		var classes = '';
+		if (extraData.classes) {
+			classes = extraData.classes;
+		}
 
-		var newBlockquote = `<figure class="kg-card kg-embed-card kg-video-card ${extraData.classes ? extraData.classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
+		var newBlockquote = `<figure class="kg-card kg-embed-card kg-video-card ${classes ? classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
 				<div class="kg-video" style="${style}">
 					<video ${autoplay ? "autoplay" : ''} ${muted ? "muted" : ''} ${loop ? "loop" : ''}>
 						${source}
@@ -544,35 +621,108 @@
 		var extraData = parseExtraData($(this)[0].nextSibling);
 		var fileType = getFileType(href);
 
-		var source = videoSource(href, fileType);
 		
+		var altFileTypes = [];
 		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
-			var i = 0;
-			for (i = 0; i < extraData.alternativeFileTypes.length; i++) {
-				var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
-				if (fileType !== extraData.alternativeFileTypes[i]) {
-					source += pictureSource(altHref, extraData.alternativeFileTypes[i]);
-				}
-			}
+			altFileTypes = extraData.alternativeFileTypes;
 		}
 
-		var caption = extraData.caption ? extraData.caption : '';
-
-		var newBlockquote = `<figure class="kg-card kg-image-card ${extraData.classes ? extraData.classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
-				<picture>
-					${source}
-					<img class="kg-image" src="${href}" alt="${caption !== '' ? caption : ''}">
-				</picture>
-				${caption !== '' ? generateFigureCaption(extraData.caption) : ''}
-			</figure>`;
+		if (!altFileTypes.includes(fileType)) {
+			altFileTypes.push(fileType);
+		}
+		var type = 'normal';
+		if (extraData.classes) {
+			if (extraData.contains('kg-width-half')) {
+				type = 'half';
+			} else if (extraData.contains('kg-width-full')) {
+				type = 'full';
+			}
+		}
 		
+
+		var caption = extraData.caption ? extraData.caption : '';
+		var newBlockquote = `<figure class="kg-card kg-image-card ${extraData.classes ? extraData.classes : ''} ${caption !== '' ? "kg-card-hascaption" : ''}">
+				${generatePictureElement(href, altFileTypes, caption, type)}
+				${caption !== '' ? generateFigureCaption(caption) : ''}
+			</figure>`;
+		console.log(newBlockquote);
 		$(this).replaceWith(newBlockquote);
 	}
 
-	function pictureSource (filePath, fileType) {
-		return `<source src="${filePath}" type="${imageMimeTypes[fileType]}">`; 
+	function generatePictureElement (href, extraFormats, alt, type) {
+		var isOnsite = linkIsOnsite(href);
+		var fileType = getFileType(href);
+		var source = '';
+		var img = '';
+		var srcset = '';
+
+		if (isOnsite) {
+			srcset = generateSrcSet(href, type);
+			for (var format in extraFormats) {
+				if (imageMimeTypes[extraFormats[format]] && !fallbackImageType.includes(extraFormats[format])) {
+					var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);					
+					source += pictureSource(newSrcset, extraFormats[format], imageSizeAttribute[type]);	
+				} else if (fallbackImageType.includes(extraFormats[format])) {
+					var newHref = href.replace(fileType, extraFormats[format]);
+
+					if (extraFormats[format] === 'svg') {
+						img = generateImgElement(newHref, '', alt, type);
+					} else {
+						var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);	
+						img = generateImgElement(newHref, newSrcset, alt, type);
+					}
+					
+				}			
+			}
+		}
+
+		return `<picture>
+			${source}
+			${img}
+		</picture>`;
 	}
-	/** Instagram specific setup methods */
+
+	function pictureSource (srcset, fileType, media) {
+		return `<source class="kg-image" srcset="${srcset}" media="${media}" loading="lazy" type="${imageMimeTypes[fileType]}">`; 
+	}
+
+	function generateImgElement (href, srcset, alt, type) {
+		if (linkIsOnsite(href)) {
+			href = createSubLink(href, '');
+		}
+		var sizes = type && imageSizeAttribute[type] !== undefined ? imageSizeAttribute[type] : '';
+		return `<img class="kg-image" src="${href}" loading="lazy" srcset="${srcset}" sizes="${sizes}" alt="${alt && alt !== '' ? alt : ''}" data-link="${href}">`;
+	}
+
+	function generateSrcSet(href, type) {
+		var srcset = '';
+		for (var size in imageMediaCalls[type]) {
+			srcset += createSubLink(href, imageMediaCalls[type][size]) + ` ${imageMediaCalls[type][size]}w,`;
+		};
+		srcset = srcset.replace(/,$/g, '');
+		return srcset;
+	}
+
+	function createSubLink (href, size) {
+		if (size && size.match(/^\d+$/g)) {
+			size = `/w${size}/`;
+		} else {
+			size = '';
+		}
+		if (href.match(/\/w\d+\//g)) {
+			if (size === '') {
+				href = href.replace(/\/images\/size\/w\d+\//g, '/images/');
+			} else {
+				href = href.replace(/\/w\d+\//g, size);
+			}
+		} else {
+			href = href.replace('/images/','/images/size' + size);
+		}
+		return href;
+	}
+	/** 
+	 * Instagram specific setup methods 
+	 * */
 	function disableInstagram() {
 		$(this)[0].setAttribute('data-src', $(this)[0].getAttribute('data-instgrm-permalink'));
 		$(this)[0].setAttribute('data-instgrm-permalink', '');
@@ -632,10 +782,13 @@
 		var captionClass = caption && caption !== '' ? "kg-card-hascaption" : '';
 
 		if (!$(this).parent().is('figure')) {
-			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes') + captionClass))
-				.addClass('kg-video');
+			$(this).wrap(generateEmbedFigure($(this)[0].getAttribute('data-classes') + captionClass));
 		}		
 		$(this).parent().addClass('kg-video-card');
+		if (!$(this).parent().is('kg-video')) {
+			$(this).wrap('<div class="kg-video"</div>');
+		}
+
 		if (caption && caption !== '') {
 			$(this).parent().append(generateFigureCaption(caption));
 		}
