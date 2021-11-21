@@ -29,7 +29,7 @@
 }
 
 .content {
-    max-width: 1000px;
+    max-width: _size(content);
     @include breakpoint('<=xlarge') {
         max-width: 720px;
     }
@@ -208,6 +208,7 @@
     font-size: 1rem;
     line-height: 1.4em;
     text-align: center;
+    margin-top: 0.33em;
 }
 
 .kg-width-wide {
@@ -219,21 +220,29 @@
 
 .kg-width-full {
     position: relative;
-    margin-left: calc(calc(calc(1000px - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
+    margin-left: calc(calc(calc(#{_size(content)} - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), #{_size(wrapper) * 1.3})) / 2));
     width: calc(100vw - 4rem);
     
-    max-width: 72rem;
+    max-width: _size(wrapper);
+
+    @include breakpoint('>xxlarge') {
+        max-width: #{_size(wrapper) * 1.3};
+    }
+    @include breakpoint('<=xxlarge') {
+        margin-left: calc(calc(calc(#{_size(content)} - 100vw) / 2) + calc(calc(100vw - min(calc(100vw + 8rem), 1840px)) / 2));
+        width: _size(wrapper);
+    }
 
     @include breakpoint('<=xlarge') {
-        margin-left: calc(calc(calc(720px - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
+        margin-left: calc(calc(calc(720px - 100vw) / 2) + calc(calc(100vw - min(calc(100vw - 4rem), #{_size(wrapper)})) / 2));
     }
     @include breakpoint('<=large') {
         width: calc(var(--viewport-width, 100vw) - 4rem);
-        margin-left: calc(calc(calc(720px - var(--viewport-width, 100vw)) / 2) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), 72rem)) / 2));
+        margin-left: calc(calc(calc(720px - var(--viewport-width, 100vw)) / 2) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), #{_size(wrapper)})) / 2));
     }
     @include breakpoint('<=medium') {
         margin-left: calc(min(calc(calc(720px - 100vw) / 2), -6rem) + calc(calc(100vw - min(calc(100vw - 4rem), 72rem)) / 2));
-        margin-left: calc(min(calc(calc(720px - var(--viewport-width, 100vw)) / 2), -6rem) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), 72rem)) / 2));   
+        margin-left: calc(min(calc(calc(720px - var(--viewport-width, 100vw)) / 2), -6rem) + calc(calc(var(--viewport-width, 100vw) - min(calc(var(--viewport-width, 100vw) - 4rem), #{_size(wrapper)})) / 2));   
     }
     @include breakpoint('<=small') {
         margin-left: -2rem;
@@ -497,65 +506,6 @@
     }
 }
 
-.videoConsent {
-    font-size: 0.8rem;
-    position: fixed;
-    background-color: _palette(bg);
-    bottom: 0;
-    z-index: 10;
-    padding: 2em;
-    width: 100%;
-    min-width: 320px;
-    display: none;
-    flex-direction: row;
-    justify-content: space-evenly;
-
-    @include breakpoint('<=medium') {
-        flex-direction: column;
-    }
-
-    p {
-      margin-bottom: 0.5rem; 
-      margin-right: 2rem;    
-      flex: initial;  
-    }
-    button {
-
-        font-size: 0.8rem;
-        height: 3rem;
-        line-height: 3rem;
-    }
-
-    div.consentButtons {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 500px;
-        flex: none;
-        display:flex;
-        flex-direction: row;
-
-        a {
-            margin-left: 2rem;
-        }
-
-        @include breakpoint('<=large') {
-            width: 400px;
-        }
-        @include breakpoint('<=xsmall') {
-            flex-direction: column;
-            width: 300px;
-            text-align: center;
-
-            a {
-                margin-left: 0;
-            }
-        }
-
-        
-    }
-}
-
 .kg-partner-card {
     width: 100%;
     display: flex;
@@ -581,6 +531,12 @@
     @include breakpoint('>=medium') {
         a {
             width: 30%;
+        }
+    }
+
+    @include breakpoint('>=xlarge') {
+        a {
+            width: 23%;
         }
     }
 }

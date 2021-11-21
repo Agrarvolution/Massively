@@ -14,6 +14,10 @@
 		max-width: _size(wrapper);
 		z-index: 2;
 
+		@include breakpoint('>xxlarge') {
+			max-width: #{_size(wrapper) * 1.3};
+		}	
+
 		> * {
 			@include padding((_size(padding) * 2), (_size(padding) * 2));
 			margin: 0;

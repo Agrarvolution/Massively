@@ -17,7 +17,8 @@
 
 	// Breakpoints.
 	var breakPointSource = {
-		default:   ['1681px',   null       ],
+		default:   ['2281px',   null       ],
+		xxlarge:   ['1681px',   '2280px'   ],
 		xlarge:    ['1281px',   '1680px'   ],
 		large:     ['981px',    '1280px'   ],
 		medium:    ['737px',    '980px'    ],
@@ -266,19 +267,19 @@
 
 	var defaultImageLink = '/content/images/size/';
 	var imageMediaCalls = {
-		'normal': ['300', '400', '500', '600', '700', '800', '1000'],
-		'half': ['300', '400', '500', '600'],
+		'normal': ['300', '400', '500', '600', '700', '800', '1200', '1200', '1500'],
+		'half': ['300', '400', '500', '600', '700'],
 		'gallery': ['200', '300', '400', '500', '600'],
 		'bookmark': ['300', '400', '500', '600'],
-		'full': ['400', '500', '600', '700', '800', '900', '1000', '1150', '1500'],
+		'full': ['400', '500', '600', '700', '800', '900', '1000', '1150', '1500', '2000'],
 		'partner': ['200', '300', '400'],
 	};
 	var imageSizeAttribute = {
-		'normal': '(min-width: 1681px) 1000px, (min-width: 900px) 720px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-		'half': '(min-width: 1681px) 400px, (min-width: 900px) 300px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-		'gallery': '(min-width: 1681px) 500px, (min-width: 900px) 360px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-		'bookmark': '(min-width: 1681px) 400px, (min-width: 737px) 300px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-		'full': '(min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
+		'normal': '(min-width: 2281px) 1500px, (min-width: 1681px) 1200px, (min-width: 900px) 720px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'half': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'gallery': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'bookmark': '(min-width: 2281px) 600px, (min-width: 1681px) 480px, (min-width: 737px) 300px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+		'full': '(min-width: 2281px) 2000px, (min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
 		'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
 	}
 
@@ -804,7 +805,7 @@
 		this.src = '';
 		var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
 		if (this.parent().is('.kg-video')) {
-			this.parent().before(consent);
+			thisparent().before(consent);
 		} else {
 			this.before(consent);
 		}
