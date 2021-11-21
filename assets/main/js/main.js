@@ -803,11 +803,13 @@
 	function disableYoutube () {
 		this.setAttribute('data-src', this.src);
 		this.src = '';
+		var $this = $(this);
+
 		var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
-		if (this.parent().is('.kg-video')) {
-			thisparent().before(consent);
+		if ($this.parent().is('.kg-video')) {
+			$this.parent().before(consent);
 		} else {
-			this.before(consent);
+			$this.before(consent);
 		}
 	}
 
