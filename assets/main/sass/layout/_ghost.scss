@@ -181,7 +181,34 @@
 
 // Content
 // --------------------------------------------
+div.content {
+    @include breakpoint('>=large') {
+        column-count: 2;
+        break-before: column;
+        column-gap: 2rem;
+        .kg-card, h1, h2, h3, h4, h5, h6, hr, blockquote {
+            margin-top: 2rem;
+            column-span: all;
+        }
+        .kg-card:not(.kg-width-half) + .kg-card, .kg-card:first-child {
+            margin-top: 0;
+        }
+        .kg-width-half {
+            column-span:none;
+            margin-left: 0;
+            width: 100%;
+        }
 
+        li {
+            break-inside: avoid;
+            break-before: column;
+        }
+        p {
+            margin: 0;          
+        }
+    }
+
+}
 // Markdown images and videos
 .content p > img, .content p > video {
     max-width: 100%;
