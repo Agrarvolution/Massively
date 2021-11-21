@@ -280,10 +280,8 @@
 		'partner': '(max-width: 560px) 200px, (max-width: 736px) 300px, (min-width: 737px) 200px, (min-width: 860px) 300px'
 	}
 
-	var i = 0;
-
 	function reloadVideosOnSizeUpdate (size) {
-		for (i = 0; i < video.length; i++) {
+		for (var i = 0; i < video.length; i++) {
 			if (linkIsOnsite(video[i].children[0].src)) {
 				var layoutType = 'normal';
 				if (video[i].parentNode.parentNode.classList.contains('kg-width-half')) {
@@ -305,6 +303,7 @@
 
 	var cookieValue = 1;
 	var cookieDaysAlive = 365;
+	
 	//video consent
 	function setCookie(name,value,days) {
 		var expires = "";
