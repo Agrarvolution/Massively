@@ -191,6 +191,9 @@
             margin-top: 2rem;
             column-span: all;
         }
+        .kg-card:first-child:not(.kg-float-right):not(.kg-float-left), .kg-card form {
+            margin-top: 0;
+        }
         .kg-card:not(.kg-width-half) + .kg-card, .kg-card:first-child {
             margin-top: 0;
         }
@@ -204,9 +207,13 @@
         }
 
         li, span {
-            break-inside: avoid;
+            break-inside: avoid-column;
             break-before: column;
         }
+        span pre {
+            break-inside: avoid-column;
+        }
+        
         p {
             margin: 0;          
         }

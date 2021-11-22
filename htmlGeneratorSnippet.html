@@ -13,39 +13,67 @@
             <label for="select-html-snippet">HTML Template</label>
         </span>
         <span>
-            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="link-json" placeholder="['link1', 'link2', ...]"></textarea>
-            <label for="links">Media links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {}}]</label>
+            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="link-json" placeholder='["link1", "link2", ...] | [{"link": "", metadata:""]'></textarea>
+            <label for="links">Media links in JSON</label>
             <pre style="font-family: monospace; line-height:1;">
+["link", "link"]
+
 [{
     "link": "",
     "metadata": {
         "aspect-ratio": "", 
         "object-fit": "", 
         "object-position": "",
-        "target-href": ""
+        "target-href": "link target",
+        "open-as-new": "false - defaults to true",
+        "srcset": "overwrites general srcset",
+        "fallback": [
+            "link": "overwrites fallback types",
+            "srcset": "",
+            "sizes": ""
+        ]
     }
 }]
             </pre>
         </span>
         <span>
-            <input type="text" name="fallback-types" id="fallback-types">
-            <label for="fallback-types">Fallback file types (Need be created manually!) in JSON -> [{"file type": "fallback type"}]</label>
+            <input type="text" name="fallback-types" id="fallback-types" placeholder='[{"file type": "fallback type"}]'>
+            <label for="fallback-types">Fallback file types (Need be created manually!) in JSON</label>
         </span>
         <span>
-            <input type="text" name="figure-classes" id="figure-classes">
+            <input type="text" name="custom-sizes" id="custom-sizes" placeholder="(min-width: 720px) 720px">
+            <label for="custom-sizes">Sizes attribute (Overwrites standard)</label>
+        </span>
+        <span>
+            <input type="text" name="custom-width" id="custom-width" placeholder='["100", "300", ...]'>
+            <label for="custom-width">Image width in px (Overwrites standard)</label>
+        </span>
+        <span>
+            <input type="checkbox" name="enable-responsive" id="enable-responsive" checked>
+            <label for="enable-responsive">Enable generation of responsive links (Ghost file structure only)</label>
+        </span>
+        <span>
+            <input type="text" name="figure-classes" id="figure-classes" placeholder="kg-width-wide">
             <label for="figure-classes">Extra figure classes (without or without leading dot)</label>
         </span>
         <span>
-            <input type="text" name="caption" id="figure-caption">
+            <input type="text" name="caption" id="figure-caption" placeholder="This a caption.">
             <label for="caption">Caption</label>
         </span>
         <span>
-            <input type="text" name="wrapping-href" id="wrapping-href">
+            <input type="text" name="wrapping-href" id="wrapping-href" placeholder="https://ghost.com">
             <label for="wrapping-href">Link - block wrap</label>
+        </span>
+        <span>
+            <input type="checkbox" name="open-link" id="open-link">
+            <label for="open-link">Open in new window</label>
         </span>
         <span class="kg-column-all">
             <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="settings-json"></textarea>
-            <label for="links">Settings JSON - will be overriden</label>
+            <label for="links">Settings JSON - will be overridden by settings above</label>
+        </span>
+        <span class="kg-column-all">
+            <p id="generator-errors"></p>
         </span>
         <span class="kg-column-all">
             <button id="reset-generator" type="reset">Reset</button>
@@ -54,8 +82,11 @@
         </span>
     </form>
     <hr>
+    <h3 id="generator-output">Output</h3>
     <textarea class="kg-column-all" id="output-space" style="font-family: monospace; height: 300px; line-height:1;">Testoutput asdkjflaskdjflasdf</textarea>
     <span class="kg-column-all">
         <button id="copy-to-clipboard">Copy to clipboard</button>
     </span> 
+    <div id="html-preview"></div>
+    </div>
 </figure>
