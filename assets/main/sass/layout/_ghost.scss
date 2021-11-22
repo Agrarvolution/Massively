@@ -316,6 +316,13 @@
     flex-direction: row;
     justify-content: center;
 
+    @include breakpoint('>=medium') {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        gap: 0.5vw;
+    }
+
     @include breakpoint('<medium') {
         flex-direction: column;
         margin: 0 !important;
@@ -327,14 +334,11 @@
     margin: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 .kg-gallery-row:not(:first-of-type) {
     margin: 0.5vw 0 0 0;
-}
-
-.kg-gallery-image:not(:first-of-type) {
-    margin: 0 0 0 0.5vw;
 }
 
 @include breakpoint('<medium') {
