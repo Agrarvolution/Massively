@@ -186,18 +186,24 @@
         column-count: 2;
         break-before: column;
         column-gap: 2rem;
-        .kg-card, h1, h2, h3, h4, h5, h6, hr, blockquote {
+
+        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote {
             margin-top: 2rem;
             column-span: all;
         }
         .kg-card:not(.kg-width-half) + .kg-card, .kg-card:first-child {
             margin-top: 0;
         }
-        .kg-width-half {
+        .kg-width-half.kg-float-right, .kg-width-half.kg-float-left {
             column-span:none;
             margin-left: 0;
             width: 100%;
         }
+        p + .kg-width-half.kg-float-right, p + .kg-width-half.kg-float-left {
+            margin-top: 1rem;
+        }
+
+
 
         li {
             break-inside: avoid;
