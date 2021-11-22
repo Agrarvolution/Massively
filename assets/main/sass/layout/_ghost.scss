@@ -181,13 +181,13 @@
 
 // Content
 // --------------------------------------------
-.post div.content {
+.post div.content, form {
     @include breakpoint('>=large') {
         column-count: 2;
         break-before: column;
         column-gap: 2rem;
 
-        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote {
+        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote, form, button {
             margin-top: 2rem;
             column-span: all;
         }
@@ -203,9 +203,7 @@
             margin-top: 1rem;
         }
 
-
-
-        li {
+        li, span {
             break-inside: avoid;
             break-before: column;
         }

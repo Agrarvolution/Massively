@@ -132,10 +132,11 @@
 
 	textarea {
 		padding: 0.75rem 1rem;
+		width: 100% !important;
 	}
 
 	input[type="checkbox"],
-	input[type="radio"], {
+	input[type="radio"] {
 		@include vendor('appearance', 'none');
 		display: block;
 		float: left;
@@ -244,7 +245,7 @@
 		}
 
 		input[type="checkbox"],
-		input[type="radio"], {
+		input[type="radio"] {
 			& + label {
 				color: _palette($p, fg);
 
