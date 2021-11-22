@@ -181,7 +181,7 @@
 
 // Content
 // --------------------------------------------
-div.content {
+.post div.content {
     @include breakpoint('>=large') {
         column-count: 2;
         break-before: column;
@@ -216,6 +216,10 @@ div.content {
 
 .kg-card {
     margin: 0 0 2rem 0;
+
+    @include breakpoint('<=small') {
+        margin: 0 0 1rem 0;
+    }
 }
 
 .kg-embed-card {
@@ -339,15 +343,31 @@ div.content {
     .kg-gallery-image:last-of-type{
         margin: 1vw 0 ;
     }
+
+    .kg-gallery-row:last-child > .kg-gallery-image:last-of-type {
+        margin-bottom: 0;
+    }
+    .kg-gallery-card:not(.kg-card-hascaption) + .kg-gallery-card {
+        margin-top: 1vw;
+    }
 }
 
-.kg-gallery-card + .kg-image-card,
-.kg-image-card + .kg-gallery-card {
-    margin: 1em 0 2em;
+
+
+.kg-gallery-card.kg-card-hascaption + .kg-image-card,
+.kg-image-card.kg-card-hascaption + .kg-gallery-card {
+    margin-top: 2rem;
+
+    @include breakpoint('<=small') {
+        margin-top: 1rem;
+    }
 }
 
 .kg-gallery-card figcaption {
     margin-top: 1em;
+    @include breakpoint('<=small') {
+        margin-top: 0.5rem;
+    }
 }
 
 .kg-gallery-card--vertical {
@@ -543,7 +563,8 @@ div.content {
 @include breakpoint('<medium') {
     .kg-card.kg-float-left, .kg-card.kg-float-right {
         float: none;
-        margin: 0 0 2rem 0;
+        margin-left: 0;
+        margin-right: 0;
         width: 100%;
         min-width: 100%;
     }
