@@ -1,40 +1,61 @@
-<form id="generate-embed-html">
-    <span>
-        <select name="select-html-snippet">
-            <option value="image">Image</option>
-            <option value="gallery">Gallery</option>
-            <option value="gallery-narrow">Gallery narrow</option>
-            <option value="gallery-flowing">Gallery flowing</option>
-            <option value="bookmark">Bookmark</option>
-            <option value="video">Video</option>
-        </select>
-        <label for="select-html-snippet">HTML Template</label>
-    </span>
-    <span>
-        <textarea rows="8" style="font-family: monospace; line-height:1;" name="links" placeholder="['link1', 'link2', ...]"></textarea>
-        <label for="links">Links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {}}]</label>
-    </span>
-    <span>
-        <textarea rows="8" style="font-family: monospace; line-height:1;" name="image-metadata" placeholder="{'aspect-ratio': '16/9, 'object-fit': 'cover', 'object-position': 'center', 'fallbackTypes': [{'avif': 'jpeg'}]}">
-{
-    "aspect-ratio": "", 
-    "object-fit": "", 
-    "object-position": "", 
-    "fallbackTypes": [],
-}
-        </textarea>
-        <label for="image-metadata">General image metadata [in JSON]</p>
-    </span>
-    <span>
-        <input type="text" name="figure-classes">
-        <label for="figure-classes">Extra figure classes</label>
-    </span>
-    <span>
-        <input type="text" name="caption">
-        <label for="caption">Caption</label>
-    </span>
-    <button class="kg-card" id="generator-submit" type="Submit">Generate</button>
-</form>
-<hr>
-<textarea class="kg-card" style="font-family: monospace; height: 300px; line-height:1;">Testoutput asdkjflaskdjflasdf</textarea>
-<button class="kg-card" id="copy-to-clipboard">Copy to clipboard</button>
+<figure class="kg-card kg-embed-generator-card">
+    <script src="/assets/main/js/embedGenerator.js"></script>
+    <form id="generate-embed-html" method="post">
+        <span>
+            <select name="select-html-snippet" id="select-html-snippet">
+                <option value="image">Image</option>
+                <option value="gallery">Gallery</option>
+                <option value="gallery-narrow">Gallery narrow</option>
+                <option value="gallery-flowing">Gallery flowing</option>
+                <option value="bookmark">Bookmark</option>
+                <option value="video">Video</option>
+            </select>
+            <label for="select-html-snippet">HTML Template</label>
+        </span>
+        <span>
+            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="link-json" placeholder="['link1', 'link2', ...]"></textarea>
+            <label for="links">Media links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {}}]</label>
+            <pre style="font-family: monospace; line-height:1;">
+[{
+    "link": "",
+    "metadata": {
+        "aspect-ratio": "", 
+        "object-fit": "", 
+        "object-position": "",
+        "target-href": ""
+    }
+}]
+            </pre>
+        </span>
+        <span>
+            <input type="text" name="fallback-types" id="fallback-types">
+            <label for="fallback-types">Fallback file types (Need be created manually!) in JSON -> [{"file type": "fallback type"}]</label>
+        </span>
+        <span>
+            <input type="text" name="figure-classes" id="figure-classes">
+            <label for="figure-classes">Extra figure classes (without or without leading dot)</label>
+        </span>
+        <span>
+            <input type="text" name="caption" id="figure-caption">
+            <label for="caption">Caption</label>
+        </span>
+        <span>
+            <input type="text" name="wrapping-href" id="wrapping-href">
+            <label for="wrapping-href">Link - block wrap</label>
+        </span>
+        <span class="kg-column-all">
+            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="settings-json"></textarea>
+            <label for="links">Settings JSON - will be overriden</label>
+        </span>
+        <span class="kg-column-all">
+            <button id="reset-generator" type="reset">Reset</button>
+            <button id="generate-json" type="Submit">Create JSON</button>
+            <button id="generate-html" type="Submit">Create HTML</button>
+        </span>
+    </form>
+    <hr>
+    <textarea class="kg-column-all" id="output-space" style="font-family: monospace; height: 300px; line-height:1;">Testoutput asdkjflaskdjflasdf</textarea>
+    <span class="kg-column-all">
+        <button id="copy-to-clipboard">Copy to clipboard</button>
+    </span> 
+</figure>

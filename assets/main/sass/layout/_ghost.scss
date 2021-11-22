@@ -660,6 +660,18 @@
     display: none;
 }
 
+// Special
+// --------------------------------------------
+
+.kg-embed-generator-card  .kg-column-all  {
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    column-span: all;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 
 
 // Error Pages
