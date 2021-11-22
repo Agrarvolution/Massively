@@ -1,14 +1,28 @@
-<form>
+<form id="generate-embed-html">
     <span>
         <select name="select-html-snippet">
-        <label for="select-html-snippet">
             <option value="image">Image</option>
             <option value="gallery">Gallery</option>
             <option value="gallery-narrow">Gallery narrow</option>
             <option value="gallery-flowing">Gallery flowing</option>
             <option value="bookmark">Bookmark</option>
             <option value="video">Video</option>
-        </label>
+        </select>
+        <label for="select-html-snippet">HTML Presets</label>
     </span>
+    <span>
+        <textarea row="4" name="links"></textarea>
+        <label for="links">Links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {"aspect-ration": "...", ...}}]</label>
+        <p>Processes following meta-data: aspect-ratio, object-fit, object-position, fallback file types (e.g. jpeg for avif files)</p>
+    </span>
+    <span>
+        <textarea row="4" name="image-metadata"></textarea>
+        <label for="image-metadata">General image metadata in JSON</p>
+    </span>
+    <span>
+        <input type="text" name="figure-classes">
+        <label for="figure-classes">Extra figure classes</label>
+    </span>
+    
     <button type="Submit">Generate</button>
 </form>
