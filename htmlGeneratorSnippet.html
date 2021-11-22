@@ -8,21 +8,33 @@
             <option value="bookmark">Bookmark</option>
             <option value="video">Video</option>
         </select>
-        <label for="select-html-snippet">HTML Presets</label>
+        <label for="select-html-snippet">HTML Template</label>
     </span>
     <span>
-        <textarea row="4" name="links"></textarea>
-        <label for="links">Links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {"aspect-ration": "...", ...}}]</label>
-        <p>Processes following meta-data: aspect-ratio, object-fit, object-position, fallback file types (e.g. jpeg for avif files)</p>
+        <textarea rows="8" style="font-family: monospace; line-height:1;" name="links" placeholder="['link1', 'link2', ...]"></textarea>
+        <label for="links">Links in JSON [link1, link2, ...] | Optional [{"link": link, "metadata": {}}]</label>
     </span>
     <span>
-        <textarea row="4" name="image-metadata"></textarea>
-        <label for="image-metadata">General image metadata in JSON</p>
+        <textarea rows="8" style="font-family: monospace; line-height:1;" name="image-metadata" placeholder="{'aspect-ratio': '16/9, 'object-fit': 'cover', 'object-position': 'center', 'fallbackTypes': [{'avif': 'jpeg'}]}">
+{
+    "aspect-ratio": "", 
+    "object-fit": "", 
+    "object-position": "", 
+    "fallbackTypes": [],
+}
+        </textarea>
+        <label for="image-metadata">General image metadata [in JSON]</p>
     </span>
     <span>
         <input type="text" name="figure-classes">
         <label for="figure-classes">Extra figure classes</label>
     </span>
-    
-    <button type="Submit">Generate</button>
+    <span>
+        <input type="text" name="caption">
+        <label for="caption">Caption</label>
+    </span>
+    <button class="kg-card" id="generator-submit" type="Submit">Generate</button>
 </form>
+<hr>
+<textarea class="kg-card" style="font-family: monospace; height: 300px; line-height:1;">Testoutput asdkjflaskdjflasdf</textarea>
+<button class="kg-card" id="copy-to-clipboard">Copy to clipboard</button>
