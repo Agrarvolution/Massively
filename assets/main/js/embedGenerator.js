@@ -213,7 +213,7 @@ var ghostEmbedGenerator = () => {
     // -----------------------------------------------------------------------------------------  
     function generateImageCard(data) {
         let figure = generateElement('figure', ['kg-card', 'kg-image-card'].concat(data.classes || ''));
-        figure.appendChild(generateMedia(data, 0, mediaTypes.image));
+        figure.appendChild(generateMedia(data, data.mediaLinks[0], mediaTypes.image));
 
         if (data.caption) {
             figure.appendChild(generateFigureCaption(data.caption));
@@ -227,14 +227,14 @@ var ghostEmbedGenerator = () => {
     function generateGalleryCard(data) {
         let galleryRows = 0;
         let galleryColumns = 3;
-        galleryRows = Math.floor(data?.links.length || 0 / galleryColumns);
+        galleryRows = Math.floor(data.links?.length || 0 / galleryColumns);
 
         let figure = generateElement('figure', ['kg-card', 'kg-gallery-card'].concat(data.classes || ''));
         let container = generateElement('div', 'kg-gallery-container');
         figure.appendChild(container);
 
         let row = {}
-        for (let i = 0; i < data?.links.length; i++) {
+        for (let i = 0; i < data.links?.length; i++) {
             if ((i % galleryColumns) === 0) {
                 row = generateElement('div', 'kg-gallery-row');
                 container.appendChild(row);
@@ -335,7 +335,7 @@ var ghostEmbedGenerator = () => {
      * @returns DOM Object
      */
     function generateMedia(data, mediaLink, type) {
-        let fileType = getFileType(mediaLink.link);
+        let fileType = getFileType(mediaLink?.link);
         let fallbacks = [];
         let srcset = '';
         let sizes = '';
@@ -344,7 +344,7 @@ var ghostEmbedGenerator = () => {
         let styles = '';
 
         //Handle responsiveness
-        if (mediaLink.link && isGhostLink(mediaLink.link) && data.isResponsive && type === mediaTypes.image) {
+        if (mediaLink?.link && isGhostLink(mediaLink.link) && data.isResponsive && type === mediaTypes.image) {
             srcset = generateSrcSet(mediaLink.link, data.responsiveType);
         }
 
@@ -355,7 +355,7 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle custom fallsbacks
-        for (let fallback in mediaLink.fallback) {
+        for (let fallback in mediaLink?.fallback) {
             let tempFallback = {};
 
             if (fallback.link && type === mediaTypes.image) {
@@ -382,7 +382,7 @@ var ghostEmbedGenerator = () => {
             }
         }
         /* Add default image last if custom fallbacks */
-        if (mediaLink.fallback) {
+        if (mediaLink?.fallback) {
             let tempFallback = {};
             tempFallback.link = mediaLink.link || '';
 
@@ -395,7 +395,7 @@ var ghostEmbedGenerator = () => {
             }
             fallbacks.push(tempFallback);
         }
-        if (isGhostLink(mediaLink.link) && !mediaLink.fallback) {
+        if (isGhostLink(mediaLink?.link) && !mediaLink.fallback) {
             let fallbacks = [fileType]
             for (let fallbackType in data.fallbackTypes) {
                 if (!fallbacks.includes(fallbackType[fileType])) {
@@ -421,14 +421,14 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle styles
-        if (mediaLink['aspect-ratio']) {
+        if (mediaLink?.['aspect-ratio']) {
             let aspectRatio = mediaLink['aspect-ratio'][0] + '/' + mediaLink['aspect-ratio'][1];
             styles += `object-fit:${aspectRatio};`
         }
-        if (mediaLink['object-fit']) {
+        if (mediaLink?.['object-fit']) {
             styles += `object-fit:${mediaLink['object-fit']};`;
         }
-        if (mediaLink['object-position']) {
+        if (mediaLink?.['object-position']) {
             styles += `object-fit:${mediaLink['object-position']};`;
         }
 
@@ -465,14 +465,14 @@ var ghostEmbedGenerator = () => {
                 img.style = styles;
                 mediaElement = img;
             }
-        } else if (type === mediaTypes.video && mediaLink.video) {
+        } else if (type === mediaTypes.video) {
             let video = document.createElement('video');
-            video.autoplay = mediaLink.video.autoplay || true;
-            video.loop = mediaLink.video.loop || true;
-            video.muted = mediaLink.video.muted || true;
-            video.controls = mediaLink.video.controls || false;
-            video.poster = mediaLink.video.poster || '';
-            video.preload = mediaLink.video.preload || preloadHTML[0];
+            video.autoplay = mediaLink.video?.autoplay || true;
+            video.loop = mediaLink.video?.loop || true;
+            video.muted = mediaLink.video?.muted || true;
+            video.controls = mediaLink.video?.controls || false;
+            video.poster = mediaLink.video?.poster || '';
+            video.preload = mediaLink.video?.preload || preloadHTML[0];
 
             for (let fallback in fallbacks) {
                 video.appendChild(generateSourceElement(fallback.link,
@@ -485,7 +485,7 @@ var ghostEmbedGenerator = () => {
         }
 
         //wrap media in link
-        if (!data.link && mediaLink['target-href']) {
+        if (!data?.link && mediaLink?.['target-href']) {
             let a = generateLink(mediaLink['target-href'], data.openAsNew, '');
             a.appendChild(mediaElement);
             mediaElement = a;
@@ -536,15 +536,7 @@ var ghostEmbedGenerator = () => {
 
     function generateElement(tagname, classes) {
         let el = document.createElement(tagname);
-        classes = classes.filter( ael => {
-            return ael != null && ael !== undefined && ael !== ''
-        });
-        try {
-            el.classList.add(...classes);
-        } catch (e) {
-            console.log(classes, e);
-        }
-        return el;
+        return addMultipleClasses(el, classes);
     }
 
     function generateLink(href, openAsNew, classes) {
@@ -552,9 +544,7 @@ var ghostEmbedGenerator = () => {
             href: href,
             target: openAsNew ? '_blank' : ''
         });
-        a.classList(classes);
-
-        return a;
+        return addMultipleClasses(a, classes);
     }
     function wrapInLink(parent, wrapper) {
         for (let child in parent) {
@@ -598,6 +588,22 @@ var ghostEmbedGenerator = () => {
     function calcAspectRatio(aspectRatio) {
         return aspectRatio[1] * 100 / aspectRatio[0];
     }
+    function addMultipleClasses(domEl, classes) {
+        if (typeof classes === 'object') {
+            classes = classes.filter(el => {
+                return el != null && el !== undefined && el !== ''
+            });
+
+            try {
+                domEl.classList.add(...classes);
+            } catch (e) {
+                console.log(classes, e);
+            }
+        } else if (typeof classes === 'string' && classes !== '') {
+            domEl.classList.add(classes);
+        }
+        return domEl;
+    }
     // Form validation
     // -----------------------------------------------------------------------------------------
     function validateForm() {
@@ -613,7 +619,7 @@ var ghostEmbedGenerator = () => {
     }
     function processForm() {
         let data = {};
-        let settings = document.forms[0][formElementID.settings].value;
+        let settings = document.forms[0][formElementID.settings];
         let linkList = document.forms[0][formElementID.links].value;
         let fallbackTypes = document.forms[0][formElementID.fallback].value;
         let classes = document.forms[0][formElementID.classes].value;
@@ -624,8 +630,10 @@ var ghostEmbedGenerator = () => {
         let enableResponsive = document.forms[0][formElementID.responsive].checked;
         let openAsNew = document.forms[0][formElementID.openAsNew].checked;
 
-        data.snippet = document.forms[0][formElementID.snippet].value;
+        settings = settings.value === '' ? settings.innerText : settings.value;
 
+        data.snippet = document.forms[0][formElementID.snippet].value;
+        console.log(document.forms, document.forms[0][formElementID.settings].value, document.forms[0][10].value);
         if (settings !== '') {
             try {
                 settings = JSON.parse(settings);
@@ -633,7 +641,9 @@ var ghostEmbedGenerator = () => {
                     data.snippet = settings.snippet;
                 }
 
+                console.log(document.forms, settings.mediaLinks, settings.mediaLinks.length, "jhaswdfjhlköysdfklajsehfkljAWSEHFKILUJAwehfkljaswed");
                 if (settings.mediaLinks && settings.mediaLinks.length) {
+                    
                     data.mediaLinks = parseLinks(settings.mediaLinks);
                 }
 
@@ -658,28 +668,32 @@ var ghostEmbedGenerator = () => {
                     data.width = parseCustomWidth(width);
                 }
 
-                settings.openAsNew = convertTextToBool(settings.openAsNew);
-                if (settings.openAsNew) {
-                    data.openAsNew = settings.openAsNew;
-                }
-
-                settings.enableResponsive = convertTextToBool(settings.enableResponsive);
-                if (settings.enableResponsive) {
-                    data.enableResponsive = settings.enableResponsive;
-                }
+                data.openAsNew = convertTextToBool(settings.openAsNew);
+                data.enableResponsive = convertTextToBool(settings.enableResponsive);
             } catch (e) {
                 console.log(settings, e);
             }
         }
 
-        try {
-            if (linkList !== '') {
+        if (linkList === '') {
+            data.mediaLinks = data.mediaLinks?.length > 0 ? data.mediaLinks : 0;
+        } else if (linkList.match(/^[^{[]/g)) {
+            data.mediaLinks = [];
+            linkList = cleanAttr(linkList).split(',');
+            for (let link in linkList) {
+                data.mediaLinks.push({
+                    link: linkList[link].trim()
+                });
+            }
+        } else {
+            try {
                 linkList = JSON.parse(linkList);
                 data.mediaLinks = parseLinks(linkList);
+            } catch (e) {
+                console.log(linkList, e)
             }
-        } catch (e) {
-            console.log(linkList, e)
         }
+
 
 
         try {
@@ -729,7 +743,7 @@ var ghostEmbedGenerator = () => {
             }
         }
         data.responsiveType = cardToResponsiveType[tempCardType];
-
+        console.log(data);
         return data;
     }
 
@@ -749,110 +763,106 @@ var ghostEmbedGenerator = () => {
     }
 
     function parseLinks(linkList) {
+        console.log("Fuckyou sdfjasdklön-");
         let links = [];
+        for (let i = 0; i < linkList.length; i++) {
+            let tempLink = {}
+            if (typeof linkList[i] === 'string') {
+                tempLink.link = cleanAttr(linkList[i]);
+            } else {
+                if (linkList[i].link) {
+                    tempLink.link = cleanAttr(linkList[i].link);
+                }
+                if (linkList[i].metadata) {
+                    tempLink.metadata = {};
 
-        if (linkList.length && typeof linkList[0] === 'string') {
-            for (let i = 0; i < linkList.length; i++) {
-                links.push({ link: linkList[i].replaceAll('"', '').trim() });
-            }
-        } else {
-            for (let i = 0; i < linkList.length; i++) {
-                let tempLink = {}
-                if (typeof linkList[i] === 'string') {
-                    tempLink.link = cleanAttr(linkList[i]);
-                } else {
-                    if (linkList[i].link) {
-                        tempLink.link = cleanAttr(linkList.link);
+                    if (linkList[i].metadata['aspect-ratio'] !== undefined &&
+                        linkList[i].metadata['aspect-ratio'].match(/^\d+\/\d+$/)) {
+                        tempLink.metadata.aspectRatio = linkList[i].metadata['aspect-ratio'].split('/');
                     }
-                    if (linkList[i].metadata) {
-                        tempLink.metadata = {};
 
-                        if (linkList[i].metadata['aspect-ratio'] !== undefined &&
-                            linkList[i].metadata['aspect-ratio'].match(/^\d+\/\d+$/)) {
-                            tempLink.metadata.aspectRatio = linkList[i].metadata['aspect-ratio'].split('/');
-                        }
+                    if (linkList[i].metadata['object-fit'] !== '' &&
+                        objectFitCSS.includes(linkList[i].metadata['object-fit'])) {
+                        tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata['object-fit']);
+                    }
 
-                        if (linkList[i].metadata['object-fit'] !== '' &&
-                            objectFitCSS.includes(linkList[i].metadata['object-fit'])) {
-                            tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata['object-fit']);
-                        }
+                    if (linkList[i].metadata['object-position']) {
+                        tempLink.metadata.objectPosition = cleanAttr(linkList[i].metadata['object-position']);
+                    }
 
-                        if (linkList[i].metadata['object-position']) {
-                            tempLink.metadata.objectPosition = cleanAttr(linkList[i].metadata['object-position']);
-                        }
+                    if (linkList[i].metadata['target-href']) {
+                        tempLink.metadata.href = cleanAttr(linkList[i].metadata['target-href']);
+                    }
 
-                        if (linkList[i].metadata['target-href']) {
-                            tempLink.metadata.href = cleanAttr(linkList[i].metadata['target-href']);
-                        }
+                    if (linkList[i].metadata['open-as-new']) {
+                        tempLink.metadata.openAsNew = linkList[i].metadata['open-as-new'] === true ? true : false;
+                    }
 
-                        if (linkList[i].metadata['open-as-new']) {
-                            tempLink.metadata.openAsNew = linkList[i].metadata['open-as-new'] === true ? true : false;
-                        }
+                    if (linkList[i].metadata['srcset']) {
+                        tempLink.metadata.srcset = cleanAttr(linkList[i].metadata['srcset']);
+                    }
 
-                        if (linkList[i].metadata['srcset']) {
-                            tempLink.metadata.srcset = cleanAttr(linkList[i].metadata['srcset']);
-                        }
+                    tempLink.metadata.fallback = [];
+                    for (let j = 0; j = linkList[i].metadata['fallback'].length; j++) {
+                        let tempFallback = {};
 
-                        tempLink.metadata.fallback = [];
-                        for (let j = 0; j = linkList[i].metadata['fallback'].length; j++) {
-                            let tempFallback = {};
+                        if (linkList[i].metadata['fallback'][j].link) {
+                            tempFallback.link = cleanAttr(linkList[i].metadata['fallback'][j].link);
 
-                            if (linkList[i].metadata['fallback'][j].link) {
-                                tempFallback.link = cleanAttr(linkList[i].metadata['fallback'][j].link);
-
-                                if (linkList[i].metadata['fallback'][j].srcset) {
-                                    tempFallback.srcset = cleanAttr(linkList[i].metadata['fallback'][j].srcset);
-                                }
-                                if (linkList[i].metadata['fallback'][j].sizes) {
-                                    tempFallback.sizes = cleanAttr(linkList[i].metadata['fallback'][j].sizes);
-                                }
-                                tempLink.metadata.fallback.push(tempFallback);
+                            if (linkList[i].metadata['fallback'][j].srcset) {
+                                tempFallback.srcset = cleanAttr(linkList[i].metadata['fallback'][j].srcset);
                             }
-                        }
-                    }
-                    if (linkList[i].video) {
-                        if (linkList[i].video['loop']) {
-                            tempLink.video.loop = convertTextToBool(linkList[i].video['loop']);
-                        }
-                        if (linkList[i].video['autoplay']) {
-                            tempLink.video.autoplay = convertTextToBool(linkList[i].video['autoplay']);
-                        }
-                        if (linkList[i].video['muted']) {
-                            tempLink.video.muted = convertTextToBool(linkList[i].video['muted']);
-                        }
-                        if (linkList[i].video['controls']) {
-                            tempLink.video.controls = convertTextToBool(linkList[i].video['controls']);
-                        }
-                        if (preloadHTML.includes(linkList[i].video['preload'])) {
-                            tempLink.video.preload = linkList[i].video['preload'];
-                        }
-                        if (linkList[i].video['poster']) {
-                            tempLink.video.poster = cleanAttr(linkList[i].video['poster']);
-                        }
-                    }
-                    if (linkList[i].bookmark) {
-                        if (linkList[i].bookmark['title']) {
-                            tempLink.bookmark.title = linkList[i].bookmark['title'];
-                        }
-                        if (linkList[i].bookmark['description']) {
-                            tempLink.bookmark.description = linkList[i].bookmark['description'];
-                        }
-                        if (linkList[i].bookmark['icon']) {
-                            tempLink.bookmark.icon = linkList[i].bookmark['icon'];
-                        }
-                        if (linkList[i].bookmark['author']) {
-                            tempLink.bookmark.author = linkList[i].bookmark['author'];
-                        }
-                        if (linkList[i].bookmark['publisher']) {
-                            tempLink.bookmark.publisher = linkList[i].bookmark['publisher'];
+                            if (linkList[i].metadata['fallback'][j].sizes) {
+                                tempFallback.sizes = cleanAttr(linkList[i].metadata['fallback'][j].sizes);
+                            }
+                            tempLink.metadata.fallback.push(tempFallback);
                         }
                     }
                 }
-                links.push(tempLink);
+                if (linkList[i].video) {
+                    if (linkList[i].video['loop']) {
+                        tempLink.video.loop = convertTextToBool(linkList[i].video['loop']);
+                    }
+                    if (linkList[i].video['autoplay']) {
+                        tempLink.video.autoplay = convertTextToBool(linkList[i].video['autoplay']);
+                    }
+                    if (linkList[i].video['muted']) {
+                        tempLink.video.muted = convertTextToBool(linkList[i].video['muted']);
+                    }
+                    if (linkList[i].video['controls']) {
+                        tempLink.video.controls = convertTextToBool(linkList[i].video['controls']);
+                    }
+                    if (preloadHTML.includes(linkList[i].video['preload'])) {
+                        tempLink.video.preload = linkList[i].video['preload'];
+                    }
+                    if (linkList[i].video['poster']) {
+                        tempLink.video.poster = cleanAttr(linkList[i].video['poster']);
+                    }
+                }
+                if (linkList[i].bookmark) {
+                    if (linkList[i].bookmark['title']) {
+                        tempLink.bookmark.title = linkList[i].bookmark['title'];
+                    }
+                    if (linkList[i].bookmark['description']) {
+                        tempLink.bookmark.description = linkList[i].bookmark['description'];
+                    }
+                    if (linkList[i].bookmark['icon']) {
+                        tempLink.bookmark.icon = linkList[i].bookmark['icon'];
+                    }
+                    if (linkList[i].bookmark['author']) {
+                        tempLink.bookmark.author = linkList[i].bookmark['author'];
+                    }
+                    if (linkList[i].bookmark['publisher']) {
+                        tempLink.bookmark.publisher = linkList[i].bookmark['publisher'];
+                    }
+                }
             }
+            links.push(tempLink);
         }
         return links;
     }
+    
+
 
 
 
@@ -867,12 +877,13 @@ var ghostEmbedGenerator = () => {
             return false;
         }
         if (typeof text === 'boolean') {
-            return true;
+            return text;
         }
+        return false;
     }
     function getFileType(href) {
         try {
-            if (href !== undefined && href !== '') {
+            if (href != null && href !== undefined && href !== '') {
                 var match = new URL(href).pathname.match(/\.([\w]){1,}$/gi);
 
                 if (match) {
@@ -882,7 +893,7 @@ var ghostEmbedGenerator = () => {
             }
         }
         catch (e) {
-            console.log(e);
+            console.log(href, "Can't find file type.");
         }
         return '';
     }
