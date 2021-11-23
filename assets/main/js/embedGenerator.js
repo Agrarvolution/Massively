@@ -2,6 +2,10 @@
 
 var ghostEmbedGenerator = () => {
     const htmlSnippetTypes = ['image', 'gallery', 'gallery-narrow', 'gallery-flowing', 'bookmark', 'video'];
+    const galleryCardClasses = {
+        narrow: 'kg-gallery-container--narrow',
+        flowing: 'kg-gallery-container--flowing'
+    };
     const objectFitCSS = ['fill', 'contain', 'cover', 'none', 'scale-down', 'inherit', 'initial', 'revert', 'unset'];
     const preloadHTML = ['auto', 'metadata', 'none'];
     const formElementID = {
@@ -31,6 +35,7 @@ var ghostEmbedGenerator = () => {
     let settingsField = document.getElementById('settings-json');
     let selector = document.getElementById('select-html-snippet');
 
+    let snippetState = sessionStorage.getItem(storageKey + "snippet") || 'image';
 
     // Load and save settings
     // -----------------------------------------------------------------------------------------
@@ -62,7 +67,9 @@ var ghostEmbedGenerator = () => {
 
     // Storage handling
     // -----------------------------------------------------------------------------------------
-    selector.addEventListener('change', switchForm);
+    selector.value = snippetState;
+
+    selector.addEventListener('change', snippetChange);
     resetButton.addEventListener('click', event => {
         storeData(selector.value, false);
     });
@@ -79,6 +86,12 @@ var ghostEmbedGenerator = () => {
         removeChildren(previewField);
         inputDataToExtraSettings(settingData);
         return true;
+    }
+
+    function snippetChange() {
+        snippetState = selector.value;
+        sessionStorage.setItem(storageKey + 'snippet', snippetState);
+        return switchForm();
     }
 
     // Button handlers
@@ -129,8 +142,10 @@ var ghostEmbedGenerator = () => {
                 generatedHTML = generateGalleryCard(data);
                 break;
             case 'gallery-narrow':
+                generatedHTML = generateGalleryRowlessCard(data, galleryCardClasses.narrow);
                 break;
             case 'gallery-flowing':
+                generatedHTML = generateGalleryRowlessCard(data, galleryCardClasses.flowing);
                 break;
             case 'bookmark':
                 generatedHTML = generateBookmarkCard(data);
@@ -144,7 +159,9 @@ var ghostEmbedGenerator = () => {
         }
         outputField.value = generatedHTML.outerHTML;
         // change if better solution found
-        removeChildren(previewField).appendChild(generatedHTML);
+        if (generatedHTML instanceof HTMLElement) {
+            removeChildren(previewField).appendChild(generatedHTML);
+        }
     }
 
     // HTML Generation
@@ -234,7 +251,7 @@ var ghostEmbedGenerator = () => {
         figure.appendChild(container);
 
         let row = {}
-        for (let i = 0; i < data.links?.length; i++) {
+        for (let i = 0; i < data.mediaLinks?.length; i++) {
             if ((i % galleryColumns) === 0) {
                 row = generateElement('div', 'kg-gallery-row');
                 container.appendChild(row);
@@ -243,7 +260,7 @@ var ghostEmbedGenerator = () => {
             let galleryImage = generateElement('div', 'kg-gallery-image');
             galleryImage.style = `flex: 1.5 1 0%;`
 
-            let isVideo = isVideoLink(data.links[i].link);
+            let isVideo = isVideoLink(data.mediaLinks[i].link);
             if (isVideo) {
                 galleryImage.classList.add('kg-video');
 
@@ -254,6 +271,29 @@ var ghostEmbedGenerator = () => {
 
             galleryImage.appendChild(generateMedia(data, data.mediaLinks[i], isVideo ? mediaTypes.video : mediaTypes.image));
             row.appendChild(galleryImage);
+        }
+        return figure;
+    }
+
+    function generateGalleryRowlessCard(data, galleryType) {
+        let figure = generateElement('figure', ['kg-card', 'kg-gallery-card'].concat(data.classes || ''));
+        let container = generateElement('div', ['kg-gallery-container', galleryType]);
+        figure.appendChild(container);
+
+        for (let i = 0; i < data.mediaLinks?.length; i++) {
+            let galleryImage = generateElement('div', 'kg-gallery-image');
+
+            let isVideo = isVideoLink(data.mediaLinks[i].link);
+            if (isVideo) {
+                galleryImage.classList.add('kg-video');
+
+                if (data.links[i]['aspect-ratio']) {
+                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.mediaLinks[i]['aspect-ratio'])}%;`;
+                }
+            }
+
+            galleryImage.appendChild(generateMedia(data, data.mediaLinks[i], isVideo ? mediaTypes.video : mediaTypes.image));
+            container.appendChild(galleryImage);
         }
         return figure;
     }
@@ -680,10 +720,14 @@ var ghostEmbedGenerator = () => {
         } else if (linkList.match(/^[^{[]/g)) {
             data.mediaLinks = [];
             linkList = cleanAttr(linkList).split(',');
+
             for (let link in linkList) {
-                data.mediaLinks.push({
-                    link: linkList[link].trim()
-                });
+                console.log(linkList[link]);
+                if (linkList[link].length !== 0) {
+                    data.mediaLinks.push({
+                        link: linkList[link].trim()
+                    });
+                }
             }
         } else {
             try {
