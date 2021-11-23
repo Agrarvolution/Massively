@@ -15,7 +15,7 @@ var ghostEmbedGenerator = () => {
         openAsNew: 9,
         settings: 10
     }
-    const buttonTypes = {html: 'html', json: 'json'};
+    const buttonTypes = { html: 'html', json: 'json' };
 
     let htmlButton = document.getElementById('generate-html');
     let jsonButton = document.getElementById('generate-json');
@@ -47,7 +47,7 @@ var ghostEmbedGenerator = () => {
             data = processForm();
 
             switch (type) {
-                case buttonTypes.html: 
+                case buttonTypes.html:
                     pickGenerator(data);
                     break;
                 case buttonTypes.json:
@@ -56,7 +56,7 @@ var ghostEmbedGenerator = () => {
                 default:
                     break;
             }
-            document.getElementById('generator-output').scrollIntoView({behavior: 'smooth'});
+            document.getElementById('generator-output').scrollIntoView({ behavior: 'smooth' });
         } else {
             return false;
         }
@@ -64,16 +64,25 @@ var ghostEmbedGenerator = () => {
 
     function pickGenerator(data) {
         let generatedHTML = '';
-        switch(data.snippet) {
+        switch (data.snippet) {
             case 'image':
+                generateGalleryCard(data);
+                break;
             case 'gallery':
+                generateGallery(data);
+                break;
             case 'gallery-narrow':
+                break;
             case 'gallery-flowing':
+                break;
             case 'bookmark':
+                generateBookmarkCard(data);
+                break;
             case 'video':
+                generateVideoCard(data);
                 break;
             default:
-                writeError ('No matching generator found.');
+                writeError('No matching generator found.');
                 break;
         }
         outputField.value = generatedHTML;
@@ -104,8 +113,9 @@ var ghostEmbedGenerator = () => {
         'avif': 'image/avif'
     }
     const fallbackImageType = [
-    'svg', 'jpeg', 'jpg', 'png', 'gif'
+        'svg', 'jpeg', 'jpg', 'png', 'gif'
     ];
+    const videoTypes = ['mp4', 'ogg', 'ogv', 'mov', 'mkv'];
     const mediaTypes = {
         'image': 'img',
         'video': 'video'
@@ -127,31 +137,145 @@ var ghostEmbedGenerator = () => {
         'full': '(min-width: 2281px) 2000px, (min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
         'gallery-flowing': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
     }
+
+    // HTML Generation - element generation
+    // -----------------------------------------------------------------------------------------  
+    function generateGalleryCard(data) {
+        let figure = generateElement('figure', ['kg-card', 'kg-image-card'].concat(data.classes || ''));
+        figure.appendChild(generateMedia(data, 0, mediaTypes.image));
+
+        if (data.caption) {
+            figure.appendChild(generateFigureCaption(data.caption));
+        }
+        if (data.link) {
+            figure = wrapInLink(figure, generateLink(data.link, data.openAsNew, ''));
+        }
+        return figure;
+    }
+
+    function generateGallery(data) {
+        let galleryRows = 0;
+        let galleryColumns = 3;
+        galleryRows = Math.floor(data?.links.length || 0 / galleryColumns);
+
+        let figure = generateElement('figure', ['kg-card', 'kg-gallery-card'].concat(data.classes || ''));
+        let container = generateElement('div', 'kg-gallery-container');
+        figure.appendChild(container);
+
+        let row = {}
+        for (let i = 0; i < data?.links.length; i++) {
+            if ((i % galleryColumns) === 0) {
+                row = generateElement('div', 'kg-gallery-row');
+                container.appendChild(row);
+            }
+
+            let galleryImage = generateElement('div', 'kg-gallery-image');
+            galleryImage.style = `flex:flex: 1.77778 1 0%;`
+
+            let isVideo = isVideoLink(data.links[i].link);
+            if (isVideo) {
+                galleryImage.classList.add('kg-video');
+
+                if (data.links[i]['aspect-ratio']) {
+                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.links[index]['aspect-ratio'])}%;`;
+                }
+            }
+
+            galleryImage.appendChild(generateMedia(data, i, isVideo ? mediaTypes.video : mediaTypes.image));
+            row.appendChild(galleryImage);
+        }
+        return figure;
+    }
+
+
+    function generateBookmarkCard(data) {
+        let figure = generateElement('figure', ['kg-card', 'kg-bookmark-card'].concat(data.classes || ''));
+        let bookmarkContainer = generateLink(data.link || '', data.openAsNew, 'kg-bookmark-container');
+
+        let bookmarkContent = generateElement('div', 'kg-bookmark-content'),
+            bookmarkTitle = generateElement('div', 'kg-bookmark-title'),
+            bookmarkDescription = generateElement('div', 'kg-bookmark-description'),
+            bookmarkMetadata = generateElement('div', 'kg-bookmark-metadata'),
+            bookmarkIcon = generateElement('div', 'kg-bookmark-icon'),
+            bookmarkAuthor = generateElement('div', 'kg-bookmark-author'),
+            bookmarkPublisher = generateElement('div', 'kg-bookmark-publisher'),
+            bookmarkThumbnail = generateElement('div', 'kg-bookmark-thumbnail');
+
+        let bookmarkImage = generateMedia(data, 0, mediaTypes.image);
+
+        figure.appendChild(bookmarkContainer);
+        bookmarkContainer.appendChild(bookmarkContent, bookmarkThumbnail);
+        bookmarkContent.appendChild(bookmarkTitle).appendChild(bookmarkDescription).appendChild(bookmarkMetadata);
+        bookmarkMetadata.appendChild(bookmarkIcon, bookmarkAuthor, bookmarkPublisher);
+        bookmarkThumbnail.appendChild(bookmarkImage);
+
+        if (data.links?.[0]?.bookmark.title) {
+            bookmarkTitle.innerText = data.links[0]?.bookmark.title;
+        }       
+        if (data.links?.[0]?.bookmark.description) {
+            bookmarkDescription.innerText = data.links[0]?.bookmark.description;
+        }  
+        if (data.links?.[0]?.bookmark.icon) {
+            bookmarkIcon.src = data.links[0]?.bookmark.icon;
+        }
+        if (data.links?.[0]?.bookmark.author) {
+            bookmarkAuthor.innerText = data.links[0]?.bookmark.author;
+        }    
+        if (data.links?.[0]?.bookmark.publisher) {
+            bookmarkPublisher.innerText = data.links[0]?.bookmark.publisher;
+        }
         
+        return figure;
+    }
 
+    function generateVideoCard(data) {
+        let figure = generateElement('figure', ['kg-card', 'kg-video-card'].concat(data.classes || ''));
 
+        figure.appendChild(generateVideoContainer(data, 0));
+
+        if (data.caption) {
+            figure.appendChild(generateFigureCaption(data.caption));
+        }
+
+        if (data.link) {
+            figure = wrapInLink(figure, generateLink(data.link, data.openAsNew, ''));
+        }
+        return figure;
+    }
 
     // HTML Generation - sub element generation
-    // -----------------------------------------------------------------------------------------  
+    // ----------------------------------------------------------------------------------------- 
+    function generateVideoContainer(data, index) {
+        let aspectRatio = '';
+        let container = document.createElement('div');
+        container.classList.add('kg-video');
+        if (data.links[index]['aspect-ratio']) {
+            aspectRatio = `padding-bottom:${calcAspectRatio(data.links[index]['aspect-ratio'])}%;`;
+        }
+        container.style = aspectRatio;
+        container.appendChild(generateMedia(data, index, mediaTypes.video));
+
+        return container;
+    }
     /**
      * Generates a sngle image block
      * @param {*} data from form validation
      * @param {*} index index from Link list
      * @param {*} type media type -> image, video
      * @returns DOM Object
-     */ 
-    function generateImage (data, index, type) {
+     */
+    function generateMedia(data, index, type) {
         let isGhostLink = isGhostLink(data.mediaLinks[index]?.link);
-		let fileType = getFileType(data.mediaLinks[index].link);
+        let fileType = getFileType(data.mediaLinks[index].link);
         let fallbacks = [];
-		let srcset = '';
+        let srcset = '';
         let sizes = '';
         let mediaElement = {};
         let alt = cleanAttr(data.caption) || '';
-        let videoAttr = '';
+        let styles = '';
 
         //Handle responsiveness
-        if (data.mediaLinks?.[index].link && isGhostLink && data.isResponsive && type === mediaTypes.image) {   
+        if (data.mediaLinks?.[index].link && isGhostLink && data.isResponsive && type === mediaTypes.image) {
             srcset = generateSrcSet(data.mediaLinks?.[index].link, data.snippet);
         }
 
@@ -202,30 +326,37 @@ var ghostEmbedGenerator = () => {
             }
             fallbacks.push(tempFallback);
         }
-        if (isGhostLink && !data.mediaLinks?.[index].fallback) {     
+        if (isGhostLink && !data.mediaLinks?.[index].fallback) {
             let fallbacks = [fileType]
             for (let fallbackType in data.fallbackTypes) {
                 if (!fallbacks.includes(fallbackType[fileType])) {
                     fallbacks.push(fallbackType[fileType]);
                 }
             }
-            
+
             for (let fallbackType in fallbacks) {
                 let tempFallback = {};
-                tempFallback.link = data.mediaLinks[index].link.replaceAll(fileType, fallbackType);
+                tempFallback.link = data.mediaLinks[index].link.replaceAll("." + fileType, "." + fallbackType);
 
                 if (fallbackType !== 'svg' && type === mediaTypes.image) {
-                    tempFallback.srcset = srcset.replaceAll(fileType, fallbackType);
+                    tempFallback.srcset = srcset.replaceAll("." + fileType, "." + fallbackType);
                     tempFallback.sizes = sizes;
                 } else {
                     tempFallback.srcset = '';
                     tempFallback.sizes = '';
                 }
-                
                 tempFallback.fileType = fallbackType;
 
                 fallbacks.push(tempFallback);
             }
+        }
+
+        //Handle styles
+        if (data.links?.[index]['object-fit']) {
+            styles += `object-fit:${data.links?.[index]['object-fit']};`;
+        }
+        if (data.links?.[index]['object-position']) {
+            styles += `object-fit:${data.links?.[index]['object-position']};`;
         }
 
         // Create export element
@@ -235,48 +366,62 @@ var ghostEmbedGenerator = () => {
                 picture.classList.add('kg-image');
 
                 for (let i = 0; i < fallbacks.length; i++) {
-                    if (i+1 === fallbacks.length) {
-                        picture.appendChild(createImgElement(fallbacks[i].link, 
-                                                            fallbacks[i].srcset, 
-                                                            fallbacks[i].sizes, 
-                                                            alt));
+                    let img = {};
+                    if (i + 1 === fallbacks.length) {
+                        img.generateImgElement(fallbacks[i].link,
+                            fallbacks[i].srcset,
+                            fallbacks[i].sizes,
+                            alt);
                     } else {
-                        picture.appendChild(createSourceElement(fallbacks[i].link, 
-                                                            fallbacks[i].srcset, 
-                                                            fallbacks[i].fileType, 
-                                                            fallbacks[i].sizes, 
-                                                            mediaTypes.image));
+                        img.generateSourceElement(fallbacks[i].link,
+                            fallbacks[i].srcset,
+                            fallbacks[i].fileType,
+                            fallbacks[i].sizes,
+                            mediaTypes.image);
                     }
+                    img.style = styles;
+                    picture.appendChild(img);
                 }
+                mediaElement = picture;
             } else if (fallbacks.length > 0) {
-                mediaElement = createImgElement(fallbacks[0].link, fallbacks[0].srcset, fallbacks[0].sizes, alt);
+                let img = generateImgElement(fallbacks[0].link, fallbacks[0].srcset, fallbacks[0].sizes, alt);
+                img.style = styles;
+                mediaElement = img;
             } else {
-                mediaElement = createImgElement('', srcset, sizes, alt);
+                let img = generateImgElement('', srcset, sizes, alt);
+                img.style = styles;
+                mediaElement = img;
             }
         } else if (type === mediaTypes.video) {
             let video = document.createElement('video');
-            video.autoplay = data.mediaLinks[index].autoplay || true;
-            video.loop = data.mediaLinks[index].autoplay || true;
-            video.muted = data.mediaLinks[index].muted || true;
-            video.controls = data.mediaLinks[index].controls || false;
-            video.poster = data.mediaLinks[index].poster || '';
-            video.poster = data.mediaLinks[index].preload || preloadHTML[0];
+            video.autoplay = data.mediaLinks[index].video.autoplay || true;
+            video.loop = data.mediaLinks[index].video.loop || true;
+            video.muted = data.mediaLinks[index].video.muted || true;
+            video.controls = data.mediaLinks[index].video.controls || false;
+            video.poster = data.mediaLinks[index].video.poster || '';
+            video.preload = data.mediaLinks[index].video.preload || preloadHTML[0];
 
             for (let fallback in fallbacks) {
-                video.appendChild(createSourceElement(fallback.link, 
-                                                    '', 
-                                                    fallback.fileType, 
-                                                    '', 
-                                                    mediaTypes.video));
+                video.appendChild(generateSourceElement(fallback.link,
+                    '',
+                    fallback.fileType,
+                    '',
+                    mediaTypes.video));
             }
             mediaElement = video;
         }
-        
 
-		return mediaElement;
-	}
+        //wrap media in link
+        if (!data.link && data.mediaLinks[index]['target-href']) {
+            let a = generateLink(data.mediaLinks[index]['target-href'], data.openAsNew, '');
+            a.appendChild(mediaElement);
+            mediaElement = a;
+        }
 
-    function createSourceElement (src, srcset, fileType, media, mediaType) {
+        return mediaElement;
+    }
+
+    function generateSourceElement(src, srcset, fileType, media, mediaType) {
         let source = Object.assign(document.createElement('source'), {
             src: src,
             srcset: srcset,
@@ -294,12 +439,12 @@ var ghostEmbedGenerator = () => {
             default:
                 break;
         }
-        return source; 
+        return source;
     }
-	function createImgElement (src, srcset, sizes, alt) {
+    function generateImgElement(src, srcset, sizes, alt) {
         if (isGhostLink(src)) {
-			src = createSubLink(src, '');
-		}
+            src = createSubLink(src, '');
+        }
         let img = Object.assign(document.createElement('img'), {
             src: src,
             srcset: srcset,
@@ -308,39 +453,74 @@ var ghostEmbedGenerator = () => {
         });
         img.classList.add('kg-image');
         return img;
-	}
+    }
 
+    function generateFigureCaption(caption) {
+        let caption = document.createElement('figcaption');
+        caption.innerText = caption;
+        return caption;
+    }
+
+    function generateElement(tagname, classes) {
+        let el = document.createElement(tagname);
+        el.classList.add(classes);
+        return el;
+    }
+
+    function generateLink(href, openAsNew, classes) {
+        let a = Object.assign(document.createElement('a'), {
+            href = href,
+            target = openAsNew ? '_blank' : ''
+        });
+        a.classList(classes);
+
+        return a;
+    }
+    function wrapInLink(parent, wrapper) {
+        for (let child in parent) {
+            wrapper.appendChild(child);
+        }
+        return parent.appendChild(wrapper);
+    }
     // HTML Generation - generation helper methods
     // -----------------------------------------------------------------------------------------  
-	function generateSrcSet(href, type) {
-		var srcset = '';
-		for (let size in imgWidth[type]) {
-			srcset += createSubLink(href, imgWidth[type][size]) + ` ${imgWidth[type][size]}w,`;
-		};
-		srcset = srcset.replace(/,$/g, '');
-		return srcset;
-	}
-    function createSubLink (href, size) {
-		if (size && size.match(/^\d+$/g)) {
-			size = `/w${size}/`;
-		} else {
-			size = '';
-		}
-		if (href.match(/\/w\d+\//g)) {
-			if (size === '') {
-				href = href.replace(/\/images\/size\/w\d+\//g, '/images/');
-			} else {
-				href = href.replace(/\/w\d+\//g, size);
-			}
-		} else {
-			href = href.replace('/images/','/images/size' + size);
-		}
-		return href;
-	}
-
+    function generateSrcSet(href, type) {
+        var srcset = '';
+        for (let size in imgWidth[type]) {
+            srcset += createSubLink(href, imgWidth[type][size]) + ` ${imgWidth[type][size]}w,`;
+        };
+        srcset = srcset.replace(/,$/g, '');
+        return srcset;
+    }
+    function createSubLink(href, size) {
+        if (size && size.match(/^\d+$/g)) {
+            size = `/w${size}/`;
+        } else {
+            size = '';
+        }
+        if (href.match(/\/w\d+\//g)) {
+            if (size === '') {
+                href = href.replace(/\/images\/size\/w\d+\//g, '/images/');
+            } else {
+                href = href.replace(/\/w\d+\//g, size);
+            }
+        } else {
+            href = href.replace('/images/', '/images/size' + size);
+        }
+        return href;
+    }
+    function isVideoLink(href) {
+        if (typeof href === 'string' && videoTypes[getFileType(href)]) {
+            return true;
+        }
+        false;
+    }
+    function calcAspectRatio(aspectRatio) {
+        return aspectRatio[1] * 100 / aspectRatio[0];
+    }
     // Form validation
     // -----------------------------------------------------------------------------------------
-    function validateForm () {
+    function validateForm() {
         if (document.forms[0]) {
             //Check snippet selection
             if (!htmlSnippetTypes.includes(document.forms[0][formElementID.snippet].value)) {
@@ -351,7 +531,7 @@ var ghostEmbedGenerator = () => {
         }
         return false;
     }
-    function processForm () {
+    function processForm() {
         let data = {};
         let settings = document.forms[0][formElementID.settings].value;
         let linkList = document.forms[0][formElementID.links].value;
@@ -382,13 +562,14 @@ var ghostEmbedGenerator = () => {
                 }
 
                 if (settings.classes) {
-                    data.classes = cleanAttr(settings.classes);
+                    data.classes = cleanAttr(settings.classes).replaceAll('.', '');
+                    data.classes = data.classes.split(/\s/);
                 }
                 if (settings.caption) {
                     data.caption = settings.caption;
                 }
                 if (settings.link) {
-                    data.link = cleanAttr(settings.link); 
+                    data.link = cleanAttr(settings.link);
                 }
                 if (settings.sizes) {
                     data.sizes = cleanAttr(settings.sizes);
@@ -400,7 +581,7 @@ var ghostEmbedGenerator = () => {
                 settings.openAsNew = convertTextToBool(settings.openAsNew);
                 if (settings.openAsNew) {
                     data.openAsNew = settings.openAsNew;
-                } 
+                }
 
                 settings.enableResponsive = convertTextToBool(settings.enableResponsive);
                 if (settings.enableResponsive) {
@@ -410,7 +591,7 @@ var ghostEmbedGenerator = () => {
                 console.log(settings, e);
             }
         }
-        
+
         try {
             if (linkList !== '') {
                 linkList = JSON.parse(linkList);
@@ -420,20 +601,21 @@ var ghostEmbedGenerator = () => {
             console.log(linkList, e)
         }
 
-        
+
         try {
             if (fallbackTypes !== '') {
                 fallbackTypes = JSON.parse(fallbackTypes);
                 if (fallbackTypes.length) {
                     data.fallbackTypes = fallbackTypes;
                 }
-            }          
+            }
         } catch (e) {
             console.log(fallbackTypes, e);
         }
 
         if (classes !== '') {
-            data.classes = cleanAttr(classes);
+            data.classes = cleanAttr(classes).replaceAll('.', '');
+            data.classes = data.classes.split(/\s/);
         }
         if (caption !== '') {
             data.caption = caption;
@@ -447,7 +629,7 @@ var ghostEmbedGenerator = () => {
         }
         if (width !== '') {
             try {
-                width = JSON.parse(width);                
+                width = JSON.parse(width);
                 data.width = parseCustomWidth(width);
             } catch (e) {
                 console.log(width, e)
@@ -459,12 +641,12 @@ var ghostEmbedGenerator = () => {
 
         return data;
     }
-    function writeError (error) {
-        errorField.innerText =  `An error occured: ${error}`;
+    function writeError(error) {
+        errorField.innerText = `An error occured: ${error}`;
     }
     // Form validation helper functions
     // -----------------------------------------------------------------------------------------
-    function parseCustomWidth (widthArr) {
+    function parseCustomWidth(widthArr) {
         let width = [];
         for (let i = 0; i < widthArr.length; i++) {
             if (widthArr[i].matches(/^\d+$/g)) {
@@ -474,12 +656,12 @@ var ghostEmbedGenerator = () => {
         return width;
     }
 
-    function parseLinks (linkList) {
+    function parseLinks(linkList) {
         let links = [];
 
         if (linkList.length && typeof linkList[0] === 'string') {
             for (let i = 0; i < linkList.length; i++) {
-                links.push({link: linkList[i].replaceAll('"', '').trim()});
+                links.push({ link: linkList[i].replaceAll('"', '').trim() });
             }
         } else {
             for (let i = 0; i < linkList.length; i++) {
@@ -489,51 +671,34 @@ var ghostEmbedGenerator = () => {
                 }
                 if (linkList[i].metadata) {
                     tempLink.metadata = {};
-                    
-                    if (linkList[i].metadata['aspect-ratio'] !== '' && 
+
+                    if (linkList[i].metadata['aspect-ratio'] !== undefined &&
                         linkList[i].metadata['aspect-ratio'].match(/^\d+\/\d+$/)) {
-                            tempLink.metadata.aspectRatio = linkList[i].metadata['aspect-ratio'];
+                        tempLink.metadata.aspectRatio = linkList[i].metadata['aspect-ratio'].split('/');
                     }
 
-                    if (linkList[i].metadata['object-fit'] !== '' && 
+                    if (linkList[i].metadata['object-fit'] !== '' &&
                         objectFitCSS.includes(linkList[i].metadata['object-fit'])) {
-                            tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata['object-fit']);
+                        tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata['object-fit']);
                     }
 
-                    if (linkList[i].metadata['object-position'] !== '') {
+                    if (linkList[i].metadata['object-position']) {
                         tempLink.metadata.objectPosition = cleanAttr(linkList[i].metadata['object-position']);
                     }
 
-                    if (linkList[i].metadata['target-href'] !== '') {
+                    if (linkList[i].metadata['target-href']) {
                         tempLink.metadata.href = cleanAttr(linkList[i].metadata['target-href']);
                     }
 
-                    if (linkList[i].metadata['open-as-new'] !== '') {
-                        tempLink.metadata.openAsNew = linkList[i].metadata['open-as-new'] === true ? true : false; 
-                    } 
+                    if (linkList[i].metadata['open-as-new']) {
+                        tempLink.metadata.openAsNew = linkList[i].metadata['open-as-new'] === true ? true : false;
+                    }
 
-                    if (linkList[i].metadata['srcset'] !== '') {
+                    if (linkList[i].metadata['srcset']) {
                         tempLink.metadata.srcset = cleanAttr(linkList[i].metadata['srcset']);
                     }
 
-                    if (linkList[i].metadata['loop'] !== '') {
-                        tempLink.metadata.loop = convertTextToBool(linkList[i].metadata['loop']);
-                    }
-                    if (linkList[i].metadata['autoplay'] !== '') {
-                        tempLink.metadata.autoplay = convertTextToBool(linkList[i].metadata['autoplay']);
-                    }
-                    if (linkList[i].metadata['muted'] !== '') {
-                        tempLink.metadata.muted = convertTextToBool(linkList[i].metadata['muted']);
-                    }
-                    if (linkList[i].metadata['controls'] !== '') {
-                        tempLink.metadata.controls = convertTextToBool(linkList[i].metadata['controls']);
-                    }
-                    if (preloadHTML.includes(linkList[i].metadata['preload'])) {
-                        tempLink.metadata.preload = linkList[i].metadata['preload'];
-                    }
-                    if (linkList[i].metadata['poster'] !== '') {
-                        tempLink.metadata.poster = cleanAttr(linkList[i].metadata['poster']);
-                    }
+
 
                     tempLink.metadata.fallback = [];
                     for (let j = 0; j = linkList[i].metadata['fallback'].length; j++) {
@@ -552,6 +717,43 @@ var ghostEmbedGenerator = () => {
                         }
                     }
                 }
+                if (linkList[i].video) {
+                    if (linkList[i].video['loop']) {
+                        tempLink.video.loop = convertTextToBool(linkList[i].video['loop']);
+                    }
+                    if (linkList[i].video['autoplay']) {
+                        tempLink.video.autoplay = convertTextToBool(linkList[i].video['autoplay']);
+                    }
+                    if (linkList[i].video['muted']) {
+                        tempLink.video.muted = convertTextToBool(linkList[i].video['muted']);
+                    }
+                    if (linkList[i].video['controls']) {
+                        tempLink.video.controls = convertTextToBool(linkList[i].video['controls']);
+                    }
+                    if (preloadHTML.includes(linkList[i].video['preload'])) {
+                        tempLink.video.preload = linkList[i].video['preload'];
+                    }
+                    if (linkList[i].video['poster']) {
+                        tempLink.video.poster = cleanAttr(linkList[i].video['poster']);
+                    }
+                }
+                if (linkList[i].bookmark) {
+                    if (linkList[i].bookmark['title']) {
+                        tempLink.bookmark.title = linkList[i].bookmark['title'];
+                    }
+                    if (linkList[i].bookmark['description']) {
+                        tempLink.bookmark.description = linkList[i].bookmark['description'];
+                    }
+                    if (linkList[i].bookmark['icon']) {
+                        tempLink.bookmark.icon = linkList[i].bookmark['icon'];
+                    }
+                    if (linkList[i].bookmark['author']) {
+                        tempLink.bookmark.author = linkList[i].bookmark['author'];
+                    }
+                    if (linkList[i].bookmark['publisher']) {
+                        tempLink.bookmark.publisher = linkList[i].bookmark['publisher'];
+                    }
+                }
                 links.push(tempLink);
             }
         }
@@ -563,7 +765,7 @@ var ghostEmbedGenerator = () => {
     // General helper functions
     // -----------------------------------------------------------------------------------------
 
-    function convertTextToBool (text) {
+    function convertTextToBool(text) {
         if (text === 'true') {
             return true;
         }
@@ -574,32 +776,32 @@ var ghostEmbedGenerator = () => {
             return true;
         }
     }
-    function getFileType (href) {
+    function getFileType(href) {
         try {
-			if (href !== undefined || href !== '') {
-				var match =  new URL(href).pathname.match(/\.([\w]){1,}$/gi);
+            if (href !== undefined || href !== '') {
+                var match = new URL(href).pathname.match(/\.([\w]){1,}$/gi);
 
-				if (match) {
-					return match[0].replace('.', '').trim();
-				}
-				return '';
-			}
-		}
-		catch (e) {
-			console.log(e);
-		}
+                if (match) {
+                    return match[0].replace('.', '').trim();
+                }
+                return '';
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
         return '';
     }
     function cleanAttr(text) {
         return text?.replaceAll('"', '').trim();
     }
-	function isGhostLink(href) {
+    function isGhostLink(href) {
         defaultImageLink;
-		if (href && typeof href === 'string' && href.matches(defaultImageLink)) {
+        if (href && typeof href === 'string' && href.matches(defaultImageLink)) {
             return true;
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 };
 
 window.addEventListener('load', ghostEmbedGenerator);

@@ -604,7 +604,7 @@
 			var aspectRatio = extraData.aspectRatio.match(/^\d+\/\d+$/);
 			if (aspectRatio.length) {
 				aspectRatio = aspectRatio[0].split('/');
-				style += `padding-bottom:${aspectRatio[1]*100/aspectRatio[0]}%;`
+				style += `padding-bottom:${aspectRatio[1]*100/aspectRatio[0]}%;`;
 			}
 		}
 		style = style.replace(/\s/g, '');
