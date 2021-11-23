@@ -49,8 +49,8 @@ var ghostEmbedGenerator = () => {
         return {};
     }
     function inputDataToExtraSettings(data) {
-        let output = JSON.stringify(data, false, '\t')
-        settingsField.innerText = output === 'null' ? '' : output;
+        let output = JSON.stringify(data, false, 4);
+        settingsField.value = output === 'null' ? '' : output;
     }
 
     // Storage handling
@@ -63,17 +63,14 @@ var ghostEmbedGenerator = () => {
     function switchForm() {
         if (validateForm()) {
             let data = processForm();
-            if (currentSnippet !== '') {
-                data.snippet = currentSnippet;
-            }
-            storeData(currentSnippet, data);
-            currentSnippet = data.snippet;
+            storeData(data.snippet, data);
+            currentSnippet = selector.value;
 
             // Reset output
             outputField.value = '';
             removeChildren(previewField);
         }
-        inputDataToExtraSettings(loadData());
+        inputDataToExtraSettings(loadData(selector.value));
         return true;
     }
 
@@ -104,7 +101,7 @@ var ghostEmbedGenerator = () => {
                     pickGenerator(data);
                     break;
                 case buttonTypes.json:
-                    outputField.value = JSON.stringify(data, false, '\t');
+                    outputField.value = JSON.stringify(data, false, 4);
                     break;
                 default:
                     break;
