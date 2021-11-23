@@ -16,39 +16,40 @@
             <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="link-json" placeholder='["link1", "link2", ...] | [{"link": "", metadata:""]'></textarea>
             <label for="links">Media links in JSON</label>
             <pre style="font-family: monospace; line-height:1;">
-["link", "link"]
-
-[{
-    "link": "",
-    "metadata": {
-        "aspect-ratio": "", 
-        "object-fit": "", 
-        "object-position": "",
-        "target-href": "link target",
-        "open-as-new": "false - defaults to true",
-        "srcset": "overwrites general srcset",      
-        "preload": "auto|metadata|none",
-        "fallback": [{
-            "link": "overwrites fallback types",
-            "srcset": "",
-            "sizes": ""
-        }]
-    },
-    "video": {
-        "muted": "true",
-        "loop": "true",
-        "autoplay": "true",
-        "controls": false,
-        "poster": "link"
-    },
-    "bookmark": {
-        "title": "",
-        "description": "",
-        "icon": "small icon src",
-        "author": "",
-        "publisher": ""
+[
+    "link",
+    {
+        "link": "",
+        "metadata": {
+            "aspect-ratio": "", 
+            "object-fit": "", 
+            "object-position": "",
+            "target-href": "link target",
+            "open-as-new": "false - defaults to true",
+            "srcset": "overwrites general srcset",      
+            "preload": "auto|metadata|none",
+            "fallback": [{
+                "link": "overwrites fallback types",
+                "srcset": "",
+                "sizes": ""
+            }]
+        },
+        "video": {
+            "muted": "true",
+            "loop": "true",
+            "autoplay": "true",
+            "controls": false,
+            "poster": "link"
+        },
+        "bookmark": {
+            "title": "",
+            "description": "",
+            "icon": "small icon src",
+            "author": "",
+            "publisher": ""
+        }
     }
-}]
+]
             </pre>
         </span>
         <span>
