@@ -398,8 +398,8 @@ var ghostEmbedGenerator = () => {
         if (isGhostLink(mediaLink?.link) && !mediaLink.fallback) {
             let fallbackTypes = [fileType];
             for (let fallbackType in data.fallbackTypes) {
-                if (!fallbackTypes.includes(fallbackType[fileType])) {
-                    fallbackTypes.push(fallbackType[fileType]);
+                if (!fallbackTypes.includes(data.fallbackTypes[fallbackType][fileType])) {
+                    fallbackTypes.push(data.fallbackTypes[fallbackType][fileType]);
                 }
             }
 
@@ -441,12 +441,12 @@ var ghostEmbedGenerator = () => {
                 for (let i = 0; i < fallbacks.length; i++) {
                     let img = {};
                     if (i + 1 === fallbacks.length) {
-                        img.generateImgElement(fallbacks[i].link,
+                        img = generateImgElement(fallbacks[i].link,
                             fallbacks[i].srcset,
                             fallbacks[i].sizes,
                             alt);
                     } else {
-                        img.generateSourceElement(fallbacks[i].link,
+                        img = generateSourceElement(fallbacks[i].link,
                             fallbacks[i].srcset,
                             fallbacks[i].fileType,
                             fallbacks[i].sizes,
@@ -504,6 +504,7 @@ var ghostEmbedGenerator = () => {
 
         switch (mediaType) {
             case mediaTypes.image:
+                source.removeAttribute('src');
                 source.loading = 'lazy';
                 source.classList.add('kg-image');
                 break;
@@ -633,7 +634,7 @@ var ghostEmbedGenerator = () => {
         settings = settings.value === '' ? settings.innerText : settings.value;
 
         data.snippet = document.forms[0][formElementID.snippet].value;
-        console.log(document.forms, document.forms[0][formElementID.settings].value, document.forms[0][10].value);
+
         if (settings !== '') {
             try {
                 settings = JSON.parse(settings);
@@ -641,9 +642,8 @@ var ghostEmbedGenerator = () => {
                     data.snippet = settings.snippet;
                 }
 
-                console.log(document.forms, settings.mediaLinks, settings.mediaLinks.length, "jhaswdfjhlköysdfklajsehfkljAWSEHFKILUJAwehfkljaswed");
                 if (settings.mediaLinks && settings.mediaLinks.length) {
-                    
+
                     data.mediaLinks = parseLinks(settings.mediaLinks);
                 }
 
@@ -743,7 +743,7 @@ var ghostEmbedGenerator = () => {
             }
         }
         data.responsiveType = cardToResponsiveType[tempCardType];
-        console.log(data);
+
         return data;
     }
 
@@ -763,7 +763,6 @@ var ghostEmbedGenerator = () => {
     }
 
     function parseLinks(linkList) {
-        console.log("Fuckyou sdfjasdklön-");
         let links = [];
         for (let i = 0; i < linkList.length; i++) {
             let tempLink = {}
@@ -861,7 +860,7 @@ var ghostEmbedGenerator = () => {
         }
         return links;
     }
-    
+
 
 
 
