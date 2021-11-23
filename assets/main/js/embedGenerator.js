@@ -396,25 +396,25 @@ var ghostEmbedGenerator = () => {
             fallbacks.push(tempFallback);
         }
         if (isGhostLink(mediaLink?.link) && !mediaLink.fallback) {
-            let fallbacks = [fileType]
+            let fallbackTypes = [fileType];
             for (let fallbackType in data.fallbackTypes) {
-                if (!fallbacks.includes(fallbackType[fileType])) {
-                    fallbacks.push(fallbackType[fileType]);
+                if (!fallbackTypes.includes(fallbackType[fileType])) {
+                    fallbackTypes.push(fallbackType[fileType]);
                 }
             }
 
-            for (let fallbackType in fallbacks) {
+            for (let fallbackType in fallbackTypes) {
                 let tempFallback = {};
-                tempFallback.link = mediaLink.link.replaceAll("." + fileType, "." + fallbackType);
+                tempFallback.link = mediaLink.link.replaceAll("." + fileType, "." + fallbackTypes[fallbackType]);
 
-                if (fallbackType !== 'svg' && type === mediaTypes.image) {
-                    tempFallback.srcset = srcset.replaceAll("." + fileType, "." + fallbackType);
+                if (fallbackTypes[fallbackType] !== 'svg' && type === mediaTypes.image) {
+                    tempFallback.srcset = srcset.replaceAll("." + fileType, "." + fallbackTypes[fallbackType]);
                     tempFallback.sizes = sizes;
                 } else {
                     tempFallback.srcset = '';
                     tempFallback.sizes = '';
                 }
-                tempFallback.fileType = fallbackType;
+                tempFallback.fileType = fallbackTypes[fallbackType];
 
                 fallbacks.push(tempFallback);
             }
