@@ -18,13 +18,64 @@ var ghostEmbedGenerator = () => {
         settings: 10
     }
     const buttonTypes = { html: 'html', json: 'json' };
+    const storageKey = "ghostEmbedGenerator-";
 
     let htmlButton = document.getElementById('generate-html');
     let jsonButton = document.getElementById('generate-json');
+    let resetButton = document.getElementById('reset-generator');
+
     let clipboardButton = document.getElementById('copy-to-clipboard');
     let outputField = document.getElementById('output-space');
     let errorField = document.getElementById('generator-errors');
     let previewField = document.getElementById('html-preview');
+    let settingsField = document.getElementById('settings-json');
+    let selector = document.getElementById('select-html-snippet');
+
+    let currentSnippet = '';
+
+
+
+    // Load and save settings
+    // -----------------------------------------------------------------------------------------
+    function storeData(snippet, data) {
+        localStorage.setItem(storageKey + snippet, JSON.stringify(data));
+    }
+    function loadData(snippet) {
+        try {
+            return JSON.parse(localStorage.getItem(storageKey + snippet));
+        } catch (e) {
+            console.log(e);
+        }
+        return {};
+    }
+    function inputDataToExtraSettings(data) {
+        let output = JSON.stringify(data, false, '\t')
+        settingsField.innerText = output === 'null' ? '' : output;
+    }
+
+    // Storage handling
+    // -----------------------------------------------------------------------------------------
+    selector.addEventListener('change', switchForm);
+    resetButton.addEventListener('click', event => {
+        storeData(currentSnippet, {});
+    });
+
+    function switchForm() {
+        if (validateForm()) {
+            let data = processForm();
+            if (currentSnippet !== '') {
+                data.snippet = currentSnippet;
+            }
+            storeData(currentSnippet, data);
+            currentSnippet = data.snippet;
+
+            // Reset output
+            outputField.value = '';
+            removeChildren(previewField);
+        }
+        inputDataToExtraSettings(loadData());
+        return true;
+    }
 
     // Button handlers
     // -----------------------------------------------------------------------------------------
@@ -47,6 +98,7 @@ var ghostEmbedGenerator = () => {
         let data = {};
         if (validateForm()) {
             data = processForm();
+            storeData(currentSnippet, data);
             switch (type) {
                 case buttonTypes.html:
                     pickGenerator(data);
@@ -88,10 +140,7 @@ var ghostEmbedGenerator = () => {
         }
         outputField.value = generatedHTML.outerHTML;
         // change if better solution found
-        while (previewField.firstChild) {
-            previewField.removeChild(previewField.firstChild);
-        }
-        previewField.appendChild(generatedHTML);
+        removeChildren(previewField).appendChild(generatedHTML);
     }
 
     // HTML Generation
@@ -116,9 +165,7 @@ var ghostEmbedGenerator = () => {
         'jxl': 'image/jxl',
         'avif': 'image/avif'
     }
-    const fallbackImageType = [
-        'svg', 'jpeg', 'jpg', 'png', 'gif'
-    ];
+    const fallbackImageType = ['svg', 'jpeg', 'jpg', 'png', 'gif'];
     const videoTypes = ['mp4', 'ogg', 'ogv', 'mov', 'mkv'];
     const mediaTypes = {
         'image': 'img',
@@ -297,7 +344,7 @@ var ghostEmbedGenerator = () => {
             srcset = generateSrcSet(mediaLink.link, data.responsiveType);
         }
 
-        if (data.sizes !== '' && type === mediaTypes.image) {
+        if (data.sizes && data.sizes !== '' && type === mediaTypes.image) {
             sizes = data.sizes;
         } else if (data.isResponsive && type === mediaTypes.image) {
             sizes = imageSizes[data.responsiveType] || '';
@@ -370,6 +417,10 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle styles
+        if (mediaLink['aspect-ratio']) {
+            let aspectRatio = mediaLink['aspect-ratio'][0] + '/' + mediaLink['aspect-ratio'][1];
+            styles += `object-fit:${aspectRatio};`
+        }
         if (mediaLink['object-fit']) {
             styles += `object-fit:${mediaLink['object-fit']};`;
         }
@@ -441,10 +492,10 @@ var ghostEmbedGenerator = () => {
 
     function generateSourceElement(src, srcset, fileType, media, mediaType) {
         let source = Object.assign(document.createElement('source'), {
-            src: src,
-            srcset: srcset,
+            src: src || '',
+            srcset: srcset || '',
             type: mimeTypes[fileType] || '',
-            media: media
+            media: media || ''
         });
 
         switch (mediaType) {
@@ -464,10 +515,10 @@ var ghostEmbedGenerator = () => {
             src = createSubLink(src, '');
         }
         let img = Object.assign(document.createElement('img'), {
-            src: src,
-            srcset: srcset,
-            sizes: sizes,
-            alt: alt
+            src: src || '',
+            srcset: srcset || '',
+            sizes: sizes || '',
+            alt: alt || ''
         });
         img.classList.add('kg-image');
         return img;
@@ -660,17 +711,17 @@ var ghostEmbedGenerator = () => {
         let tempCardType = data.snippet;
 
         if (data.classes?.length) {
-            let tempCardType = data.snippet;
             if (data.classes.includes('kg-width-half')) {
-                tempCardType = '.kg-width-half';
+                tempCardType += '.kg-width-half';
             } else if (data.classes.includes('kg-width-full')) {
-                tempCardType = '.kg-width-full';
+                tempCardType += '.kg-width-full';
             }
         }
         data.responsiveType = cardToResponsiveType[tempCardType];
 
         return data;
     }
+
     function writeError(error) {
         errorField.innerText = `An error occured: ${error}`;
     }
@@ -833,6 +884,16 @@ var ghostEmbedGenerator = () => {
         }
         return false;
     }
+    function removeChildren(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+        return parent;
+    }
+
+    // Init after load
+    // -----------------------------------------------------------------------------------------
+    switchForm();
 };
 
 window.addEventListener('load', ghostEmbedGenerator);
