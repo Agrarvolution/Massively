@@ -31,46 +31,53 @@ var ghostEmbedGenerator = () => {
     let settingsField = document.getElementById('settings-json');
     let selector = document.getElementById('select-html-snippet');
 
-    let currentSnippet = '';
-
-
 
     // Load and save settings
     // -----------------------------------------------------------------------------------------
     function storeData(snippet, data) {
-        localStorage.setItem(storageKey + snippet, JSON.stringify(data));
+        localStorage.setItem(storageKey + snippet, data ? JSON.stringify(data) : '');
     }
     function loadData(snippet) {
         try {
-            return JSON.parse(localStorage.getItem(storageKey + snippet));
+            let data = localStorage.getItem(storageKey + snippet);
+
+            if (data !== '') {
+                data = JSON.parse(localStorage.getItem(storageKey + snippet));
+            }
+            return data;
         } catch (e) {
             console.log(e);
         }
-        return {};
+        return '';
     }
     function inputDataToExtraSettings(data) {
-        let output = JSON.stringify(data, false, 4);
-        settingsField.value = output === 'null' ? '' : output;
+        if (data !== '') {
+            let output = JSON.stringify(data, false, 4);
+            settingsField.value = output === 'null' ? '' : output;
+        } else {
+            settingsField.value = '';
+        }
+
     }
 
     // Storage handling
     // -----------------------------------------------------------------------------------------
     selector.addEventListener('change', switchForm);
     resetButton.addEventListener('click', event => {
-        storeData(currentSnippet, {});
+        storeData(selector.value, false);
     });
 
     function switchForm() {
-        if (validateForm()) {
+        let settingData = loadData(selector.value);
+        if (settingData !== '' && validateForm()) {
             let data = processForm();
             storeData(data.snippet, data);
-            currentSnippet = selector.value;
-
-            // Reset output
-            outputField.value = '';
-            removeChildren(previewField);
         }
-        inputDataToExtraSettings(loadData(selector.value));
+
+        // Reset output
+        outputField.value = '';
+        removeChildren(previewField);
+        inputDataToExtraSettings(settingData);
         return true;
     }
 
@@ -95,7 +102,7 @@ var ghostEmbedGenerator = () => {
         let data = {};
         if (validateForm()) {
             data = processForm();
-            storeData(currentSnippet, data);
+            storeData(data.snippet, data);
             switch (type) {
                 case buttonTypes.html:
                     pickGenerator(data);
