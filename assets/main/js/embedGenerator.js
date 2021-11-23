@@ -123,10 +123,10 @@ var ghostEmbedGenerator = () => {
         let generatedHTML = '';
         switch (data.snippet) {
             case 'image':
-                generatedHTML = generateGalleryCard(data);
+                generatedHTML = generateImageCard(data);
                 break;
             case 'gallery':
-                generatedHTML = generateGallery(data);
+                generatedHTML = generateGalleryCard(data);
                 break;
             case 'gallery-narrow':
                 break;
@@ -211,7 +211,7 @@ var ghostEmbedGenerator = () => {
     };
     // HTML Generation - element generation
     // -----------------------------------------------------------------------------------------  
-    function generateGalleryCard(data) {
+    function generateImageCard(data) {
         let figure = generateElement('figure', ['kg-card', 'kg-image-card'].concat(data.classes || ''));
         figure.appendChild(generateMedia(data, 0, mediaTypes.image));
 
@@ -224,7 +224,7 @@ var ghostEmbedGenerator = () => {
         return figure;
     }
 
-    function generateGallery(data) {
+    function generateGalleryCard(data) {
         let galleryRows = 0;
         let galleryColumns = 3;
         galleryRows = Math.floor(data?.links.length || 0 / galleryColumns);
@@ -241,7 +241,7 @@ var ghostEmbedGenerator = () => {
             }
 
             let galleryImage = generateElement('div', 'kg-gallery-image');
-            galleryImage.style = `flex:flex: 1.77778 1 0%;`
+            galleryImage.style = `flex: 1.5 1 0%;`
 
             let isVideo = isVideoLink(data.links[i].link);
             if (isVideo) {
@@ -536,7 +536,14 @@ var ghostEmbedGenerator = () => {
 
     function generateElement(tagname, classes) {
         let el = document.createElement(tagname);
-        el.classList.add(classes);
+        classes = classes.filter( ael => {
+            return ael != null && ael !== undefined && ael !== ''
+        });
+        try {
+            el.classList.add(...classes);
+        } catch (e) {
+            console.log(classes, e);
+        }
         return el;
     }
 
