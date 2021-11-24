@@ -2,18 +2,7 @@
     <script src="/assets/main/js/embedGenerator.js"></script>
     <form id="generate-embed-html" method="post">
         <span>
-            <select name="select-html-snippet" id="select-html-snippet">
-                <option value="image">Image</option>
-                <option value="gallery">Gallery</option>
-                <option value="gallery-narrow">Gallery narrow</option>
-                <option value="gallery-flowing">Gallery flowing</option>
-                <option value="bookmark">Bookmark</option>
-                <option value="video">Video</option>
-            </select>
-            <label for="select-html-snippet">HTML Template</label>
-        </span>
-        <span>
-            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="link-json" placeholder='["link1", "link2", ...] | [{"link": "", metadata:""]'></textarea>
+            <textarea rows="30" style="font-family: monospace; line-height:1;font-size:0.9rem;" name="links" id="link-json" placeholder='["link1", "link2", ...] | [{"link": "", metadata:""]'></textarea>
             <label for="links">Media links in JSON</label>
             <pre style="font-family: monospace; line-height:1;">
 [
@@ -53,6 +42,17 @@
             </pre>
         </span>
         <span>
+            <select name="select-html-snippet" id="select-html-snippet">
+                <option value="image">Image</option>
+                <option value="gallery">Gallery</option>
+                <option value="gallery-narrow">Gallery narrow</option>
+                <option value="gallery-flowing">Gallery flowing</option>
+                <option value="bookmark">Bookmark</option>
+                <option value="video">Video</option>
+            </select>
+            <label for="select-html-snippet">HTML Template</label>
+        </span>
+        <span>
             <input type="text" name="fallback-types" id="fallback-types" placeholder='[{"file type": "fallback type"}]'>
             <label for="fallback-types">Fallback file types (Need be created manually!) in JSON</label>
         </span>
@@ -85,7 +85,7 @@
             <label for="open-link">Open in new window</label>
         </span>
         <span class="kg-column-all">
-            <textarea rows="10" style="font-family: monospace; line-height:1;" name="links" id="settings-json"></textarea>
+            <textarea rows="10" style="font-family: monospace; line-height:1;font-size:0.9rem;" name="links" id="settings-json"></textarea>
             <label for="links">Settings JSON - will be overridden by settings above</label>
         </span>
         <span class="kg-column-all">
