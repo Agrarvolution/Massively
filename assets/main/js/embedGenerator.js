@@ -661,7 +661,7 @@ var ghostEmbedGenerator = () => {
 
         //wrap media in link
         if (!data?.link && mediaLink?.metadata.targetHref) {
-            let a = generateLink(mediaLink.metadata.targetHref, data.openAsNew, '');
+            let a = generateLink(mediaLink.metadata.targetHref, mediaLink.metadata.openAsNew || data.openAsNew || true, '');
             a.appendChild(mediaElement);
             mediaElement = a;
         }
@@ -983,11 +983,12 @@ var ghostEmbedGenerator = () => {
                     }
 
                     if (linkList[i].metadata.targetHref) {
-                        tempLink.metadata.href = cleanAttr(linkList[i].metadata.targetHref);
+                        tempLink.metadata.targetHref = cleanAttr(linkList[i].metadata.targetHref);
                     }
 
                     if (linkList[i].metadata.openAsNew) {
-                        tempLink.metadata.openAsNew = linkList[i].metadata.openAsNew === true ? true : false;
+                        console.log(linkList[i].metadata);
+                        tempLink.metadata.openAsNew = convertTextToBool(linkList[i].metadata.openAsNew);
                     }
 
                     if (linkList[i].metadata.srcset) {
