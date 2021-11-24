@@ -50,11 +50,20 @@ var ghostEmbedGenerator = () => {
     let clipboardButton = document.getElementById('copy-to-clipboard');
 
     let linkField = document.getElementById('link-json');
+    let settingsField = document.getElementById('settings-json');
+    let selector = document.getElementById('select-html-snippet');
+    let enableResponsiveCheckbox = document.getElementById('enable-responsive');
+    let openAsNewCheckbox = document.getElementById('open-link');
+
     let outputField = document.getElementById('output-space');
     let errorField = document.getElementById('generator-errors');
     let previewField = document.getElementById('html-preview');
-    let settingsField = document.getElementById('settings-json');
-    let selector = document.getElementById('select-html-snippet');
+    let fallbackField = document.getElementById('fallback-types');
+    let classesField = document.getElementById('figure-classes');
+    let captionField = document.getElementById('figure-caption');
+    let wrapperLinkField = document.getElementById('wrapping-href');
+    let sizesField = document.getElementById('custom-sizes');
+    let widthField = document.getElementById('custom-width');
 
     let snippetState = sessionStorage.getItem(storageKey + "snippet") || 'image';
 
@@ -66,7 +75,6 @@ var ghostEmbedGenerator = () => {
     function loadData(snippet) {
         try {
             let data = localStorage.getItem(storageKey + snippet);
-
             if (data !== '') {
                 data = JSON.parse(localStorage.getItem(storageKey + snippet));
             }
@@ -100,14 +108,15 @@ var ghostEmbedGenerator = () => {
     function switchForm() {
         let settingData = loadData(selector.value);
         if (settingData !== '' && validateForm()) {
-            let data = processForm();
+            let data = processForm();           
             storeData(data.snippet, data);
+        } else {
+            inputDataToExtraSettings(settingData);
         }
-
+        setForm(settingData);
         // Reset output
         outputField.value = '';
         removeChildren(previewField);
-        inputDataToExtraSettings(settingData);
         return true;
     }
 
@@ -155,7 +164,7 @@ var ghostEmbedGenerator = () => {
                 linkField.value = JSON.stringify(currentLinks, false, 4);
             } catch (e) {
                 linkField.value += '\r\n' + JSON.stringify([helper], false, 4);
-            }           
+            }
         }
     }
     function removeLinkTemplate(isLast) {
@@ -802,16 +811,16 @@ var ghostEmbedGenerator = () => {
     }
     function processForm() {
         let data = {};
-        let settings = document.getElementById('settings-json');
-        let linkList = document.getElementById('link-json').value;
-        let fallbackTypes = document.getElementById('fallback-types').value;
-        let classes = document.getElementById('figure-classes').value;
-        let caption = document.getElementById('figure-caption').value;
-        let wrapperLink = document.getElementById('wrapping-href').value;
-        let sizes = document.getElementById('custom-sizes').value;
-        let width = document.getElementById('custom-width').value;
-        let enableResponsive = document.getElementById('enable-responsive').checked;
-        let openAsNew = document.getElementById('open-link').checked;
+        let settings = settingsField;
+        let linkList = linkField.value;
+        let fallbackTypes = fallbackField.value;
+        let classes = classesField.value;
+        let caption = captionField.value;
+        let wrapperLink = wrapperLinkField.value;
+        let sizes = sizesField.value;
+        let width = widthField.value;
+        let enableResponsive = enableResponsiveCheckbox.checked;
+        let openAsNew = openAsNewCheckbox.checked;
 
         settings = settings.value === '' ? settings.innerText : settings.value;
 
@@ -864,7 +873,7 @@ var ghostEmbedGenerator = () => {
         }
 
         if (linkList === '') {
-            data.mediaLinks = data.mediaLinks?.length > 0 ? data.mediaLinks : 0;
+            data.mediaLinks = data.mediaLinks?.length > 0 ? data.mediaLinks : [];
         } else if (linkList.match(/^[^{[]/g)) {
             data.mediaLinks = [];
             linkList = cleanAttr(linkList).split(',');
@@ -935,6 +944,43 @@ var ghostEmbedGenerator = () => {
 
         return data;
     }
+    function setForm(data) {
+        if (data.openAsNew !== undefined) {
+            if (data.openAsNew) {
+                openAsNewCheckbox.checked = true;
+            } else {
+                openAsNewCheckbox.removeAttribute('checked');
+            }
+        }
+        if (data.isResponsive !== undefined) {
+            if (data.isResponsive) {
+                enableResponsiveCheckbox.checked = true;
+            } else {
+                enableResponsiveCheckbox.removeAttribute('checked');
+            }
+        }
+        if (data.mediaLinks !== undefined) {
+            linkField.value = JSON.stringify(data.mediaLinks, false, 4);
+        }
+        if (data.caption !== undefined) {
+            captionField.value = data.caption;
+        }
+        if (data.sizes !== undefined) {
+            sizesField.value = data.sizes;
+        }
+        if (data.link !== undefined) {
+            wrapperLinkField.value = data.link;
+        }
+        if (data.width !== undefined) {
+            widthField.value = JSON.stringify(data.width);
+        }
+        if (data.classes !== undefined) {
+            classesField.value = data.classes.join(' ');
+        }
+        if (data.fallbackTypes !== undefined) {
+            fallbackField.value = JSON.stringify(data.fallbackTypes);
+        }
+    }
 
     function writeError(error) {
         errorField.innerText = `An error occured: ${error}`;
@@ -964,7 +1010,6 @@ var ghostEmbedGenerator = () => {
                 if (linkList[i].metadata) {
                     tempLink.metadata = {};
 
-                    console.log(linkList[i].metadata);
                     if (typeof linkList[i].metadata.aspectRatio === 'object' && linkList[i].metadata.aspectRatio.length) {
                         let n1 = Number(linkList[i].metadata.aspectRatio[0]),
                             n2 = Number(linkList[i].metadata.aspectRatio[1]);
@@ -990,14 +1035,12 @@ var ghostEmbedGenerator = () => {
                     }
 
                     if (linkList[i].metadata.openAsNew) {
-                        console.log(linkList[i].metadata);
                         tempLink.metadata.openAsNew = convertTextToBool(linkList[i].metadata.openAsNew);
                     }
 
                     if (linkList[i].metadata.srcset) {
                         tempLink.metadata.srcset = cleanAttr(linkList[i].metadata.srcset);
                     }
-                    console.log(tempLink);
                 }
 
                 if (linkList[i]['fallback']) {
@@ -1059,7 +1102,6 @@ var ghostEmbedGenerator = () => {
                 }
             }
             links.push(tempLink);
-            console.log(tempLink);
         }
         return links;
     }
