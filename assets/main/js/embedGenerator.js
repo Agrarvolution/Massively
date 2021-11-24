@@ -8,27 +8,22 @@ var ghostEmbedGenerator = () => {
     };
     const objectFitCSS = ['fill', 'contain', 'cover', 'none', 'scale-down', 'inherit', 'initial', 'revert', 'unset'];
     const preloadHTML = ['auto', 'metadata', 'none'];
-    const formElementID = {
-        snippet: 1,
-        links: 0,
-        fallback: 2,
-        sizes: 3,
-        width: 4,
-        responsive: 5,
-        classes: 6,
-        caption: 7,
-        link: 8,
-        openAsNew: 9,
-        settings: 10
-    }
     const buttonTypes = { html: 'html', json: 'json' };
     const storageKey = "ghostEmbedGenerator-";
+    const linkTemplates = {
+        'image': {
+            //dooooooooooooooooooooooooooooooooooooooooooooooo
+        }
+    }
+
+
 
     let htmlButton = document.getElementById('generate-html');
     let jsonButton = document.getElementById('generate-json');
     let resetButton = document.getElementById('reset-generator');
-
     let clipboardButton = document.getElementById('copy-to-clipboard');
+    let metadataButton = document.getElementById('add-link-template');
+
     let outputField = document.getElementById('output-space');
     let errorField = document.getElementById('generator-errors');
     let previewField = document.getElementById('html-preview');
@@ -106,6 +101,9 @@ var ghostEmbedGenerator = () => {
     });
     clipboardButton.addEventListener('click', event => {
         navigator.clipboard.writeText(outputField.value);
+    });
+    metadataButton.addEventListener('click', event => {
+        event.preventDefault();
     });
 
     // Process pipeline
@@ -272,6 +270,13 @@ var ghostEmbedGenerator = () => {
             galleryImage.appendChild(generateMedia(data, data.mediaLinks[i], isVideo ? mediaTypes.video : mediaTypes.image));
             row.appendChild(galleryImage);
         }
+
+        if (data.caption) {
+            figure.appendChild(generateFigureCaption(data.caption));
+        }
+        if (data.link) {
+            figure = wrapInLink(figure, generateLink(data.link, data.openAsNew, ''));
+        }
         return figure;
     }
 
@@ -294,6 +299,13 @@ var ghostEmbedGenerator = () => {
 
             galleryImage.appendChild(generateMedia(data, data.mediaLinks[i], isVideo ? mediaTypes.video : mediaTypes.image));
             container.appendChild(galleryImage);
+        }
+
+        if (data.caption) {
+            figure.appendChild(generateFigureCaption(data.caption));
+        }
+        if (data.link) {
+            figure = wrapInLink(figure, generateLink(data.link, data.openAsNew, ''));
         }
         return figure;
     }
@@ -376,7 +388,7 @@ var ghostEmbedGenerator = () => {
         return container;
     }
     /**
-     * Generates a sngle image block
+     * Generates a single image block
      * @param {object} data from form validation
      * @param {object} mediaLink
      * @param {{'image', 'video'}} type media type -> image, video
@@ -390,8 +402,8 @@ var ghostEmbedGenerator = () => {
         let mediaElement = {};
         let alt = cleanAttr(data.caption) || '';
         let styles = '';
-    
-        if (fallbackImageType.includes(fileType)) {
+
+        if (fallbackImageType[fileType]) {
             type = mediaTypes.video;
         }
 
@@ -521,7 +533,7 @@ var ghostEmbedGenerator = () => {
             video.loop = true;
             if (mediaLink.video?.loop) {
                 video.loop = mediaLink.video?.loop;
-            }     
+            }
             video.muted = true;
             if (mediaLink.video?.muted) {
                 video.muted = mediaLink.video?.muted;
@@ -612,10 +624,14 @@ var ghostEmbedGenerator = () => {
         return addMultipleClasses(a, classes);
     }
     function wrapInLink(parent, wrapper) {
-        for (let child in parent) {
-            wrapper.appendChild(child);
+        console.log(parent.children);
+        while (parent.firstChild) {
+            wrapper.appendChild(parent.firstChild);
+            parent.firstChild.remove();
         }
-        return parent.appendChild(wrapper);
+        parent.appendChild(wrapper);
+        console.log(parent);
+        return parent;
     }
     // HTML Generation - generation helper methods
     // -----------------------------------------------------------------------------------------  
@@ -674,7 +690,8 @@ var ghostEmbedGenerator = () => {
     function validateForm() {
         if (document.forms[0]) {
             //Check snippet selection
-            if (!htmlSnippetTypes.includes(document.forms[0][formElementID.snippet].value)) {
+            if (!htmlSnippetTypes.includes(document.getElementById('select-html-snippet').value)) {
+                console.log(document.forms[0], document.getElementById('select-html-snippet'));
                 writeError("Snippet doesn't exist.");
                 return false;
             }
@@ -684,20 +701,20 @@ var ghostEmbedGenerator = () => {
     }
     function processForm() {
         let data = {};
-        let settings = document.forms[0][formElementID.settings];
-        let linkList = document.forms[0][formElementID.links].value;
-        let fallbackTypes = document.forms[0][formElementID.fallback].value;
-        let classes = document.forms[0][formElementID.classes].value;
-        let caption = document.forms[0][formElementID.caption].value;
-        let wrapperLink = document.forms[0][formElementID.link].value;
-        let sizes = document.forms[0][formElementID.sizes].value;
-        let width = document.forms[0][formElementID.width].value;
-        let enableResponsive = document.forms[0][formElementID.responsive].checked;
-        let openAsNew = document.forms[0][formElementID.openAsNew].checked;
+        let settings = document.getElementById('settings-json');
+        let linkList = document.getElementById('link-json').value;
+        let fallbackTypes = document.getElementById('fallback-types').value;
+        let classes = document.getElementById('figure-classes').value;
+        let caption = document.getElementById('figure-caption').value;
+        let wrapperLink = document.getElementById('wrapping-href').value;
+        let sizes = document.getElementById('custom-sizes').value;
+        let width = document.getElementById('custom-width').value;
+        let enableResponsive = document.getElementById('enable-responsive').checked;
+        let openAsNew = document.getElementById('open-link').checked;
 
         settings = settings.value === '' ? settings.innerText : settings.value;
 
-        data.snippet = document.forms[0][formElementID.snippet].value;
+        data.snippet = document.getElementById('select-html-snippet').value;
 
         if (settings !== '') {
             try {
@@ -716,8 +733,14 @@ var ghostEmbedGenerator = () => {
                 }
 
                 if (settings.classes) {
-                    data.classes = cleanAttr(settings.classes).replaceAll('.', '');
-                    data.classes = data.classes.split(/\s/);
+                    if (settings.classes.length) {
+                        for (let figClass in settings.classes) {
+                            settings.classes[figClass] = cleanAttr(settings.classes[figClass]);
+                        }
+                    } else {
+                        settings.classes = cleanAttr(settings.classes).replaceAll('.', '').split(/\s/);
+                    }
+                    data.classes = settings.classes;
                 }
                 if (settings.caption) {
                     data.caption = settings.caption;
@@ -762,8 +785,6 @@ var ghostEmbedGenerator = () => {
                 console.log(linkList, e)
             }
         }
-        console.log(data);
-
 
         try {
             if (fallbackTypes !== '') {
@@ -824,7 +845,7 @@ var ghostEmbedGenerator = () => {
     function parseCustomWidth(widthArr) {
         let width = [];
         for (let i = 0; i < widthArr.length; i++) {
-            if (widthArr[i].matches(/^\d+$/g)) {
+            if (typeof widthArr[i] === 'number' || widthArr[i].match(/^\d+$/g)) {
                 width.push(widthArr[i]);
             }
         }
@@ -871,9 +892,9 @@ var ghostEmbedGenerator = () => {
                     }
 
                     tempLink.metadata.fallback = [];
-                    for (let j = 0; j = linkList[i].metadata['fallback'].length; j++) {
+                    for (let j = 0; j < linkList[i].metadata['fallback']?.length; j++) {
                         let tempFallback = {};
-
+                        console.log(linkList[i].metadata['fallback'], j);
                         if (linkList[i].metadata['fallback'][j].link) {
                             tempFallback.link = cleanAttr(linkList[i].metadata['fallback'][j].link);
 
