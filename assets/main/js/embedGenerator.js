@@ -766,9 +766,9 @@ var ghostEmbedGenerator = () => {
             } else {
                 href = href.replace(/\/w\d+\//g, size);
             }
-        } else {
-            href = href.replace('/images/', '/images/size' + size);
-        }
+        } else if (size !== '') {
+			href = href.replace('/images/', '/images/size' + size);
+		}
         return href;
     }
     function isVideoLink(href) {

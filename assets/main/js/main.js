@@ -596,7 +596,7 @@
 			} else {
 				href = href.replace(/\/w\d+\//g, size);
 			}
-		} else {
+		} else if (size !== '') {
 			href = href.replace('/images/', '/images/size' + size);
 		}
 		return href;
@@ -778,8 +778,10 @@
 		var fullSrc = images[i].src;
 		if (linkIsOnsite(fullSrc)) {
 			fullSrc = createSubLink(images[i].src, '');
-		}	
-		images[i].setAttribute('data-link', fullSrc);
+		}
+		if (images[i].parentNode.tagName !== 'A') {
+			images[i].setAttribute('data-link', fullSrc);
+		}
 	}
 	//make figure images clickable
 	$('body').on('click', 'img', function () {
