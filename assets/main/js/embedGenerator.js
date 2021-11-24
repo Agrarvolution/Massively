@@ -19,8 +19,6 @@ var ghostEmbedGenerator = () => {
             targetHref: "",
             openAsNew: '',
             srcset: "",
-            preload: "",
-
         },
         fallback: [{
             link: "",
@@ -32,7 +30,8 @@ var ghostEmbedGenerator = () => {
             loop: "",
             autoplay: "",
             controls: '',
-            poster: ""
+            poster: "",
+            preload: "",
         },
         bookmark: {
             title: "",
@@ -131,8 +130,10 @@ var ghostEmbedGenerator = () => {
             case 'video':
                 delete helper.bookmark
                 delete helper.metadata.srcset;
+                break;
             case 'bookmark':
                 delete helper.video;
+                break;
         }
 
         if (!displayFallback) {
