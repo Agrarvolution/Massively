@@ -125,12 +125,12 @@ var ghostEmbedGenerator = () => {
             case 'gallery-narrow':
             case 'gallery-flowing':
             default:
-                delete helper.bookmark,
-                    helper.video;
+                delete helper.bookmark;
+                delete helper.video;
                 break;
             case 'video':
-                delete helper.bookmark,
-                    helper.metadata.srcset;
+                delete helper.bookmark
+                delete helper.metadata.srcset;
             case 'bookmark':
                 delete helper.video;
         }
@@ -146,7 +146,7 @@ var ghostEmbedGenerator = () => {
             try {
                 currentLinks = JSON.parse(linkField.value);
                 console.log(currentLinks);
-                if (!currentLinks.length) {
+                if (!currentLinks.length < 0) {
                     currentLinks = [currentLinks];
                 }
                 currentLinks.push(helper);
@@ -417,9 +417,9 @@ var ghostEmbedGenerator = () => {
             bookmarkTitle = generateElement('div', 'kg-bookmark-title'),
             bookmarkDescription = generateElement('div', 'kg-bookmark-description'),
             bookmarkMetadata = generateElement('div', 'kg-bookmark-metadata'),
-            bookmarkIcon = generateElement('div', 'kg-bookmark-icon'),
-            bookmarkAuthor = generateElement('div', 'kg-bookmark-author'),
-            bookmarkPublisher = generateElement('div', 'kg-bookmark-publisher'),
+            bookmarkIcon = generateElement('img', 'kg-bookmark-icon'),
+            bookmarkAuthor = generateElement('span', 'kg-bookmark-author'),
+            bookmarkPublisher = generateElement('span', 'kg-bookmark-publisher'),
             bookmarkThumbnail = generateElement('div', 'kg-bookmark-thumbnail');
 
         let bookmarkImage = generateMedia(data, data.mediaLinks[0], mediaTypes.image);
@@ -507,7 +507,9 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle responsiveness
-        if (mediaLink?.link && isGhostLink(mediaLink.link) && data.isResponsive && type === mediaTypes.image) {
+        if (mediaLink.metadata?.srcset) {
+            srcset = mediaLink.metadata.srcset;
+        } else if (mediaLink?.link && isGhostLink(mediaLink?.link) && data.isResponsive && type === mediaTypes.image) {
             srcset = generateSrcSet(mediaLink.link, data.responsiveType);
         }
 
@@ -877,9 +879,7 @@ var ghostEmbedGenerator = () => {
         } else {
             try {
                 linkList = JSON.parse(linkList);
-
                 data.mediaLinks = parseLinks(linkList);
-                console.log(data.mediaLinks);
             } catch (e) {
                 console.log(linkList, e)
             }
@@ -1050,7 +1050,6 @@ var ghostEmbedGenerator = () => {
                     }
                 }
             }
-            console.log(tempLink);
             links.push(tempLink);
         }
         return links;
