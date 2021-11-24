@@ -93,6 +93,8 @@ var ghostEmbedGenerator = () => {
     selector.addEventListener('change', snippetChange);
     resetButton.addEventListener('click', event => {
         storeData(selector.value, false);
+        outputField.value = '';
+        previewField.innerText = '';
     });
 
     function switchForm() {
@@ -478,8 +480,8 @@ var ghostEmbedGenerator = () => {
         let aspectRatio = '';
         let container = document.createElement('div');
         container.classList.add('kg-video');
-        if (mediaLink.aspectRatio) {
-            aspectRatio = `padding-bottom:${calcAspectRatio(mediaLink.aspectRatio)}%;`;
+        if (mediaLink?.metadata.aspectRatio) {
+            aspectRatio = `padding-bottom:${calcAspectRatio(mediaLink.metadata.aspectRatio)}%;`;
         }
         container.style = aspectRatio;
         container.appendChild(generateMedia(data, mediaLink, mediaTypes.video));
@@ -507,7 +509,7 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle responsiveness
-        if (mediaLink.metadata?.srcset) {
+        if (mediaLink?.metadata.srcset) {
             srcset = mediaLink.metadata.srcset;
         } else if (mediaLink?.link && isGhostLink(mediaLink?.link) && data.isResponsive && type === mediaTypes.image) {
             srcset = generateSrcSet(mediaLink.link, data.responsiveType);
@@ -629,24 +631,24 @@ var ghostEmbedGenerator = () => {
             let video = document.createElement('video');
 
             video.autoplay = true;
-            if (mediaLink.video?.autoplay) {
+            if (mediaLink?.video.autoplay) {
                 video.autoplay = mediaLink.video?.autoplay;
             }
             video.loop = true;
-            if (mediaLink.video?.loop) {
+            if (mediaLink?.video.loop) {
                 video.loop = mediaLink.video?.loop;
             }
             video.muted = true;
-            if (mediaLink.video?.muted) {
+            if (mediaLink?.video.muted) {
                 video.muted = mediaLink.video?.muted;
             }
-            if (mediaLink.video?.controls) {
+            if (mediaLink?.video.controls) {
                 video.controls = mediaLink.video?.controls;
             }
-            if (mediaLink.video?.poster) {
+            if (mediaLink?.video.poster) {
                 video.poster = mediaLink.video?.poster;
             }
-            if (mediaLink.video?.preload) {
+            if (mediaLink?.video.preload) {
                 video.preload = mediaLink.video?.preload;
             }
 
