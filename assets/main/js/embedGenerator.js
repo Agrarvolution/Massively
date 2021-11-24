@@ -13,11 +13,11 @@ var ghostEmbedGenerator = () => {
     const linkTemplate = {
         link: "",
         metadata: {
-            "aspect-ratio": "",
-            "object-fit": "",
-            "object-position": "",
-            "target-href": "",
-            "open-as-new": '',
+            aspectRatio: "",
+            objectFit: "",
+            objectPosition: "",
+            targetHref: "",
+            openAsNew: '',
             srcset: "",
             preload: "",
 
@@ -145,7 +145,6 @@ var ghostEmbedGenerator = () => {
             let currentLinks = [];
             try {
                 currentLinks = JSON.parse(linkField.value);
-                console.log(currentLinks);
                 if (!currentLinks.length < 0) {
                     currentLinks = [currentLinks];
                 }
@@ -361,8 +360,8 @@ var ghostEmbedGenerator = () => {
             if (isVideo) {
                 galleryImage.classList.add('kg-video');
 
-                if (data.mediaLinks[i]['aspect-ratio']) {
-                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.mediaLinks[i]['aspect-ratio'])}%;`;
+                if (data.mediaLinks[i].aspectRatio) {
+                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.mediaLinks[i].aspectRatio)}%;`;
                 }
             }
 
@@ -391,8 +390,8 @@ var ghostEmbedGenerator = () => {
             if (isVideo) {
                 galleryImage.classList.add('kg-video');
 
-                if (data.mediaLinks[i]['aspect-ratio']) {
-                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.mediaLinks[i]['aspect-ratio'])}%;`;
+                if (data.mediaLinks[i].aspectRatio) {
+                    galleryImage.style += `padding-bottom:${calcAspectRatio(data.mediaLinks[i].aspectRatio)}%;`;
                 }
             }
 
@@ -478,8 +477,8 @@ var ghostEmbedGenerator = () => {
         let aspectRatio = '';
         let container = document.createElement('div');
         container.classList.add('kg-video');
-        if (mediaLink['aspect-ratio']) {
-            aspectRatio = `padding-bottom:${calcAspectRatio(mediaLink['aspect-ratio'])}%;`;
+        if (mediaLink.aspectRatio) {
+            aspectRatio = `padding-bottom:${calcAspectRatio(mediaLink.aspectRatio)}%;`;
         }
         container.style = aspectRatio;
         container.appendChild(generateMedia(data, mediaLink, mediaTypes.video));
@@ -523,18 +522,19 @@ var ghostEmbedGenerator = () => {
         for (let fallback in mediaLink?.fallback) {
             let tempFallback = {};
 
-            if (fallback.link && type === mediaTypes.image) {
-                tempFallback.link = fallback.link;
+            if (mediaLink.fallback[fallback].link && type === mediaTypes.image) {
+                tempFallback.link = mediaLink.fallback[fallback].link;
+                tempFallback.srcset = tempFallback.link;
 
-                if (fallback.srcset) {
-                    tempFallback.srcset = fallback.srcset;
-                } else if (isGhostLink(fallback.link)) {
-                    tempFallback.srcset = generateSrcSet(fallback.link, data.responsiveType);
+                if (mediaLink.fallback[fallback].srcset) {
+                    tempFallback.srcset = mediaLink.fallback[fallback].srcset;
+                } else if (isGhostLink(mediaLink.fallback[fallback].link)) {
+                    tempFallback.srcset = generateSrcSet(mediaLink.fallback[fallback].link, data.responsiveType);
                 }
 
-                if (fallback.sizes) {
-                    tempFallback.sizes = fallback.sizes;
-                } else if (isGhostLink(fallback.link)) {
+                if (mediaLink.fallback[fallback].sizes) {
+                    tempFallback.sizes = mediaLink.fallback[fallback].sizes;
+                } else if (isGhostLink(mediaLink.fallback[fallback].link)) {
                     tempFallback.sizes = sizes;
                 }
                 fallbacks.push(tempFallback);
@@ -580,15 +580,15 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle styles
-        if (mediaLink?.['aspect-ratio']) {
-            let aspectRatio = mediaLink['aspect-ratio'][0] + '/' + mediaLink['aspect-ratio'][1];
+        if (mediaLink?.metadata.aspectRatio) {
+            let aspectRatio = mediaLink?.metadata.aspectRatio[0] + '/' + mediaLink.metadata.aspectRatio[1];
             styles += `object-fit:${aspectRatio};`
         }
-        if (mediaLink?.['object-fit']) {
-            styles += `object-fit:${mediaLink['object-fit']};`;
+        if (mediaLink?.metadata.objectFit) {
+            styles += `object-fit:${mediaLink.metadata.objectFit};`;
         }
-        if (mediaLink?.['object-position']) {
-            styles += `object-fit:${mediaLink['object-position']};`;
+        if (mediaLink?.metadata.objectPosition) {
+            styles += `object-fit:${mediaLink.metadata.objectPosition};`;
         }
 
         // Create export element
@@ -660,8 +660,8 @@ var ghostEmbedGenerator = () => {
         }
 
         //wrap media in link
-        if (!data?.link && mediaLink?.['target-href']) {
-            let a = generateLink(mediaLink['target-href'], data.openAsNew, '');
+        if (!data?.link && mediaLink?.metadata.targetHref) {
+            let a = generateLink(mediaLink.metadata.targetHref, data.openAsNew, '');
             a.appendChild(mediaElement);
             mediaElement = a;
         }
@@ -725,13 +725,11 @@ var ghostEmbedGenerator = () => {
         return addMultipleClasses(a, classes);
     }
     function wrapInLink(parent, wrapper) {
-        console.log(parent.children);
         while (parent.firstChild) {
             wrapper.appendChild(parent.firstChild);
             parent.firstChild.remove();
         }
         parent.appendChild(wrapper);
-        console.log(parent);
         return parent;
     }
     // HTML Generation - generation helper methods
@@ -792,7 +790,6 @@ var ghostEmbedGenerator = () => {
         if (document.forms[0]) {
             //Check snippet selection
             if (!htmlSnippetTypes.includes(document.getElementById('select-html-snippet').value)) {
-                console.log(document.forms[0], document.getElementById('select-html-snippet'));
                 writeError("Snippet doesn't exist.");
                 return false;
             }
@@ -964,38 +961,39 @@ var ghostEmbedGenerator = () => {
                 if (linkList[i].metadata) {
                     tempLink.metadata = {};
 
-                    if (linkList[i].metadata['aspect-ratio'] !== undefined &&
-                        linkList[i].metadata['aspect-ratio'].match(/^\d+\/\d+$/)) {
-                        tempLink.metadata.aspectRatio = linkList[i].metadata['aspect-ratio'].split('/');
+                    console.log(linkList[i].metadata);
+                    if (linkList[i].metadata.aspectRatio !== undefined &&
+                        linkList[i].metadata.aspectRatio.match(/^\d+\/\d+$/)) {
+                        tempLink.metadata.aspectRatio = linkList[i].metadata.aspectRatio.split('/');
                     }
 
-                    if (linkList[i].metadata['object-fit'] !== '' &&
-                        objectFitCSS.includes(linkList[i].metadata['object-fit'])) {
-                        tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata['object-fit']);
+                    if (linkList[i].metadata.objectFit !== '' &&
+                        objectFitCSS.includes(linkList[i].metadata.objectFit)) {
+                        tempLink.metadata.objectFit = cleanAttr(linkList[i].metadata.objectFit);
                     }
 
-                    if (linkList[i].metadata['object-position']) {
-                        tempLink.metadata.objectPosition = cleanAttr(linkList[i].metadata['object-position']);
+                    if (linkList[i].metadata.objectPosition) {
+                        tempLink.metadata.objectPosition = cleanAttr(linkList[i].metadata.objectPosition);
                     }
 
-                    if (linkList[i].metadata['target-href']) {
-                        tempLink.metadata.href = cleanAttr(linkList[i].metadata['target-href']);
+                    if (linkList[i].metadata.targetHref) {
+                        tempLink.metadata.href = cleanAttr(linkList[i].metadata.targetHref);
                     }
 
-                    if (linkList[i].metadata['open-as-new']) {
-                        tempLink.metadata.openAsNew = linkList[i].metadata['open-as-new'] === true ? true : false;
+                    if (linkList[i].metadata.openAsNew) {
+                        tempLink.metadata.openAsNew = linkList[i].metadata.openAsNew === true ? true : false;
                     }
 
-                    if (linkList[i].metadata['srcset']) {
-                        tempLink.metadata.srcset = cleanAttr(linkList[i].metadata['srcset']);
+                    if (linkList[i].metadata.srcset) {
+                        tempLink.metadata.srcset = cleanAttr(linkList[i].metadata.srcset);
                     }
+                    console.log(tempLink);
                 }
 
                 if (linkList[i]['fallback']) {
                     tempLink.fallback = [];
                     for (let j = 0; j < linkList[i]['fallback']?.length; j++) {
                         let tempFallback = {};
-                        console.log(linkList[i]['fallback'], j);
                         if (linkList[i]['fallback'][j].link) {
                             tempFallback.link = cleanAttr(linkList[i]['fallback'][j].link);
 
@@ -1051,6 +1049,7 @@ var ghostEmbedGenerator = () => {
                 }
             }
             links.push(tempLink);
+            console.log(tempLink);
         }
         return links;
     }
