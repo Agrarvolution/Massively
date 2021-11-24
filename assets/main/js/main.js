@@ -5,9 +5,9 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-(function($) {
+(function ($) {
 
-	var	$window = $(window),
+	var $window = $(window),
 		$body = $('body'),
 		$wrapper = $('#wrapper'),
 		$header = $('#header'),
@@ -17,23 +17,23 @@
 
 	// Breakpoints.
 	var breakPointSource = {
-		default:   ['2281px',   null       ],
-		xxlarge:   ['1681px',   '2280px'   ],
-		xlarge:    ['1281px',   '1680px'   ],
-		large:     ['981px',    '1280px'   ],
-		medium:    ['737px',    '980px'    ],
-		small:     ['481px',    '736px'    ],
-		xsmall:    ['361px',    '480px'    ],
-		xxsmall:   [null,       '360px'    ]
+		default: ['2281px', null],
+		xxlarge: ['1681px', '2280px'],
+		xlarge: ['1281px', '1680px'],
+		large: ['981px', '1280px'],
+		medium: ['737px', '980px'],
+		small: ['481px', '736px'],
+		xsmall: ['361px', '480px'],
+		xxsmall: [null, '360px']
 	}
 	breakpoints(breakPointSource);
-	
+
 	/**
 	 * Applies parallax scrolling to an element's background image.
 	 * @return {jQuery} jQuery object.
 	 */
-	$.fn._parallax = function(intensity) {
-		var	$window = $(window),
+	$.fn._parallax = function (intensity) {
+		var $window = $(window),
 			$this = $(this);
 
 		if (this.length == 0 || intensity === 0)
@@ -41,7 +41,7 @@
 
 		if (this.length > 1) {
 
-			for (var i=0; i < this.length; i++)
+			for (var i = 0; i < this.length; i++)
 				$(this[i])._parallax(intensity);
 
 			return $this;
@@ -51,12 +51,12 @@
 		if (!intensity)
 			intensity = 0.1;
 
-		$this.each(function() {
+		$this.each(function () {
 
 			var $t = $(this),
 				$bg = $('<div class="bg"></div>').appendTo($t), off;
 
-			off = function() {
+			off = function () {
 
 				$bg
 					.addClass('fixed')
@@ -72,7 +72,7 @@
 
 		$window
 			.off('load._parallax resize._parallax')
-			.on('load._parallax resize._parallax', function() {
+			.on('load._parallax resize._parallax', function () {
 				$window.trigger('scroll');
 			});
 
@@ -81,167 +81,170 @@
 	};
 
 	// Play initial animations on page load.
-		$window.on('load', function() {
-			window.setTimeout(function() {
-				$body.removeClass('is-preload');
-			}, 100);
-		});
+	$window.on('load', function () {
+		window.setTimeout(function () {
+			$body.removeClass('is-preload');
+		}, 100);
+	});
 
 	// Scrolly.
-		$('.scrolly').scrolly();
+	$('.scrolly').scrolly();
 
 	// Background.
-		$wrapper._parallax(0.925);
+	$wrapper._parallax(0.925);
 
 	// Nav Panel.
 
-		// Toggle.
-			$navPanelToggle = $(
-				'<a href="#navPanel" id="navPanelToggle">Menu</a>'
-			)
-				.appendTo($wrapper);
+	// Toggle.
+	$navPanelToggle = $(
+		'<a href="#navPanel" id="navPanelToggle">Menu</a>'
+	)
+		.appendTo($wrapper);
 
-			// Change toggle styling once we've scrolled past the header.
-				$header.scrollex({
-					bottom: '5vh',
-					enter: function() {
-						$navPanelToggle.removeClass('alt');
-						$nav.removeClass('alt')
-					},
-					leave: function() {
-						$navPanelToggle.addClass('alt');
-						$nav.addClass('alt');
-					}
-				});
+	// Change toggle styling once we've scrolled past the header.
+	$header.scrollex({
+		bottom: '5vh',
+		enter: function () {
+			$navPanelToggle.removeClass('alt');
+			$nav.removeClass('alt')
+		},
+		leave: function () {
+			$navPanelToggle.addClass('alt');
+			$nav.addClass('alt');
+		}
+	});
 
-		// Panel.
-			$navPanel = $(
-				'<div id="navPanel">' +
-					'<nav>' +
-					'</nav>' +
-					'<a href="#navPanel" class="close"></a>' +
-				'</div>'
-			)
-				.appendTo($body)
-				.panel({
-					delay: 500,
-					hideOnClick: true,
-					hideOnSwipe: true,
-					resetScroll: true,
-					resetForms: true,
-					side: 'right',
-					target: $body,
-					visibleClass: 'is-navPanel-visible'
-				});
+	// Panel.
+	$navPanel = $(
+		'<div id="navPanel">' +
+		'<nav>' +
+		'</nav>' +
+		'<a href="#navPanel" class="close"></a>' +
+		'</div>'
+	)
+		.appendTo($body)
+		.panel({
+			delay: 500,
+			hideOnClick: true,
+			hideOnSwipe: true,
+			resetScroll: true,
+			resetForms: true,
+			side: 'right',
+			target: $body,
+			visibleClass: 'is-navPanel-visible'
+		});
 
-			// Get inner.
-				$navPanelInner = $navPanel.children('nav');
+	// Get inner.
+	$navPanelInner = $navPanel.children('nav');
 
-			// Move nav content on breakpoint change.
-				var $navContent = $nav.children();
+	// Move nav content on breakpoint change.
+	var $navContent = $nav.children();
 
-				breakpoints.on('>medium', function() {
+	breakpoints.on('>medium', function () {
 
-					// NavPanel -> Nav.
-						$navContent.appendTo($nav);
+		// NavPanel -> Nav.
+		$navContent.appendTo($nav);
 
-					// Flip icon classes.
-						$nav.find('.icons, .icon')
-							.removeClass('alt');
+		// Flip icon classes.
+		$nav.find('.icons, .icon')
+			.removeClass('alt');
 
-				});
+	});
 
-				breakpoints.on('<=medium', function() {
+	breakpoints.on('<=medium', function () {
 
-					// Nav -> NavPanel.
-						$navContent.appendTo($navPanelInner);
+		// Nav -> NavPanel.
+		$navContent.appendTo($navPanelInner);
 
-					// Flip icon classes.
-						$navPanelInner.find('.icons, .icon')
-							.addClass('alt');
+		// Flip icon classes.
+		$navPanelInner.find('.icons, .icon')
+			.addClass('alt');
 
-				});
+	});
 
-			// Hack: Disable transitions on WP.
-				if (browser.os == 'wp'
-				&&	browser.osVersion < 10)
-					$navPanel
-						.css('transition', 'none');
+	// Hack: Disable transitions on WP.
+	if (browser.os == 'wp'
+		&& browser.osVersion < 10)
+		$navPanel
+			.css('transition', 'none');
 
 	// Intro.
-		var $intro = $('#intro');
+	var $intro = $('#intro');
 
-		if ($intro.length > 0) {
+	if ($intro.length > 0) {
 
-			// Hack: Fix flex min-height on IE.
-				if (browser.name == 'ie') {
-					$window.on('resize.ie-intro-fix', function() {
+		// Hack: Fix flex min-height on IE.
+		if (browser.name == 'ie') {
+			$window.on('resize.ie-intro-fix', function () {
 
-						var h = $intro.height();
+				var h = $intro.height();
 
-						if (h > $window.height())
-							$intro.css('height', 'auto');
-						else
-							$intro.css('height', h);
+				if (h > $window.height())
+					$intro.css('height', 'auto');
+				else
+					$intro.css('height', h);
 
-					}).trigger('resize.ie-intro-fix');
+			}).trigger('resize.ie-intro-fix');
+		}
+
+		// Hide intro on scroll (> small).
+		breakpoints.on('>small', function () {
+
+			$main.unscrollex();
+
+			$main.scrollex({
+				mode: 'bottom',
+				top: '25vh',
+				bottom: '-50vh',
+				enter: function () {
+					$intro.addClass('hidden');
+				},
+				leave: function () {
+					$intro.removeClass('hidden');
 				}
-
-			// Hide intro on scroll (> small).
-				breakpoints.on('>small', function() {
-
-					$main.unscrollex();
-
-					$main.scrollex({
-						mode: 'bottom',
-						top: '25vh',
-						bottom: '-50vh',
-						enter: function() {
-							$intro.addClass('hidden');
-						},
-						leave: function() {
-							$intro.removeClass('hidden');
-						}
-					});
-
-				});
-
-			// Hide intro on scroll (<= small).
-				breakpoints.on('<=small', function() {
-
-					$main.unscrollex();
-
-					$main.scrollex({
-						mode: 'middle',
-						top: '15vh',
-						bottom: '-15vh',
-						enter: function() {
-							$intro.addClass('hidden');
-						},
-						leave: function() {
-							$intro.removeClass('hidden');
-						}
-					});
-
 			});
 
-		}
+		});
+
+		// Hide intro on scroll (<= small).
+		breakpoints.on('<=small', function () {
+
+			$main.unscrollex();
+
+			$main.scrollex({
+				mode: 'middle',
+				top: '15vh',
+				bottom: '-15vh',
+				enter: function () {
+					$intro.addClass('hidden');
+				},
+				leave: function () {
+					$intro.removeClass('hidden');
+				}
+			});
+
+		});
+
+	}
 
 	//video auto resolution
 	var video = $('video');
-	var videoSizes = {'normal': {
-					'xsmall': '/content/images/videos/225/',
-					'small': '/content/images/videos/360/',
-					'medium': '/content/images/videos/480/',
-					'large': '/content/images/videos/720/',
-					'xlarge': '/content/images/videos/1080/'},
-				'half': {
-					'xsmall': '/content/images/videos/225/',
-					'small': '/content/images/videos/360/',
-					'medium': '/content/images/videos/225/',
-					'large': '/content/images/videos/225/',
-					'xlarge': '/content/images/videos/225/'},
-				};
+	var videoSizes = {
+		'normal': {
+			'xsmall': '/content/images/videos/225/',
+			'small': '/content/images/videos/360/',
+			'medium': '/content/images/videos/480/',
+			'large': '/content/images/videos/720/',
+			'xlarge': '/content/images/videos/1080/'
+		},
+		'half': {
+			'xsmall': '/content/images/videos/225/',
+			'small': '/content/images/videos/360/',
+			'medium': '/content/images/videos/225/',
+			'large': '/content/images/videos/225/',
+			'xlarge': '/content/images/videos/225/'
+		},
+	};
 	var videoMimeTypes = {
 		'mp4': 'video/mp4',
 		'ogg': 'video/ogg',
@@ -283,7 +286,33 @@
 		'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
 	}
 
-	function reloadVideosOnSizeUpdate (size) {
+	breakpoints.on('<=xsmall', function () {
+		reloadVideosOnSizeUpdate('xsmall');
+	});
+	breakpoints.on('<=small', function () {
+		reloadVideosOnSizeUpdate('small');
+	});
+	breakpoints.on('<=medium', function () {
+		reloadVideosOnSizeUpdate('medium');
+	});
+	breakpoints.on('<=xlarge', function () {
+		reloadVideosOnSizeUpdate('large');
+	});
+
+	breakpoints.on('>xsmall', function () {
+		reloadVideosOnSizeUpdate('small');
+	});
+	breakpoints.on('>small', function () {
+		reloadVideosOnSizeUpdate('medium');
+	});
+	breakpoints.on('>medium', function () {
+		reloadVideosOnSizeUpdate('large');
+	});
+	breakpoints.on('>xlarge', function () {
+		reloadVideosOnSizeUpdate('xlarge');
+	});
+
+	function reloadVideosOnSizeUpdate(size) {
 		for (var i = 0; i < video.length; i++) {
 			if (linkIsOnsite(video[i].children[0].src)) {
 				var layoutType = 'normal';
@@ -296,7 +325,7 @@
 		}
 	}
 
-	function replaceLink (links, size, currentLink) {
+	function replaceLink(links, size, currentLink) {
 		var path = currentLink.match(/[\d\w+-.]+$/g);
 		if (path !== undefined && path != null) {
 			return links[size] + path[0];
@@ -306,30 +335,30 @@
 
 	var cookieValue = 1;
 	var cookieDaysAlive = 365;
-	
+
 	//video consent
-	function setCookie(name,value,days) {
+	function setCookie(name, value, days) {
 		var expires = "";
 		if (days) {
 			var date = new Date();
-			date.setTime(date.getTime() + (days*24*60*60*1000));
+			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
 			expires = "; expires=" + date.toUTCString();
 		}
-		document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		document.cookie = name + "=" + (value || "") + expires + "; path=/";
 	}
 	function getCookie(name) {
 		var nameEQ = name + "=";
 		var ca = document.cookie.split(';');
-		for(var i=0;i < ca.length;i++) {
+		for (var i = 0; i < ca.length; i++) {
 			var c = ca[i];
-			while (c.charAt(0)==' ') c = c.substring(1,c.length);
-			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+			while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
 		}
 		return null;
 	}
 
-    function getFileType (href) {
-        try {
+	function getFileType(href) {
+		try {
 			if (href !== undefined || href !== '') {
 				var parsed = new URL(href);
 				var match = parsed.pathname.match(/\.([\w]){1,}$/gi);
@@ -343,8 +372,8 @@
 		catch (e) {
 			console.log(e);
 		}
-        return '';
-    }
+		return '';
+	}
 
 	function linkIsOnsite(href) {
 		return isRelativLink(href) !== undefined;
@@ -373,23 +402,14 @@
 			&& nextSibling.nodeName === "#text") {
 			var parsed = JSON.parse(nextSibling.textContent);
 			nextSibling.remove();
-			return parsed;	
+			return parsed;
 		}
 		return {};
 	}
 
-	function getCurrentBreakpoint() {
-		for (var size in breakPointSource) {
-			if (breakpoints.active(size)) {
-				return size;
-			}
-		}
-
-	}
-
 	var fallBackFormats = {};
 
-	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').each(function() {
+	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').each(function () {
 		var fileType = getFileType(this.src);
 
 		if (linkIsOnsite(this.src) && fileType !== 'svg') {
@@ -435,68 +455,6 @@
 	var instagram = $('blockquote.instagram-media').each(updateInstagramLink);
 	updateService('instagram', getCookie(`instagram-allowed`), false);
 
-
-	/*Setup unembedded video links */
-	links.filter(function () {
-		switch (getFileType(this.href)) {
-			case 'mp4':
-			case 'mov':
-			case 'avi':
-			case 'webm':
-			case 'ogg':
-				return true;
-			default:
-				return false;
-		}
-	}).each(createVideoCard);
-	video = $('video');
-
-	breakpoints.on('<=xsmall', function() {
-		reloadVideosOnSizeUpdate('xsmall');
-	});
-	breakpoints.on('<=small', function() {
-		reloadVideosOnSizeUpdate('small');
-	});
-	breakpoints.on('<=medium', function() {
-		reloadVideosOnSizeUpdate('medium');
-	});
-	breakpoints.on('<=xlarge', function() {
-		reloadVideosOnSizeUpdate('large');
-	});
-
-	breakpoints.on('>xsmall', function() {
-		reloadVideosOnSizeUpdate('small');
-	});
-	breakpoints.on('>small', function() {
-		reloadVideosOnSizeUpdate('medium');
-	});	
-	breakpoints.on('>medium', function() {
-		reloadVideosOnSizeUpdate('large');
-	});
-	breakpoints.on('>xlarge', function() {
-		reloadVideosOnSizeUpdate('xlarge');
-	});
-
-	/*Setup umbedded image links */
-	links.filter(function () {
-		switch (getFileType(this.href)) {
-			case 'jpg':
-			case 'jpeg':
-			case 'jfif':
-			case 'png':
-			case 'avif':
-			case 'webp':
-			case 'gif':
-			case 'jxl':
-			case 'svg':
-				return true;
-			default:
-				return false;
-		}
-	}).each(createImageCard);
-
-
-
 	/**
 	 * Common generation functions 
 	 */
@@ -507,7 +465,7 @@
 		return `<figcaption>${caption}</figcaption>`;
 	}
 
-	
+
 	/**
 	 * Consent functions
 	 */
@@ -526,7 +484,7 @@
 			</div>
 		</div>`;
 	}
-	
+
 
 	function createConsentButtonListener(service) {
 		$(`.consent-button[data-service="${service}"]`).on('click', consentGiven);
@@ -535,7 +493,7 @@
 		updateService(this.getAttribute('data-service'), true, true);
 	}
 
-	function updateService(service, active, isEvent) {	
+	function updateService(service, active, isEvent) {
 		$('.instagram-media + script').remove();
 		if (active) {
 			switch (service) {
@@ -562,12 +520,12 @@
 					$('.instagram-media + script').remove();
 					instagram.each(disableInstagram);
 					break;
-				default:			
+				default:
 					break;
 			}
 			createConsentButtonListener(service);
 		}
-		
+
 
 	}
 	function removeConsent(service) {
@@ -575,109 +533,9 @@
 	}
 
 	/**
-	 * Create video card
+	 * Create image elements
 	 */
-	function createVideoCard() {
-		var href = this.href;
-		var $this = $(this);
-		if ($this.parent().is('p')) {
-			$this.unwrap();
-		}
-		var extraData = parseExtraData(this.nextSibling);
-		var fileType = getFileType(href);
-		
-		var source = videoSource(href, fileType);
-
-		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
-			var i = 0;
-			for (i = 0; i < extraData.alternativeFileTypes.length; i++) {
-				if (videoMimeTypes[extraData.alternativeFileTypes[i]]) {
-					var altHref = href.replace(fileType, extraData.alternativeFileTypes[i]);
-					if (fileType !== extraData.alternativeFileTypes[i]) {
-						source += videoSource(altHref, extraData.alternativeFileTypes[i]);
-					}
-				}
-			}
-		}
-		var style = '';
-		if (extraData.aspectRatio) {
-			var aspectRatio = extraData.aspectRatio.match(/^\d+\/\d+$/);
-			if (aspectRatio.length) {
-				aspectRatio = aspectRatio[0].split('/');
-				style += `padding-bottom:${aspectRatio[1]*100/aspectRatio[0]}%;`;
-			}
-		}
-		style = style.replace(/\s/g, '');
-		
-		var loop = true;
-		if (extraData.loop && (extraData.loop === true || extraData.loop === false)) {
-			loop = extraData.loop;
-		}
-		var autoplay = true;
-		if (autoplay.loop && (autoplay.loop === true || autoplay.loop === false)) {
-			autoplay = autoplay.loop;
-		}
-		var muted = true;
-		if (muted.loop && (muted.loop === true || muted.loop === false)) {
-			muted = muted.loop;
-		}
-		var classes = '';
-		if (extraData.classes) {
-			classes = extraData.classes;
-		}
-
-		var newBlockquote = `<figure class="kg-card kg-embed-card kg-video-card ${classes ? classes : ''} ${extraData.caption && extraData.caption !== '' ? "kg-card-hascaption" : ''}">
-				<div class="kg-video" style="${style}">
-					<video ${autoplay ? "autoplay" : ''} ${muted ? "muted" : ''} ${loop ? "loop" : ''}>
-						${source}
-					</video>
-				</div>
-				${extraData.caption && extraData.caption !== '' ? generateFigureCaption(extraData.caption) : ''}
-			</figure>`;
-		
-		$(this).replaceWith(newBlockquote);
-	}
-	function videoSource (filePath, fileType) {
-		return `<source src="${filePath}" type="${videoMimeTypes[fileType]}">`; 
-	}
-	/**
-	 * Create image card
-	 */
-	 function createImageCard() {
-		var href = this.href;
-		if ($(this).parent().is('p')) {
-			$(this).unwrap();
-		}
-		var extraData = parseExtraData(this.nextSibling);
-		var fileType = getFileType(href);
-
-		
-		var altFileTypes = [];
-		if (extraData.alternativeFileTypes && extraData.alternativeFileTypes.length) {
-			altFileTypes = extraData.alternativeFileTypes;
-		}
-
-		if (!altFileTypes.includes(fileType)) {
-			altFileTypes.push(fileType);
-		}
-		var type = 'normal';
-		if (extraData.classes) {
-			if (extraData.contains('kg-width-half')) {
-				type = 'half';
-			} else if (extraData.contains('kg-width-full')) {
-				type = 'full';
-			}
-		}
-		
-		var caption = extraData.caption ? extraData.caption : '';
-		var newBlockquote = `<figure class="kg-card kg-image-card ${extraData.classes ? extraData.classes : ''} ${caption !== '' ? "kg-card-hascaption" : ''}">
-				${generatePictureElement(href, altFileTypes, caption, type)}
-				${caption !== '' ? generateFigureCaption(caption) : ''}
-			</figure>`;
-		$(this).replaceWith(newBlockquote);
-	}
-
-	function generatePictureElement (href, extraFormats, alt, type) {
+	function generatePictureElement(href, extraFormats, alt, type) {
 		var isOnsite = linkIsOnsite(href);
 		var fileType = getFileType(href);
 		var source = '';
@@ -688,19 +546,19 @@
 			srcset = generateSrcSet(href, type);
 			for (var format in extraFormats) {
 				if (imageMimeTypes[extraFormats[format]] && !fallbackImageType.includes(extraFormats[format])) {
-					var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);					
-					source += pictureSource(newSrcset, extraFormats[format], imageSizeAttribute[type]);	
+					var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);
+					source += pictureSource(newSrcset, extraFormats[format], imageSizeAttribute[type]);
 				} else if (fallbackImageType.includes(extraFormats[format])) {
 					var newHref = href.replace(fileType, extraFormats[format]);
 
 					if (extraFormats[format] === 'svg') {
 						img = generateImgElement(newHref, '', alt, type);
 					} else {
-						var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);	
+						var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);
 						img = generateImgElement(newHref, newSrcset, alt, type);
 					}
-					
-				}			
+
+				}
 			}
 		}
 
@@ -710,11 +568,11 @@
 		</picture>`;
 	}
 
-	function pictureSource (srcset, fileType, media) {
-		return `<source class="kg-image" srcset="${srcset}" media="${media}" loading="lazy" type="${imageMimeTypes[fileType]}">`; 
+	function pictureSource(srcset, fileType, media) {
+		return `<source class="kg-image" srcset="${srcset}" media="${media}" loading="lazy" type="${imageMimeTypes[fileType]}">`;
 	}
 
-	function generateImgElement (href, srcset, alt, type) {
+	function generateImgElement(href, srcset, alt, type) {
 		if (linkIsOnsite(href)) {
 			href = createSubLink(href, '');
 		}
@@ -731,7 +589,7 @@
 		return srcset;
 	}
 
-	function createSubLink (href, size) {
+	function createSubLink(href, size) {
 		if (size && size.match(/^\d+$/g)) {
 			size = `/w${size}/`;
 		} else {
@@ -744,7 +602,7 @@
 				href = href.replace(/\/w\d+\//g, size);
 			}
 		} else {
-			href = href.replace('/images/','/images/size' + size);
+			href = href.replace('/images/', '/images/size' + size);
 		}
 		return href;
 	}
@@ -756,7 +614,7 @@
 		this.setAttribute('data-instgrm-permalink', '');
 		$(this).before(generateEmbedConsentText('Instagram', unembedInstagramLink(this.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
 	}
-	
+
 	function createInstagramEmbedFromLink() {
 		var href = this.href;
 		var $this = $(this);
@@ -776,7 +634,7 @@
 				${caption !== '' ? generateFigureCaption(caption) : ''}
 			</figure>`;
 
-			$this.replaceWith(newBlockquote);
+		$this.replaceWith(newBlockquote);
 	}
 	function updateInstagramLink() {
 		var $this = $(this);
@@ -800,7 +658,7 @@
 		}
 	}
 	//block external sources from loading -> setup for consent
-	function disableYoutube () {
+	function disableYoutube() {
 		this.setAttribute('data-src', this.src);
 		this.src = '';
 		var $this = $(this);
@@ -821,7 +679,7 @@
 
 		if (!$this.parent().is('figure')) {
 			$this.wrap(generateEmbedFigure(this.getAttribute('data-classes') + captionClass));
-		}		
+		}
 		$this.parent().addClass('kg-video-card');
 		if (!$this.parent().is('kg-video')) {
 			$this.wrap('<div class="kg-video"</div>');
@@ -831,11 +689,11 @@
 			$this.parent().append(generateFigureCaption(caption));
 		}
 	}
-	
+
 	function unembedYoutubeLink(href) {
 		if (href && href !== false) {
 			var url = new URL(href);
-			url.host = 'www.youtube.com'		
+			url.host = 'www.youtube.com'
 			var id = url.pathname.replace("/embed/", '');
 			url.pathname = "/watch";
 			url.search = "";
@@ -860,7 +718,7 @@
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
 				allowfullscreen data-figcaption="${caption}" data-classes="${classes}">
 			</iframe>`;
-			$this.replaceWith(newIFrame);
+		$this.replaceWith(newIFrame);
 
 	}
 	function generateYoutubeEmbedLink(href) {
@@ -881,7 +739,7 @@
 		}
 
 		var noCookieHost = "www.youtube-nocookie.com";
-		
+
 		var url = new URL(src);
 		if (url.host !== noCookieHost) {
 			url.host = noCookieHost;
@@ -893,7 +751,7 @@
 	/**
 	 * Consent toggle
 	 */
-	var consentButtons = $('.kg-consent-option button').each(function() {
+	var consentButtons = $('.kg-consent-option button').each(function () {
 		toggleConsent($(this), false);
 		$(this).on('click', toggleConsentListener);
 	});
@@ -904,7 +762,7 @@
 	function toggleConsent(button, isEvent) {
 		var service = button[0].getAttribute('data-service');
 		var serviceText = service.charAt(0).toUpperCase() + service.slice(1);
-		
+
 		var cookie = getCookie(service + "-allowed");
 		console.log(isEvent, button.text(), serviceText);
 		if (cookie) {
@@ -925,7 +783,7 @@
 		images[i].setAttribute('data-link', images[i].src);
 	}
 	//make figure images clickable
-	$('body').on('click','img', function() {
+	$('body').on('click', 'img', function () {
 		if (this.parentNode.tagName === 'FIGURE' || this.parentNode.classList.contains('kg-gallery-image')) {
 			window.open(this.getAttribute('data-link'));
 		}
@@ -941,32 +799,32 @@
 
 	function updateScrollbarCSS() {
 		// Wait for next from so scrollbars appear
-		requestAnimationFrame(()=>{
-	
+		requestAnimationFrame(() => {
+
 			// True width of the viewport, minus scrollbars
 			scroller.style
 				.setProperty(
-				'--vw', 
-				scroller.clientWidth / 100 + "px"
+					'--vw',
+					scroller.clientWidth / 100 + "px"
 				);
 			scroller.style
 				.setProperty(
-				'--viewport-width', 
-				scroller.clientWidth + "px"
+					'--viewport-width',
+					scroller.clientWidth + "px"
 				);
 
 			// Width of the scrollbar
 			scroller.style
 				.setProperty(
-				'--scrollbar-width', 
-				window.innerWidth - scroller.clientWidth + "px"
+					'--scrollbar-width',
+					window.innerWidth - scroller.clientWidth + "px"
 				);
 
 			// Reset overflow
 			scroller.style
 				.setProperty(
-				'overflow', 
-				''
+					'overflow',
+					''
 				);
 		});
 		return true;
@@ -975,10 +833,10 @@
 	updateScrollbarCSS();
 
 
-    //quick fix for removed HTML entities in post headers
-    var headlines = $(".major>h1,.major>h2,.major>p.content, article>header>h2");
+	//quick fix for removed HTML entities in post headers
+	var headlines = $(".major>h1,.major>h2,.major>p.content, article>header>h2");
 
-    for (var i = 0; i < headlines.length; i++) {
-    	headlines[i].innerHTML = headlines[i].innerHTML.replace(/&amp;shy;/g,"&shy;");
-    }
+	for (var i = 0; i < headlines.length; i++) {
+		headlines[i].innerHTML = headlines[i].innerHTML.replace(/&amp;shy;/g, "&shy;");
+	}
 })(jQuery);
