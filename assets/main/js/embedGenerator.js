@@ -582,13 +582,13 @@ var ghostEmbedGenerator = () => {
         //Handle styles
         if (mediaLink?.metadata.aspectRatio) {
             let aspectRatio = mediaLink?.metadata.aspectRatio[0] + '/' + mediaLink.metadata.aspectRatio[1];
-            styles += `object-fit:${aspectRatio};`
+            styles += `aspect-ratio:${aspectRatio};`
         }
         if (mediaLink?.metadata.objectFit) {
             styles += `object-fit:${mediaLink.metadata.objectFit};`;
         }
         if (mediaLink?.metadata.objectPosition) {
-            styles += `object-fit:${mediaLink.metadata.objectPosition};`;
+            styles += `object-position:${mediaLink.metadata.objectPosition};`;
         }
 
         // Create export element
@@ -962,7 +962,13 @@ var ghostEmbedGenerator = () => {
                     tempLink.metadata = {};
 
                     console.log(linkList[i].metadata);
-                    if (linkList[i].metadata.aspectRatio !== undefined &&
+                    if (typeof linkList[i].metadata.aspectRatio === 'object' && linkList[i].metadata.aspectRatio.length) {
+                        let n1 = Number(linkList[i].metadata.aspectRatio[0]),
+                            n2 = Number(linkList[i].metadata.aspectRatio[1]);
+                        if (n1 !== NaN && n2 !== NaN) {
+                            tempLink.metadata.aspectRatio = [n1, n2];
+                        }
+                    } else if (typeof linkList[i].metadata.aspectRatio === 'string' &&
                         linkList[i].metadata.aspectRatio.match(/^\d+\/\d+$/)) {
                         tempLink.metadata.aspectRatio = linkList[i].metadata.aspectRatio.split('/');
                     }
