@@ -187,10 +187,11 @@
         break-before: column;
         column-gap: 2rem;
 
-        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote, form, button {
+        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote {
             margin-top: 2rem;
             column-span: all;
         }
+
         .kg-card:first-child:not(.kg-float-right):not(.kg-float-left), .kg-card form {
             margin-top: 0;
         }
@@ -685,6 +686,33 @@
     gap: 0.5rem;
 }
 
+.kg-form-buttom-container {
+    display:flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+#copy-to-clipboard {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+@include breakpoint('>medium') {
+    form#generate-embed-html span:nth-of-type(5) {
+        margin-top: 2rem;
+    }
+    #add-link-template {
+        margin-top: 0;
+    }    
+}
+
+@include breakpoint('<=medium') {
+    #add-link-template-fallback {
+        margin-top: 0;
+    }
+}
 
 // Error Pages
 // --------------------------------------------

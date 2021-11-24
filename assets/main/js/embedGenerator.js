@@ -10,9 +10,36 @@ var ghostEmbedGenerator = () => {
     const preloadHTML = ['auto', 'metadata', 'none'];
     const buttonTypes = { html: 'html', json: 'json' };
     const storageKey = "ghostEmbedGenerator-";
-    const linkTemplates = {
-        'image': {
-            //dooooooooooooooooooooooooooooooooooooooooooooooo
+    const linkTemplate = {
+        link: "",
+        metadata: {
+            "aspect-ratio": "",
+            "object-fit": "",
+            "object-position": "",
+            "target-href": "",
+            "open-as-new": '',
+            srcset: "",
+            preload: "",
+
+        },
+        fallback: [{
+            link: "",
+            srcset: "",
+            sizes: ""
+        }],
+        video: {
+            muted: "",
+            loop: "",
+            autoplay: "",
+            controls: '',
+            poster: ""
+        },
+        bookmark: {
+            title: "",
+            description: "",
+            icon: "",
+            author: "",
+            publisher: ""
         }
     }
 
@@ -22,8 +49,8 @@ var ghostEmbedGenerator = () => {
     let jsonButton = document.getElementById('generate-json');
     let resetButton = document.getElementById('reset-generator');
     let clipboardButton = document.getElementById('copy-to-clipboard');
-    let metadataButton = document.getElementById('add-link-template');
 
+    let linkField = document.getElementById('link-json');
     let outputField = document.getElementById('output-space');
     let errorField = document.getElementById('generator-errors');
     let previewField = document.getElementById('html-preview');
@@ -89,6 +116,65 @@ var ghostEmbedGenerator = () => {
         return switchForm();
     }
 
+    function addLinkTemplate(displayFallback) {
+        let helper = JSON.parse(JSON.stringify(linkTemplate));
+
+        switch (selector.value) {
+            case 'image':
+            case 'gallery':
+            case 'gallery-narrow':
+            case 'gallery-flowing':
+            default:
+                delete helper.bookmark,
+                    helper.video;
+                break;
+            case 'video':
+                delete helper.bookmark,
+                    helper.metadata.srcset;
+            case 'bookmark':
+                delete helper.video;
+        }
+
+        if (!displayFallback) {
+            delete helper.fallback;
+        }
+
+        if (linkField.value === '') {
+            linkField.value = JSON.stringify([helper], false, 4);
+        } else {
+            let currentLinks = [];
+            try {
+                currentLinks = JSON.parse(linkField.value);
+                console.log(currentLinks);
+                if (!currentLinks.length) {
+                    currentLinks = [currentLinks];
+                }
+                currentLinks.push(helper);
+                linkField.value = JSON.stringify(currentLinks, false, 4);
+            } catch (e) {
+                linkField.value += '\r\n' + JSON.stringify([helper], false, 4);
+            }           
+        }
+    }
+    function removeLinkTemplate(isLast) {
+        if (linkField.value === '') {
+            return false;
+        }
+        try {
+            let links = JSON.parse(linkField.value);
+            if (links.length) {
+                if (isLast) {
+                    links.pop();
+                } else {
+                    links.push();
+                }
+                linkField.value = JSON.stringify(links, false, 4);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     // Button handlers
     // -----------------------------------------------------------------------------------------
     htmlButton.addEventListener('click', event => {
@@ -102,8 +188,21 @@ var ghostEmbedGenerator = () => {
     clipboardButton.addEventListener('click', event => {
         navigator.clipboard.writeText(outputField.value);
     });
-    metadataButton.addEventListener('click', event => {
+    document.getElementById('add-link-template').addEventListener('click', event => {
         event.preventDefault();
+        addLinkTemplate(false);
+    });
+    document.getElementById('add-link-template-fallback').addEventListener('click', event => {
+        event.preventDefault();
+        addLinkTemplate(true);
+    });
+    document.getElementById('add-link-template-remove-last').addEventListener('click', event => {
+        event.preventDefault();
+        removeLinkTemplate(true);
+    });
+    document.getElementById('add-link-template-remove-first').addEventListener('click', event => {
+        event.preventDefault();
+        removeLinkTemplate(false);
     });
 
     // Process pipeline
@@ -890,24 +989,27 @@ var ghostEmbedGenerator = () => {
                     if (linkList[i].metadata['srcset']) {
                         tempLink.metadata.srcset = cleanAttr(linkList[i].metadata['srcset']);
                     }
+                }
 
-                    tempLink.metadata.fallback = [];
-                    for (let j = 0; j < linkList[i].metadata['fallback']?.length; j++) {
+                if (linkList[i]['fallback']) {
+                    tempLink.fallback = [];
+                    for (let j = 0; j < linkList[i]['fallback']?.length; j++) {
                         let tempFallback = {};
-                        console.log(linkList[i].metadata['fallback'], j);
-                        if (linkList[i].metadata['fallback'][j].link) {
-                            tempFallback.link = cleanAttr(linkList[i].metadata['fallback'][j].link);
+                        console.log(linkList[i]['fallback'], j);
+                        if (linkList[i]['fallback'][j].link) {
+                            tempFallback.link = cleanAttr(linkList[i]['fallback'][j].link);
 
-                            if (linkList[i].metadata['fallback'][j].srcset) {
-                                tempFallback.srcset = cleanAttr(linkList[i].metadata['fallback'][j].srcset);
+                            if (linkList[i]['fallback'][j].srcset) {
+                                tempFallback.srcset = cleanAttr(linkList[i]['fallback'][j].srcset);
                             }
-                            if (linkList[i].metadata['fallback'][j].sizes) {
-                                tempFallback.sizes = cleanAttr(linkList[i].metadata['fallback'][j].sizes);
+                            if (linkList[i]['fallback'][j].sizes) {
+                                tempFallback.sizes = cleanAttr(linkList[i]['fallback'][j].sizes);
                             }
-                            tempLink.metadata.fallback.push(tempFallback);
+                            tempLink.fallback.push(tempFallback);
                         }
                     }
                 }
+
                 if (linkList[i].video) {
                     tempLink.video = {};
                     if (linkList[i].video['loop']) {
