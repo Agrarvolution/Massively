@@ -165,7 +165,7 @@ var ghostEmbedGenerator = () => {
                 if (isLast) {
                     links.pop();
                 } else {
-                    links.push();
+                    links.shift();
                 }
                 linkField.value = JSON.stringify(links, false, 4);
             }
