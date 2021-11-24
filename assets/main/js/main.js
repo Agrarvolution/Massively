@@ -1,7 +1,7 @@
 'use strict';
 /*
 	Massively by HTML5 UP
-	html5up.net | @ajlkn
+	html5up.net | @ajlkn | Modified by @agrarvolution
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
@@ -245,13 +245,6 @@
 			'xlarge': '/content/images/videos/225/'
 		},
 	};
-	var videoMimeTypes = {
-		'mp4': 'video/mp4',
-		'ogg': 'video/ogg',
-		'ogv': 'video/ogv',
-		'mov': 'video/quicktime',
-		'webm': 'video/webm'
-	};
 	var imageMimeTypes = {
 		'gif': 'image/gif',
 		'jpeg': 'image/jpeg',
@@ -409,7 +402,9 @@
 
 	var fallBackFormats = {};
 
-	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').each(function () {
+	var kgImage = $('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').filter(() => {
+		return $(this).parentsUntil('figure').is(":not(.kg-responsive)");
+	}).each(function () {
 		var fileType = getFileType(this.src);
 
 		if (linkIsOnsite(this.src) && fileType !== 'svg') {
@@ -780,11 +775,15 @@
 	//auto image resolution
 	var images = $('img');
 	for (i = 0; i < images.length; i++) {
-		images[i].setAttribute('data-link', images[i].src);
+		var fullSrc = images[i].src;
+		if (linkIsOnsite(fullSrc)) {
+			fullSrc = createSubLink(images[i].src, '');
+		}	
+		images[i].setAttribute('data-link', fullSrc);
 	}
 	//make figure images clickable
 	$('body').on('click', 'img', function () {
-		if (this.parentNode.tagName === 'FIGURE' || this.parentNode.classList.contains('kg-gallery-image')) {
+		if (this.hasAttribute('data-link')) {
 			window.open(this.getAttribute('data-link'));
 		}
 	})
