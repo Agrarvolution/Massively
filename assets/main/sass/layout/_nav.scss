@@ -44,10 +44,14 @@
 			background-color: lighten(_palette(fg), 78%);
 			ul.links li {
 				a {
-					color: _palette(fg-light);
+					color: _palette(fg-light);					
 					
 					&:hover {
 						background-color: transparentize(_palette(fg), 0.8);
+					}
+					&:focus, &:focus-visible {
+						color: inherit !important;
+						background-color: transparentize(_palette(fg), 0.7);
 					}
 				}
 				&.active a:hover {
