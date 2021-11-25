@@ -675,7 +675,9 @@
 
 // Special
 // --------------------------------------------
-
+.kg-column-all  {
+    column-span: all;
+}
 .kg-embed-generator-card  .kg-column-all  {
     display: flex;
     justify-content: center;
