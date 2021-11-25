@@ -50,7 +50,7 @@
 						background-color: transparentize(_palette(fg), 0.8);
 					}
 					&:focus, &:focus-visible {
-						color: inherit !important;
+						    color: inherit !important;
 						background-color: transparentize(_palette(fg), 0.7);
 					}
 				}
@@ -85,10 +85,16 @@
 							'background-color #{_duration(transition)} ease-in-out',
 							'color #{_duration(transition)} ease-in-out'
 						));
-						display: block;
+						display: flex;
+						height: 100%;
+						align-items: center;
 						font-size: 0.8rem;
 						outline: none;
 						padding: 0 2rem;
+
+						span {
+							line-height: 1.5;
+						}
 
 						&:hover {
 							color: inherit !important;
