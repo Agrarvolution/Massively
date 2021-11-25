@@ -188,7 +188,8 @@
         break-before: column;
         column-gap: 2rem;
 
-        .kg-card:not(.kg-float-right):not(.kg-float-left), h1, h2, h3, h4, h5, h6, hr, blockquote {
+        .kg-card:not(.kg-float-right):not(.kg-float-left), .kg-consent-option,
+        h1, h2, h3, h4, h5, h6, hr, blockquote, ul, ol, table {
             margin-top: 2rem;
             column-span: all;
         }
