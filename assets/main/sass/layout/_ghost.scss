@@ -458,16 +458,14 @@ form {
 
 .kg-gallery-container--flowing {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.2rem;
+    display: block;
+    columns: 3;
+    gap: 0;
+    @include vendor('column-fill', 'balance');
 
     .kg-gallery-image {
         margin: 0;
-        width: 45%;
+        width: 100%;
         height: fit-content;
         line-height: 0;
 
@@ -478,15 +476,11 @@ form {
         }
     }
     @include breakpoint(">=medium") {
-        .kg-gallery-image {
-            width: 30%;
-        }
+        columns: 4;
     }
 
     @include breakpoint(">=xlarge") {
-        .kg-gallery-image {
-            width: 23%;
-        }
+        columns: 5;
     }
 }
 
