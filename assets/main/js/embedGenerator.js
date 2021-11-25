@@ -366,7 +366,6 @@ var ghostEmbedGenerator = () => {
             }
 
             let galleryImage = generateElement('div', 'kg-gallery-image');
-            galleryImage.style = `flex: 1.5 1 0%;`
 
             let isVideo = isVideoLink(data.mediaLinks[i].link);
             if (isVideo) {
@@ -518,7 +517,7 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle responsiveness
-        if (mediaLink?.metadata.srcset) {
+        if (mediaLink?.metadata?.srcset) {
             srcset = mediaLink.metadata.srcset;
         } else if (mediaLink?.link && isGhostLink(mediaLink?.link) && data.isResponsive && type === mediaTypes.image) {
             srcset = generateSrcSet(mediaLink.link, data.responsiveType);
@@ -592,14 +591,14 @@ var ghostEmbedGenerator = () => {
         }
 
         //Handle styles
-        if (mediaLink?.metadata.aspectRatio) {
+        if (mediaLink?.metadata?.aspectRatio) {
             let aspectRatio = mediaLink?.metadata.aspectRatio[0] + '/' + mediaLink.metadata.aspectRatio[1];
             styles += `aspect-ratio:${aspectRatio};`
         }
-        if (mediaLink?.metadata.objectFit) {
+        if (mediaLink?.metadata?.objectFit) {
             styles += `object-fit:${mediaLink.metadata.objectFit};`;
         }
-        if (mediaLink?.metadata.objectPosition) {
+        if (mediaLink?.metadata?.objectPosition) {
             styles += `object-position:${mediaLink.metadata.objectPosition};`;
         }
 
@@ -672,7 +671,7 @@ var ghostEmbedGenerator = () => {
         }
 
         //wrap media in link
-        if (!data?.link && mediaLink?.metadata.targetHref) {
+        if (!data?.link && mediaLink?.metadata?.targetHref) {
             let a = generateLink(mediaLink.metadata.targetHref, mediaLink.metadata.openAsNew || data.openAsNew || true, '');
             a.appendChild(mediaElement);
             mediaElement = a;
