@@ -179,6 +179,14 @@
 				}
 			}
 
+			> article:first-child {
+				margin-top: 10px;
+
+				@include breakpoint('<=medium') {
+					margin-top: 0;
+				}
+			}
+
 			@include breakpoint('<=medium') {
 				@include fixed-grid-resize((
 					columns:			1,
