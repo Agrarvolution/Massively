@@ -1,44 +1,35 @@
-{{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
-
-{{!-- Main --}}
-<main id="main">
+{{!< default}} {{!-- The tag above means: insert everything in this file into the {body} of the default.hbs template
+    --}} {{!-- Main --}} <main id="main">
 
     {{!-- Posts --}}
     <div class="posts">
 
         {{#foreach posts}}
-        <article>
-            <header>
-                <h2><a href="{{url}}">{{title}}</a></h2>
+        <article class="main-article">
+            <header class="main-container main-container--content">
+                <h2 class="main-content main-content--headline"><a href="{{url}}" tabindex="-1">{{{title}}}</a></h2>
+                <div class="main-content--container">
+                    <p class="main-content">{{excerpt words="33"}}</p>
+                    <a href="{{url}}" class="button main-content main-content--button">Mehr</a>
+                </div>
             </header>
-            {{#if feature_image}}
-            <a href="{{url}}" class="image fit"><img src="{{img_url feature_image size="xl"}}"
-                srcset="{{img_url feature_image size="s"}} 300w,
-                        {{img_url feature_image size="sm"}} 400w,
-                        {{img_url feature_image size="m"}} 500w,
-                        {{img_url feature_image size="xm"}} 600w,
-                        {{img_url feature_image size="xxm"}} 700w,
-                        {{img_url feature_image size="xxxm"}} 800w,
-                        {{img_url feature_image size="l"}} 900w,
-                        {{img_url feature_image size="xl"}} 1000w,
-                        {{img_url feature_image size="xxl"}} 1200w,
-                        {{img_url feature_image size="xxxl"}} 1350w,
-                        {{img_url feature_image size="xxxxl"}} 1600w"
-                sizes = "(min-width: 1680px) 1500px,
+            <div class="main-container main-container--thumbnail">
+                {{#if feature_image}}
+                <a href="{{url}}" class="main-thumbnail" tabindex="-1"><img class="main-thumbnail--image"
+                        src="{{img_url feature_image size=" xl"}}" srcset="{{img_url feature_image size=" s"}} 300w,
+                        {{img_url feature_image size="sm" }} 400w, {{img_url feature_image size="m" }} 500w, {{img_url
+                        feature_image size="xm" }} 600w, {{img_url feature_image size="xxm" }} 700w, {{img_url
+                        feature_image size="xxxm" }} 800w, {{img_url feature_image size="l" }} 900w, {{img_url
+                        feature_image size="xl" }} 1000w, {{img_url feature_image size="xxl" }} 1200w, {{img_url
+                        feature_image size="xxxl" }} 1350w, {{img_url feature_image size="xxxxl" }} 1600w" sizes="(min-width: 1680px) 1500px,
                     (min-width: 1280px) 1100px,
                     (min-width: 480px) 94vw,
-                    100vw"
-                alt="{{title}}" /></a>
-            {{/if}}
-            <p>{{excerpt words="33"}}</p>
-            <ul class="actions special">
-                <li><a href="{{url}}" class="button">Mehr</a></li>
-            </ul>
+                    100vw" alt="{{title}}" /></a>
+                {{/if}}
+            </div>
         </article>
         {{/foreach}}
 
     </div>
     {{!-- Pagination --}}
-</main>
+    </main>
