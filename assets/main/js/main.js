@@ -759,7 +759,6 @@
 		var serviceText = service.charAt(0).toUpperCase() + service.slice(1);
 
 		var cookie = getCookie(service + "-allowed");
-		console.log(isEvent, button.text(), serviceText);
 		if (cookie) {
 			button.html(`${serviceText} deaktivieren`);
 			isEvent ? setCookie(`${service}-allowed`, 0, -1) : '';
