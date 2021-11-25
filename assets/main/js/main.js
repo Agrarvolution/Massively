@@ -783,9 +783,17 @@
 		}
 	}
 	//make figure images clickable
+	var lastSeen = {};
 	$('body').on('click', 'img', function () {
+		var $this = $(this);
+		
 		if (this.hasAttribute('data-link')) {
-			window.open(this.getAttribute('data-link'));
+			if ($this.parents('.kg-gallery-container').is(':not(.kg-gallery-container--narrow)') || lastSeen === this) {
+				console.log($this.is(':focus'), $this.parents('.kg-gallery-container').is(':not(.kg-gallery-container--narrow)'), $this.parents('.kg-gallery-container'));
+				window.open(this.getAttribute('data-link'));
+			} else if ($this.parents('.kg-gallery-container').is('.kg-gallery-container--narrow')) {
+				lastSeen = this;
+			}
 		}
 	})
 
