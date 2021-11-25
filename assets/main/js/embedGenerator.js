@@ -944,6 +944,10 @@ var ghostEmbedGenerator = () => {
         return data;
     }
     function setForm(data) {
+        if (data === undefined) {
+            return false;
+        }
+        
         if (data.openAsNew !== undefined) {
             if (data.openAsNew) {
                 openAsNewCheckbox.checked = true;
