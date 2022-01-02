@@ -12,7 +12,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     {{!-- Styles'n'Scripts --}}
-    <link rel="preload" type="text/css" href="{{asset "main/css/main.css"}}" />
+    <link rel="preload" href="{{asset "main/js/jquery.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/jquery.scrollex.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/jquery.scrolly.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/browser.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/breakpoints.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/util.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/main.js"}}" as="script">
+
+    <link rel="preload" type="text/css" href="{{asset "main/css/main.css"}}" as="style" />
+    <link rel="stylesheet" type="text/css" href="{{asset "main/css/main.css"}}" />
     <noscript><link rel="stylesheet" href="{{asset "main/css/noscript.css"}}" /></noscript>
 
     {{!-- This tag outputs SEO meta+structured data and other important settings --}}
@@ -56,12 +65,12 @@
 
 
     {{!-- Theme Scripts --}}
-    <link rel="preload" href="{{asset "main/js/jquery.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/jquery.scrollex.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/jquery.scrolly.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/browser.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/breakpoints.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/util.js"}}" as="script">
+    <script src="{{asset "main/js/jquery.min.js"}}"></script>
+    <script src="{{asset "main/js/jquery.scrollex.min.js"}}"></script>
+    <script src="{{asset "main/js/jquery.scrolly.min.js"}}"></script>
+    <script src="{{asset "main/js/browser.min.js"}}"></script>
+    <script src="{{asset "main/js/breakpoints.min.js"}}"></script>
+    <script src="{{asset "main/js/util.js"}}"></script>
     <script src="{{asset "main/js/main.js"}}"></script>
 
     {{!-- Ghost outputs important scripts & data with the {ghost_foot} tag
