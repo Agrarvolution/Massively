@@ -244,26 +244,15 @@
         toggleHeadingElements[i].addEventListener('click', toggleFn, false);
     }
 
+	if (document.querySelector('.kg-video-player-container') !== undefined ||
+		document.querySelector('.kg-audio-card') !== undefined) {
+			var script = $('script');
+			script[0].src = `/assets/main/js/media.js?v=${getScriptId()}`;
+			script[0].type = 'text/javascript';
+			script[0].async = true;
+			document.querySelector('body').appendChild(script[0]); 
+	}
 	
-	if (document.querySelector('.kg-audio-card') !== undefined) {
-		loadScript('audio');		
-	}
-	if (document.querySelector('.kg-video-player-container') !== undefined) {
-		loadScript('video');
-	}
-	
-	function loadScript (fileName) {
-		var script = $('script');
-		script[0].src = `/assets/main/js/${fileName}.js?v=${getScriptId()}`;
-		script[0].type = 'text/javascript';
-		script[0].async = true;
-		/*script[0].defer = false;
-		script[0].removeAttribute('data-ghost');
-		script[0].removeAttribute('crossorigin');*/
-		document.querySelector('body').appendChild(script[0]); 
-
-	}
-
 	function getScriptId () {
 		var scripts = document.querySelectorAll('script');
 		return new URL(scripts[scripts.length - 1].src).searchParams.get('v');
@@ -349,7 +338,7 @@
 
 	function reloadVideosOnSizeUpdate(size) {
 		for (var i = 0; i < video.length; i++) {
-			if (video[i].src === undefined && linkIsOnsite(video[i].children[0].src)) {
+			if (video[i].src === '' && linkIsOnsite(video[i].children[0].src)) {
 				var layoutType = 'normal';
 				if (video[i].parentNode.parentNode.classList.contains('kg-width-half')) {
 					layoutType = 'half'
