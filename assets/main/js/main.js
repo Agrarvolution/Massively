@@ -244,6 +244,19 @@
         toggleHeadingElements[i].addEventListener('click', toggleFn, false);
     }
 
+	if (document.querySelector('.kg-audio-card') !== undefined) {
+		var audioScript = $('script');
+		audioScript[0].src = '/assets/main/js/audio.js?v=' + getScriptId();
+		audioScript[0].type = 'text/javascript';
+		document.querySelector('body').appendChild(audioScript[0]); 
+		
+	}
+
+	function getScriptId () {
+		var scripts = document.querySelectorAll('script');
+		return new URL(scripts[scripts.length - 1].src).searchParams.get('v');
+	}
+
 	//video auto resolution
 	var video = $('video');
 	var videoSizes = {
