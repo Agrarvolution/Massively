@@ -803,6 +803,22 @@ figure img:hover {
     color: #fff;
 }
 
+// Subheader
+// --------------------------------------------
+.kg-header-card {
+    text-align: center;
+}
+
+.kg-header-card-header {
+    margin-bottom: 1rem !important;
+}
+.kg-header-card-subheader {
+    font-size: 2rem;
+
+    @include breakpoint("<=small") {
+        font-size: 1rem;
+    }
+}
 
 
 
