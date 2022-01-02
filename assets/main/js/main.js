@@ -244,12 +244,24 @@
         toggleHeadingElements[i].addEventListener('click', toggleFn, false);
     }
 
+	
 	if (document.querySelector('.kg-audio-card') !== undefined) {
-		var audioScript = $('script');
-		audioScript[0].src = '/assets/main/js/audio.js?v=' + getScriptId();
-		audioScript[0].type = 'text/javascript';
-		document.querySelector('body').appendChild(audioScript[0]); 
-		
+		loadScript('audio');		
+	}
+	if (document.querySelector('.kg-video-player-container') !== undefined) {
+		loadScript('video');
+	}
+	
+	function loadScript (fileName) {
+		var script = $('script');
+		script[0].src = `/assets/main/js/${fileName}.js?v=${getScriptId()}`;
+		script[0].type = 'text/javascript';
+		script[0].async = true;
+		/*script[0].defer = false;
+		script[0].removeAttribute('data-ghost');
+		script[0].removeAttribute('crossorigin');*/
+		document.querySelector('body').appendChild(script[0]); 
+
 	}
 
 	function getScriptId () {
