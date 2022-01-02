@@ -183,9 +183,9 @@
 .post div.content,
 form {
     @include breakpoint(">=large") {
-        column-count: 2;
+        /*column-count: 2;
         break-before: column;
-        column-gap: 2rem;
+        column-gap: 2rem;*/
 
         > .kg-card:not(.kg-float-right):not(.kg-float-left),
         > .kg-consent-option,
