@@ -187,52 +187,52 @@ form {
         break-before: column;
         column-gap: 2rem;
 
-        .kg-card:not(.kg-float-right):not(.kg-float-left),
-        .kg-consent-option,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        hr,
-        blockquote,
-        ul,
-        ol,
-        table {
+        > .kg-card:not(.kg-float-right):not(.kg-float-left),
+        > .kg-consent-option,
+        > h1,
+        > h2,
+        > h3,
+        > h4,
+        > h5,
+        > h6,
+        > hr,
+        > blockquote,
+        > ul,
+        > ol,
+        > table {
             margin-top: 2rem;
             column-span: all;
         }
 
-        .kg-card:first-child:not(.kg-float-right):not(.kg-float-left),
-        .kg-card form {
+        > .kg-card:first-child:not(.kg-float-right):not(.kg-float-left),
+        > .kg-card form {
             margin-top: 0;
         }
-        .kg-card:not(.kg-width-half) + .kg-card,
-        .kg-card:first-child {
+        > .kg-card:not(.kg-width-half) + .kg-card,
+        > .kg-card:first-child {
             margin-top: 0;
         }
-        .kg-width-half.kg-float-right,
-        .kg-width-half.kg-float-left {
+        > .kg-width-half.kg-float-right,
+        > .kg-width-half.kg-float-left {
             column-span: none;
             margin-left: 0;
             width: 100%;
         }
-        p + .kg-width-half.kg-float-right,
-        p + .kg-width-half.kg-float-left {
+        > p + .kg-width-half.kg-float-right,
+        > p + .kg-width-half.kg-float-left {
             margin-top: 1rem;
         }
 
-        li,
-        span {
+        > li,
+        > span {
             break-inside: avoid-column;
             break-before: column;
         }
-        span pre {
+        > span pre {
             break-inside: avoid-column;
         }
 
-        p {
+        > p {
             margin: 0;
         }
     }
@@ -760,6 +760,52 @@ figure img:hover {
         margin-top: 0;
     }
 }
+
+// Button card
+// --------------------------------------------
+.kg-button-card,
+.kg-button-card * {
+    box-sizing: border-box;
+}
+
+.kg-button-card {
+    display: flex;
+    position: static;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+.kg-button-card.kg-align-left {
+    justify-content: flex-start;
+}
+
+.kg-button-card a.kg-btn {
+    display: flex;
+    position: static;
+    align-items: center;
+    padding: 0 1.2em;
+    height: 2.4em;
+    line-height: 1em;
+    font-size: 0.95em;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.kg-button-card a.kg-btn:hover {
+    opacity: 0.85;
+}
+
+.kg-button-card a.kg-btn-accent {
+    background-color: var(--ghost-accent-color);
+    color: #fff;
+}
+
+
+
+
 
 // Error Pages
 // --------------------------------------------
