@@ -1,18 +1,30 @@
-.content > p > a:before {
-    margin-right: 0.5rem;
-}
+.content > p {
+    a:before {
+        margin-right: 0.5rem;
+    }
 
-// Instagram Icon
-.content > p > a[href*=instagram] {
-    @include icon('\f16d', 'before');
-}
+    // Instagram Icon
+    a[href*=\.instagram] {
+        @include icon('\f16d', 'before');
+    }
 
-// Youtube Icon
-.content > p > a[href*=youtu] {
-    @include icon('\f166', 'before');
-}
+    // Youtube Icon
+    a[href*=\.youtube], a[href*=youtu\.] {
+        @include icon('\f166', 'before');
+    }
 
-// Twitter Icon
-.content > p > a[href*=twitter] {
-    @include icon('\f099', 'before');
-}
+    // Twitter Icon
+    a[href*=\.twitter] {
+        @include icon('\f099', 'before');
+    }
+
+    // Facebook Icon
+    a[href*=\.facebook] {
+        @include icon('\f082', 'before');
+    } 
+
+    //Files 
+    a[href*=drive\.google\.], a[href*=\.sharepoint\.com]  {
+        @include icon('\f15b', 'before');
+    }
+} 
