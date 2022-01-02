@@ -6,8 +6,9 @@
         <li>Niederbrunn 8 ∙ 4912 Neuhofen / Innkreis </li>
     </ul>
     <ul>
-        <li><a href="{{@site.url}}/offenlegung/">Offenlegung</a></li>
-        <li><a href="{{@site.url}}/datenschutzerklarung/">datenschutzerklarung</a></li>
+        {{#if @site.secondary_navigation}}
+            {{navigation type="secondary"}}
+        {{/if}}
     </ul>
     <ul>                            
         <li>Design by <a href="https://html5up.net">HTML5 UP</a></li>
