@@ -1,0 +1,18 @@
+.content > p > a:before {
+    margin-right: 0.5rem;
+}
+
+// Instagram Icon
+.content > p > a[href*=instagram] {
+    @include icon('\f16d', 'before');
+}
+
+// Youtube Icon
+.content > p > a[href*=youtu] {
+    @include icon('\f166', 'before');
+}
+
+// Twitter Icon
+.content > p > a[href*=twitter] {
+    @include icon('\f099', 'before');
+}
