@@ -244,20 +244,6 @@
 		toggleHeadingElements[i].addEventListener('click', toggleFn, false);
 	}
 
-	if (document.querySelector('.kg-video-player-container') !== undefined ||
-		document.querySelector('.kg-audio-card') !== undefined) {
-		var script = $('script');
-		script[0].src = `/assets/main/js/media.js?v=${getScriptId()}`;
-		script[0].type = 'text/javascript';
-		script[0].async = true;
-		document.querySelector('body').appendChild(script[0]);
-	}
-
-	function getScriptId() {
-		var scripts = document.querySelectorAll('script');
-		return new URL(scripts[scripts.length - 1].src).searchParams.get('v');
-	}
-
 	//video auto resolution
 	var video = $('video');
 	var videoSizes = {
