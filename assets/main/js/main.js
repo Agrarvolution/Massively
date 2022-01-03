@@ -469,7 +469,10 @@
 	links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
 		.each(createYoutubeEmbedFromLink);
 	/*Setup unconverted Instagram-Link as Blockquote */
-	links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
+	if (document.querySelector('.major h1')?.title === 'Linktree') {
+		links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
+	}
+	
 
 
 	var iframes = $('iframe');
