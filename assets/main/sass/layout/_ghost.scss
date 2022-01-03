@@ -459,7 +459,7 @@ form {
 .kg-gallery-container--flowing {
     width: 100%;
     display: block;
-    columns: 3;
+    columns: 2;
     gap: 0;
     @include vendor('column-fill', 'balance');
 
@@ -468,19 +468,34 @@ form {
         width: 100%;
         height: fit-content;
         line-height: 0;
-
-        .kg-partner-image {
-            padding: 5px 0;
-            flex-grow: 1;
-            width: 100%;
-        }
     }
     @include breakpoint(">=medium") {
-        columns: 4;
+        columns: 3;
     }
 
     @include breakpoint(">=xlarge") {
-        columns: 5;
+        columns: 4;
+    }
+}
+
+.partner .kg-gallery-container--flowing {
+    gap: 1rem;
+
+    > * {
+        margin-bottom: 2rem;
+
+        @include breakpoint("<medium") {
+            margin-bottom: 1rem;
+        }
+    
+    }
+    .kg-image {
+        max-height: 7.5rem;
+        object-fit: contain;
+
+        @include breakpoint("<medium") {
+            max-height: 5rem;
+        }
     }
 }
 
