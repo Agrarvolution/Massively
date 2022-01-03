@@ -418,7 +418,7 @@ form {
     }
 }
 
-.kg-gallery-card figcaption {
+.kg-gallery-card figcaption, .kg-video-card figcaption {
     margin-top: 1em;
     @include breakpoint("<=small") {
         margin-top: 0.5rem;
