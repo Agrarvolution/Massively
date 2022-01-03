@@ -229,31 +229,31 @@
 
 	const toggleHeadingElements = document.getElementsByClassName("kg-toggle-heading");
 
-    const toggleFn = function(event) {
-        const targetElement = event.target;
-        const parentElement = targetElement.closest('.kg-toggle-card');
-        var toggleState = parentElement.getAttribute("data-kg-toggle-state");
-        if (toggleState === 'close') {
-            parentElement.setAttribute('data-kg-toggle-state', 'open');
-        } else {
-            parentElement.setAttribute('data-kg-toggle-state', 'close');
-        }
-    };
+	const toggleFn = function (event) {
+		const targetElement = event.target;
+		const parentElement = targetElement.closest('.kg-toggle-card');
+		var toggleState = parentElement.getAttribute("data-kg-toggle-state");
+		if (toggleState === 'close') {
+			parentElement.setAttribute('data-kg-toggle-state', 'open');
+		} else {
+			parentElement.setAttribute('data-kg-toggle-state', 'close');
+		}
+	};
 
-    for (let i = 0; i < toggleHeadingElements.length; i++) {
-        toggleHeadingElements[i].addEventListener('click', toggleFn, false);
-    }
+	for (let i = 0; i < toggleHeadingElements.length; i++) {
+		toggleHeadingElements[i].addEventListener('click', toggleFn, false);
+	}
 
 	if (document.querySelector('.kg-video-player-container') !== undefined ||
 		document.querySelector('.kg-audio-card') !== undefined) {
-			var script = $('script');
-			script[0].src = `/assets/main/js/media.js?v=${getScriptId()}`;
-			script[0].type = 'text/javascript';
-			script[0].async = true;
-			document.querySelector('body').appendChild(script[0]); 
+		var script = $('script');
+		script[0].src = `/assets/main/js/media.js?v=${getScriptId()}`;
+		script[0].type = 'text/javascript';
+		script[0].async = true;
+		document.querySelector('body').appendChild(script[0]);
 	}
-	
-	function getScriptId () {
+
+	function getScriptId() {
 		var scripts = document.querySelectorAll('script');
 		return new URL(scripts[scripts.length - 1].src).searchParams.get('v');
 	}
@@ -465,15 +465,17 @@
 
 	//get all free links
 	var links = $('.content > p a:only-child');
-	/* Setup unconverted Youtube-Links as iFrame */
-	links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
-		.each(createYoutubeEmbedFromLink);
-	/*Setup unconverted Instagram-Link as Blockquote */
+	
+	//disable link replacement on linktree
 	var headline = document.querySelector('.major h1');
 	if (headline != null && headline !== undefined && headline.textContent !== 'Linktree') {
+		/* Setup unconverted Youtube-Links as iFrame */
+		links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
+			.each(createYoutubeEmbedFromLink);
+		/*Setup unconverted Instagram-Link as Blockquote */
 		links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
 	}
-	
+
 
 
 	var iframes = $('iframe');
@@ -821,7 +823,7 @@
 	var lastSeen = {};
 	$('body').on('click', 'img', function () {
 		var $this = $(this);
-		
+
 		if (this.hasAttribute('data-link')) {
 			if ($this.parents('.kg-gallery-container').is(':not(.kg-gallery-container--narrow)') || lastSeen === this) {
 				console.log($this.is(':focus'), $this.parents('.kg-gallery-container').is(':not(.kg-gallery-container--narrow)'), $this.parents('.kg-gallery-container'));
