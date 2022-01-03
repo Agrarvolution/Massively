@@ -470,7 +470,7 @@
 		.each(createYoutubeEmbedFromLink);
 	/*Setup unconverted Instagram-Link as Blockquote */
 	var headline = document.querySelector('.major h1');
-	if (headline !== undefined && headline.textContent !== 'Linktree') {
+	if (headline != null && headline !== undefined && headline.textContent !== 'Linktree') {
 		links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
 	}
 	
