@@ -105,6 +105,11 @@
                 "width": 1600
             }
         },
-        "custom": {}
+        "custom": {
+            "background_image_link": {
+                "type": "text",
+                "default": "/"
+            } 
+        }
     }
 }
