@@ -863,11 +863,4 @@
 	$(window).on('resize', updateScrollbarCSS);
 	updateScrollbarCSS();
 
-
-	//quick fix for removed HTML entities in post headers
-	var headlines = $(".major>h1,.major>h2,.major>p.content, article>header>h2, .main-content--headline");
-
-	for (var i = 0; i < headlines.length; i++) {
-		headlines[i].innerHTML = headlines[i].innerHTML.replace(/&amp;shy;/g, "&shy;");
-	}
 })(jQuery);

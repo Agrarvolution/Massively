@@ -132,6 +132,9 @@
 		font-size: 2em;
 	}
 }
+.main-content--headline, .major, .content p {
+	hyphens: auto;
+}
 
 
 @supports (display: grid) {
