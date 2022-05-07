@@ -82,20 +82,26 @@ agrarvolution.consent = () => {
             .forEach(button => button.addEventListener('click', consentGiven));
     }
 
-    return {
-        'generateEmbedConsentText': generateEmbedConsentText,
-        'createConsentButtonListener': createConsentButtonListener
-    }
-}
-agrarvolution.gdprExternalMedia = () => {
-    const body = document.querySelector('body');
-    const instagramScriptTemplate = document.querySelector('#instagram-script');
     function consentGiven(event) {
         updateService(event.target.getAttribute('data-service'), true, true);
     }
+    function removeConsent(service) {
+        document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => consent.closest('.kg-consent-container').remove());
+    }
+
+    return {
+        'generateEmbedConsentText': generateEmbedConsentText,
+        'createConsentButtonListener': createConsentButtonListener,
+        'removeConsent': removeConsent
+    }
+};
+
+agrarvolution.gdprExternalMedia = () => {
+    const body = document.querySelector('body');
+    const instagramScriptTemplate = document.querySelector('#instagram-script');
+
 
     function updateService(service, active, isEvent) {
-        
         if (active) {
             switch (service) {
                 case 'youtube':
@@ -110,7 +116,7 @@ agrarvolution.gdprExternalMedia = () => {
                 default:
                     break;
             }
-            removeConsent(service);
+            agarvolution.consent.removeConsent(service);
             setCookie(`${service}-allowed`, COOKIE_VALUE, COOKIE_DAYS_ALIVE);
         } else {
             switch (service) {
@@ -124,218 +130,372 @@ agrarvolution.gdprExternalMedia = () => {
                 default:
                     break;
             }
-            createConsentButtonListener(service);
+            agarvolution.consent.createConsentButtonListener(service);
         }
 
 
     }
-    function removeConsent(service) {
-        document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => consent.closest('.kg-consent-container').remove());
+
+};
+
+agrarvolution.videoHandling = (() => {
+    let videos;;
+    const videoSizes = {
+        'normal': {
+            'xsmall': '/content/images/videos/225/',
+            'small': '/content/images/videos/360/',
+            'medium': '/content/images/videos/480/',
+            'large': '/content/images/videos/720/',
+            'xlarge': '/content/images/videos/1080/'
+        },
+        'half': {
+            'xsmall': '/content/images/videos/225/',
+            'small': '/content/images/videos/360/',
+            'medium': '/content/images/videos/225/',
+            'large': '/content/images/videos/225/',
+            'xlarge': '/content/images/videos/225/'
+        },
+    };
+    function setupBreakpoints(breakpoints) {
+        video = document.querySelectorAll('video');
+
+        breakpoints.on('<=xsmall', function () {
+            updateVideoSize('xsmall');
+        });
+        breakpoints.on('<=small', function () {
+            updateVideoSize('small');
+        });
+        breakpoints.on('<=medium', function () {
+            updateVideoSize('medium');
+        });
+        breakpoints.on('<=xlarge', function () {
+            updateVideoSize('large');
+        });
+
+        breakpoints.on('>xsmall', function () {
+            updateVideoSize('small');
+        });
+        breakpoints.on('>small', function () {
+            updateVideoSize('medium');
+        });
+        breakpoints.on('>medium', function () {
+            updateVideoSize('large');
+        });
+        breakpoints.on('>xlarge', function () {
+            updateVideoSize('xlarge');
+        });
     }
-}
+
+    function updateVideoSize(size) {
+        for (var i = 0; i < videos.length; i++) {
+            reloadVideoandUpdateSize(videos[i], size);
+
+        }
+    }
+    function reloadVideoandUpdateSize(video, size) {
+        if (video == null || !(video.src === '')) {
+            return false;
+        }
+        if (!agrarvolution.util.isLinkOnsite(video.children[0].src)) {
+            return false;
+        }
+        let layoutType = 'normal';
+        if (video.closest('kg-width-half')) {
+            layoutType = 'half'
+        }
+        video.children[0].src = replaceLink(videoSizes[layoutType], size, videos[i].children[0].src);
+        video.load();
+    }
 
 
-breakpoints.on('<=xsmall', function () {
-    reloadVideosOnSizeUpdate('xsmall');
-});
-breakpoints.on('<=small', function () {
-    reloadVideosOnSizeUpdate('small');
-});
-breakpoints.on('<=medium', function () {
-    reloadVideosOnSizeUpdate('medium');
-});
-breakpoints.on('<=xlarge', function () {
-    reloadVideosOnSizeUpdate('large');
-});
+    function replaceLink(links, size, currentLink) {
+        let path = currentLink.match(/[\d\w+-.]+$/g);
+        if (path !== undefined && path != null) {
+            return links[size] + path[0];
+        }
+        return currentLink;
+    }
 
-breakpoints.on('>xsmall', function () {
-    reloadVideosOnSizeUpdate('small');
-});
-breakpoints.on('>small', function () {
-    reloadVideosOnSizeUpdate('medium');
-});
-breakpoints.on('>medium', function () {
-    reloadVideosOnSizeUpdate('large');
-});
-breakpoints.on('>xlarge', function () {
-    reloadVideosOnSizeUpdate('xlarge');
-});
+    return {
+        'setupBreakpoints': setupBreakpoints
+    }
+})();
 
-//video auto resolution
-var video = $('video');
-const videoSizes = {
-    'normal': {
-        'xsmall': '/content/images/videos/225/',
-        'small': '/content/images/videos/360/',
-        'medium': '/content/images/videos/480/',
-        'large': '/content/images/videos/720/',
-        'xlarge': '/content/images/videos/1080/'
-    },
-    'half': {
-        'xsmall': '/content/images/videos/225/',
-        'small': '/content/images/videos/360/',
-        'medium': '/content/images/videos/225/',
-        'large': '/content/images/videos/225/',
-        'xlarge': '/content/images/videos/225/'
-    },
-};
-const imageMimeTypes = {
-    'gif': 'image/gif',
-    'jpeg': 'image/jpeg',
-    'jpg': 'image/jpeg',
-    'jpe': 'image/jpeg',
-    'jfif': 'image/jpeg',
-    'png': 'image/png',
-    'svg': 'image/svg+xml',
-    'webp': 'image/webp',
-    'jxl': 'image/jxl',
-    'avif': 'image/avif'
-}
-const fallbackImageType = [
-    'svg', 'jpeg', 'jpg', 'png', 'gif'
-];
 
-const defaultImageLink = '/content/images/size/';
-const imageMediaCalls = {
-    'normal': ['300', '400', '500', '600', '700', '800', '1000', '1200', '1500'],
-    'half': ['300', '400', '500', '600', '700'],
-    'gallery': ['200', '300', '400', '500', '600'],
-    'bookmark': ['300', '400', '500', '600'],
-    'full': ['400', '500', '600', '700', '800', '900', '1000', '1150', '1500', '2000'],
-    'partner': ['200', '300', '400'],
-};
-const imageSizeAttribute = {
-    'normal': '(min-width: 2281px) 1500px, (min-width: 1681px) 1200px, (min-width: 900px) 720px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-    'half': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-    'gallery': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-    'bookmark': '(min-width: 2281px) 600px, (min-width: 1681px) 480px, (min-width: 737px) 300px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
-    'full': '(min-width: 2281px) 2000px, (min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
-    'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
-}
 
-function reloadVideosOnSizeUpdate(size) {
-    for (var i = 0; i < video.length; i++) {
-        if (video[i].src === '' && linkIsOnsite(video[i].children[0].src)) {
-            var layoutType = 'normal';
-            if (video[i].parentNode.parentNode.classList.contains('kg-width-half')) {
-                layoutType = 'half'
+agrarvolution.util = (() => {
+    function getFileType(href) {
+        try {
+            if (href === undefined) {
+                return false;
             }
-            video[i].children[0].src = replaceLink(videoSizes[layoutType], size, video[i].children[0].src);
-            video[i].load();
+            if (href === '') {
+                return false;
+            }
+
+            const parsed = new URL(href);
+            const match = parsed.pathname.match(/\.([\w]){1,}$/gi);
+
+            if (match) {
+                return match[0].replace('.', '').trim();
+            }
+            return '';
+
+        }
+        catch (e) {
+            console.warn(e);
         }
     }
-}
 
-function replaceLink(links, size, currentLink) {
-    var path = currentLink.match(/[\d\w+-.]+$/g);
-    if (path !== undefined && path != null) {
-        return links[size] + path[0];
-    }
-    return currentLink;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getFileType(href) {
-    try {
-        if (href === undefined) {
-            return false;
-        }
-        if (href === '') {
+    function isLinkOnsite(href) {
+        if (href === undefined || href == null || href === '') {
             return false;
         }
 
-        const parsed = new URL(href);
-        const match = parsed.pathname.match(/\.([\w]){1,}$/gi);
-
-        if (match) {
-            return match[0].replace('.', '').trim();
-        }
-        return '';
-
-    }
-    catch (e) {
-        console.warn(e);
-    }
-}
-
-function isLinkOnsite(href) {
-    if (href === undefined || href == null || href === '') {
-        return false;
-    }
-
-    const fileLink = href.match(/^\/.+/g);
-    if (fileLink) {
-        return true;
-    }
-
-    try {
-        var url = new URL(href);
-        if (location.host === url.host) {
+        const fileLink = href.match(/^\/.+/g);
+        if (fileLink) {
             return true;
         }
-    }
-    catch (e) {
-        console.log(e)
-    }
 
-    return false;
-}
+        try {
+            var url = new URL(href);
+            if (location.host === url.host) {
+                return true;
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
 
-function parseExtraData(nextSibling) {
-    if (nextSibling !== '' && nextSibling !== undefined && nextSibling != null
-        && nextSibling.nodeName === "#text") {
-        const parsed = JSON.parse(nextSibling.textContent);
-        nextSibling.remove();
-        return parsed;
-    }
-    return {};
-}
-
-let fallBackFormats = {};
-
-document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img').filter(() => {
-    return this.closest('figure:not(.kg-responsive)');
-}).each(function () {
-    const fileType = getFileType(this.src);
-
-    if (!isLinkOnsite(this.src) || fileType === 'svg') {
         return false;
     }
 
-    var parent = $(this).parents('figure.kg-card');
-    var type = 'normal';
-
-    if (parent.is('.kg-width-full')) {
-        type = 'full';
-    } else if (parent.is('.kg-width-half')) {
-        type = 'half';
-    } else if (parent.is('.kg-gallery-card')) {
-        type = 'gallery';
-    } else if (parent.is('.kg-partner-card')) {
-        type = 'partner';
-    } else if (parent.is('.kg-bookmark-card')) {
-        type = 'bookmark';
+    return {
+        'getFileType': getFileType,
+        'isLinkOnsite': isLinkOnsite
     }
 
-    if (fallBackFormats[fileType]) {
-        $(this).replaceWith(generatePictureElement(this.src, [fileType, fallBackFormats[fileType]], this.alt, type))
-    } else {
-        this.srcset = generateSrcSet(this.src, type);
-        this.sizes = imageSizeAttribute[type];
+
+
+})();
+
+
+
+agrarvolution.parseText = () => {
+    const imageMimeTypes = {
+        'gif': 'image/gif',
+        'jpeg': 'image/jpeg',
+        'jpg': 'image/jpeg',
+        'jpe': 'image/jpeg',
+        'jfif': 'image/jpeg',
+        'png': 'image/png',
+        'svg': 'image/svg+xml',
+        'webp': 'image/webp',
+        'jxl': 'image/jxl',
+        'avif': 'image/avif'
+    }
+    const fallbackImageType = [
+        'svg', 'jpeg', 'jpg', 'png', 'gif'
+    ];
+
+    const defaultImageLink = '/content/images/size/';
+    const imageMediaCalls = {
+        'normal': ['300', '400', '500', '600', '700', '800', '1000', '1200', '1500'],
+        'half': ['300', '400', '500', '600', '700'],
+        'gallery': ['200', '300', '400', '500', '600'],
+        'bookmark': ['300', '400', '500', '600'],
+        'full': ['400', '500', '600', '700', '800', '900', '1000', '1150', '1500', '2000'],
+        'partner': ['200', '300', '400'],
+    };
+    const imageSizeAttribute = {
+        'normal': '(min-width: 2281px) 1500px, (min-width: 1681px) 1200px, (min-width: 900px) 720px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+        'half': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+        'gallery': '(min-width: 2281px) 700px, (min-width: 1681px) 600px, (min-width: 900px) 350px, (min-width: 737px) 55vw, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+        'bookmark': '(min-width: 2281px) 600px, (min-width: 1681px) 480px, (min-width: 737px) 300px, (min-width: 481px) 75vw, (min-width: 376px) 90vw, 300px',
+        'full': '(min-width: 2281px) 2000px, (min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
+        'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
     }
 
-});
+    let fallBackFormats = {};
+
+    //Create responsive links for all images
+    document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img')
+        .filter(image => image.closest('figure:not(.kg-responsive)'))
+        .forEach(image => {
+            const fileType = agrarvolution.util.getFileType(image.src);
+
+            if (!agrarvolution.util.isLinkOnsite(image.src) || fileType === 'svg') {
+                return false;
+            }
+
+            var parent = image.closest('figure.kg-card');
+            var type = 'normal';
+
+            if (parent.is('.kg-width-full')) {
+                type = 'full';
+            } else if (parent.is('.kg-width-half')) {
+                type = 'half';
+            } else if (parent.is('.kg-gallery-card')) {
+                type = 'gallery';
+            } else if (parent.is('.kg-partner-card')) {
+                type = 'partner';
+            } else if (parent.is('.kg-bookmark-card')) {
+                type = 'bookmark';
+            }
+
+            if (fallBackFormats[fileType]) {
+                image.parentNode.replaceChild(generatePictureElement(image.src, [fileType, fallBackFormats[fileType]], image.alt, type), image);
+            } else {
+                image.srcset = generateSrcSet(image.src, type);
+                image.sizes = imageSizeAttribute[type];
+            }
+
+        });
+
+
+    //Generator methods
+
+    /**
+     * Common generation functions 
+     */
+    function generateEmbedFigure(extraClasses) {
+        const figure = document.createElement('figure');
+        figure.classList.add('kg-card', 'kg-embed-card', extraClasses);
+        return figure;
+    }
+    function generateFigureCaption(caption) {
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent = caption;
+        return figcaption;
+    }
+
+    /**
+     * Create image elements
+     */
+    function generatePictureElement(href, extraFormats, alt, type) {
+        const fileType = agrarvolution.util.getFileType(href);
+        const picture = document.createElement('picture');
+
+        let source = [], img = '', srcset = '';
+
+        if (!agrarvolution.util.isLinkOnsite(href)) {
+            return false;
+        }
+
+        srcset = generateSrcSet(href, type);
+        for (let format in extraFormats) {
+            generateFormats(extraFormats[format]);
+        }
+
+        picture.replaceWith(...source);
+        picture.appendChild(img);
+
+        return picture;
+
+        function generateFormats(format) {
+            if (imageMimeTypes[format] && !fallbackImageType.includes(format)) {
+                var newSrcset = srcset.replaceAll(fileType, format);
+                source.push(pictureSource(newSrcset, format, imageSizeAttribute[type]));
+                return true;
+            }
+            if (!fallbackImageType.includes(format)) {
+                return false;
+            }
+
+            let newHref = href.replace(fileType, format);
+
+            if (format === 'svg') {
+                img = generateImgElement(newHref, '', alt, type);
+            } else {
+                let newSrcset = srcset.replaceAll(fileType, format);
+                img = generateImgElement(newHref, newSrcset, alt, type);
+            }
+
+        }
+    }
+
+
+    function pictureSource(srcset, fileType, media) {
+        const sourceClone = document.createElement('source');
+
+        sourceClone.loading = 'lazy';
+        sourceClone.classList.add('kg-image');
+        sourceClone.srcset = srcset;
+        sourceClone.media = media;
+        sourceClone.type = imageMimeTypes[fileType];
+
+        return sourceClone;
+    }
+
+    function generateImgElement(href, srcset, alt, type) {
+        const img = document.createElement('img');
+
+        if (agrarvolution.util.isLinkOnsite(href)) {
+            href = createSubLink(href, '');
+        }
+        let sizes = type && imageSizeAttribute[type] !== undefined ? imageSizeAttribute[type] : '';
+
+        img.loading = 'lazy';
+        img.src = href;
+        img.srcset = srcset;
+        img.sizes = sizes;
+        img.alt = alt ? alt : '';
+        img.setAttribute('data-link', href);
+
+        return img;
+    }
+
+
+
+
+
+    //Util methods
+
+    function parseExtraData(nextSibling) {
+        if (nextSibling !== '' && nextSibling !== undefined && nextSibling != null
+            && nextSibling.nodeName === "#text") {
+            const parsed = JSON.parse(nextSibling.textContent);
+            nextSibling.remove();
+            return parsed;
+        }
+        return {};
+    }
+
+    function generateSrcSet(href, type) {
+        let srcset = '';
+        for (let size in imageMediaCalls[type]) {
+            srcset += createSubLink(href, imageMediaCalls[type][size]) + ` ${imageMediaCalls[type][size]}w,`;
+        };
+        srcset = srcset.replace(/,$/g, '');
+        return srcset;
+    }
+
+    function createSubLink(href, size) {
+        if (size && size.match(/^\d+$/g)) {
+            size = `/w${size}/`;
+        } else {
+            size = '';
+        }
+
+        return replaceFolder(href, size);
+
+        function replaceFolder(href, size) {
+            const HasFolder = href.match(/\/w\d+\//g);
+            if (HasFolder && size === '') {
+                return href.replace(/\/images\/size\/w\d+\//g, '/images/');
+            }
+            if (HasFolder) {
+                href.replace(/\/w\d+\//g, size);
+            }
+            return href.replace('/images/', '/images/size' + size);
+        }
+    }
+}
+
+
+
+
+
 
 //get all free links
 var links = $('.content > p a:only-child');
@@ -361,101 +521,16 @@ updateService('youtube', getCookie(`youtube-allowed`), false);
 var instagram = $('blockquote.instagram-media').each(updateInstagramLink);
 updateService('instagram', getCookie(`instagram-allowed`), false);
 
-/**
- * Common generation functions 
- */
-function generateEmbedFigure(extraClasses) {
-    return `<figure class="kg-card kg-embed-card ${extraClasses}"></figure>`;
-}
-function generateFigureCaption(caption) {
-    return `<figcaption>${caption}</figcaption>`;
-}
 
 
-/**
- * Create image elements
- */
-function generatePictureElement(href, extraFormats, alt, type) {
-    var isOnsite = isLinkOnsite(href);
-    var fileType = getFileType(href);
-    var source = '';
-    var img = '';
-    var srcset = '';
 
-    if (isOnsite) {
-        srcset = generateSrcSet(href, type);
-        for (var format in extraFormats) {
-            if (imageMimeTypes[extraFormats[format]] && !fallbackImageType.includes(extraFormats[format])) {
-                var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);
-                source += pictureSource(newSrcset, extraFormats[format], imageSizeAttribute[type]);
-            } else if (fallbackImageType.includes(extraFormats[format])) {
-                var newHref = href.replace(fileType, extraFormats[format]);
-
-                if (extraFormats[format] === 'svg') {
-                    img = generateImgElement(newHref, '', alt, type);
-                } else {
-                    var newSrcset = srcset.replaceAll(fileType, extraFormats[format]);
-                    img = generateImgElement(newHref, newSrcset, alt, type);
-                }
-
-            }
-        }
-    }
-
-    return `<picture>
-			${source}
-			${img}
-		</picture>`;
-}
-
-function pictureSource(srcset, fileType, media) {
-    return `<source class="kg-image" srcset="${srcset}" media="${media}" loading="lazy" type="${imageMimeTypes[fileType]}">`;
-}
-
-function generateImgElement(href, srcset, alt, type) {
-    if (isLinkOnsite(href)) {
-        href = createSubLink(href, '');
-    }
-    var sizes = type && imageSizeAttribute[type] !== undefined ? imageSizeAttribute[type] : '';
-    return `<img class="kg-image" src="${href}" loading="lazy" srcset="${srcset}" sizes="${sizes}" alt="${alt && alt !== '' ? alt : ''}" data-link="${href}">`;
-}
-
-function generateSrcSet(href, type) {
-    var srcset = '';
-    for (var size in imageMediaCalls[type]) {
-        srcset += createSubLink(href, imageMediaCalls[type][size]) + ` ${imageMediaCalls[type][size]}w,`;
-    };
-    srcset = srcset.replace(/,$/g, '');
-    return srcset;
-}
-
-function createSubLink(href, size) {
-    if (size && size.match(/^\d+$/g)) {
-        size = `/w${size}/`;
-    } else {
-        size = '';
-    }
-
-    return replaceFolder(href, size);
-
-    function replaceFolder(href, size) {
-        const HasFolder = href.match(/\/w\d+\//g);
-        if (HasFolder && size === '') {
-            return href.replace(/\/images\/size\/w\d+\//g, '/images/');
-        }
-        if (HasFolder) {
-            href.replace(/\/w\d+\//g, size);
-        }
-        return href.replace('/images/', '/images/size' + size);
-    }
-}
 /** 
  * Instagram specific setup methods 
  * */
 function disableInstagram() {
     this.setAttribute('data-src', this.getAttribute('data-instgrm-permalink'));
     this.setAttribute('data-instgrm-permalink', '');
-    $(this).before(generateEmbedConsentText('Instagram', unembedInstagramLink(this.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
+    $(this).before(agarvolution.consent.generateEmbedConsentText('Instagram', unembedInstagramLink(this.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
 }
 
 function createInstagramEmbedFromLink() {
@@ -506,7 +581,7 @@ function disableYoutube() {
     this.src = '';
     var $this = $(this);
 
-    var consent = generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
+    var consent = agarvolution.consent.generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
     if ($this.parent().is('.kg-video')) {
         $this.parent().before(consent);
     } else {
@@ -590,4 +665,3 @@ function generateNoCookieYoutubeLink(src) {
     return url.href;
 }
 
-}) ();
