@@ -161,6 +161,7 @@
 	.main-content--headline {
 		color: _palette(bg);
 		text-shadow: 0 0 1.5rem transparentize(_palette(fg), 0.5);
+		overflow: hidden;
 	}
 	.main-container--content:hover,
 	.main-container--content:focus-within {

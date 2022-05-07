@@ -87,8 +87,6 @@
 		}, 100);
 	});
 
-	// Scrolly.
-	$('.scrolly').scrolly();
 
 	// Background.
 	$wrapper._parallax(0.925);
@@ -168,64 +166,45 @@
 		$navPanel
 			.css('transition', 'none');
 
-	// Intro.
-	var $intro = $('#intro');
+	wrapperFadeIn();
 
-	if ($intro.length > 0) {
-
-		// Hack: Fix flex min-height on IE.
-		if (browser.name == 'ie') {
-			$window.on('resize.ie-intro-fix', function () {
-
-				var h = $intro.height();
-
-				if (h > $window.height())
-					$intro.css('height', 'auto');
-				else
-					$intro.css('height', h);
-
-			}).trigger('resize.ie-intro-fix');
+	function wrapperFadeIn() {
+		if (!(
+			"IntersectionObserver" in window &&
+			"IntersectionObserverEntry" in window &&
+			"intersectionRatio" in window.IntersectionObserverEntry.prototype
+		)) {
+			return console.warn('Browser does not support header fade in.');
 		}
 
-		// Hide intro on scroll (> small).
-		breakpoints.on('>small', function () {
+		const intro = document.querySelector("#intro");
+		let previousY = 0, previousTime = 0;
+		const ScrollTimeOut = 500; //ms
+		let observer = new IntersectionObserver(entries => {
+			console.log(entries[0], entries[0].boundingClientRect.y / window.innerHeight)
+			
+			if (entries[0].boundingClientRect.y >= 0) {
+				return false;
+			}
+			if ((entries[0].time - previousTime) < ScrollTimeOut && Math.floor((previousY - entries[0].boundingClientRect.y)/20) === 0) {
+				previousTime = entries[0].time;
+				return false;
+			}
+			if (previousY > entries[0].boundingClientRect.y) {
+				intro.classList.add('hidden');
+			} else {
+				intro.classList.remove('hidden');
+			}
+			previousY = entries[0].boundingClientRect.y;
+			previousTime = entries[0].time;
 
-			$main.unscrollex();
-
-			$main.scrollex({
-				mode: 'bottom',
-				top: '25vh',
-				bottom: '-50vh',
-				enter: function () {
-					$intro.addClass('hidden');
-				},
-				leave: function () {
-					$intro.removeClass('hidden');
-				}
-			});
-
+		}, {
+			rootMargin: '0px',
+			threshold: 0.5
 		});
-
-		// Hide intro on scroll (<= small).
-		breakpoints.on('<=small', function () {
-
-			$main.unscrollex();
-
-			$main.scrollex({
-				mode: 'middle',
-				top: '15vh',
-				bottom: '-15vh',
-				enter: function () {
-					$intro.addClass('hidden');
-				},
-				leave: function () {
-					$intro.removeClass('hidden');
-				}
-			});
-
-		});
-
+		observer.observe(intro);
 	}
+
 
 	const toggleHeadingElements = document.getElementsByClassName("kg-toggle-heading");
 
@@ -451,7 +430,7 @@
 
 	//get all free links
 	var links = $('.content > p a:only-child');
-	
+
 	//disable link replacement on linktree
 	var headline = document.querySelector('.major h1');
 	if (headline != null && headline !== undefined && headline.textContent !== 'Linktree') {
@@ -796,7 +775,7 @@
 
 	//auto image resolution
 	var images = $('img');
-	for (i = 0; i < images.length; i++) {
+	for (var i = 0; i < images.length; i++) {
 		var fullSrc = images[i].src;
 		if (linkIsOnsite(fullSrc)) {
 			fullSrc = createSubLink(images[i].src, '');
