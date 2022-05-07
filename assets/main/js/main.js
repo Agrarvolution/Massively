@@ -57,12 +57,22 @@
 
 	NavPanelToggle.addEventListener('click', event => {
 		Body.classList.add('is-navPanel-visible');
-		return true;
+		Body.addEventListener('click', closeOnOutSideTap);
+		return false;
 	});
+
 	document.querySelector('#navPanel a.close').addEventListener('click', event => {
 		Body.classList.remove('is-navPanel-visible');
 		return true;
-	})
+	});
+	function closeOnOutSideTap (event) {
+		if (event.target.id !== "navPanelToggle" && event.target.closest('#navPanel') === null) {
+			Body.classList.remove('is-navPanel-visible');
+			Body.removeEventListener('click', closeOnOutSideTap);
+			return false;
+		}
+		return true;
+	}
 
 	scrollObservers();
 
