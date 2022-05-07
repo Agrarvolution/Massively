@@ -2,6 +2,9 @@
 // --------------------------------------------
 
 // Fix main cover image bg position
+:root {
+    scroll-behavior: smooth;
+}
 #wrapper > .bg {
     background-position: top center;
     background-size: auto, auto, cover;

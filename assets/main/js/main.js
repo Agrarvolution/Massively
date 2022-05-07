@@ -180,9 +180,8 @@
 		const intro = document.querySelector("#intro");
 		let previousY = 0, previousTime = 0;
 		const ScrollTimeOut = 500; //ms
-		let observer = new IntersectionObserver(entries => {
-			console.log(entries[0], entries[0].boundingClientRect.y / window.innerHeight)
-			
+		
+		let observer = new IntersectionObserver(entries => {			
 			if (entries[0].boundingClientRect.y >= 0) {
 				return false;
 			}
@@ -190,6 +189,7 @@
 				previousTime = entries[0].time;
 				return false;
 			}
+
 			if (previousY > entries[0].boundingClientRect.y) {
 				intro.classList.add('hidden');
 			} else {
@@ -800,7 +800,7 @@
 	})
 
 	/**
-	 * Viewport width without scrollbar varaible for css
+	 * Viewport width without scrollbar variable for css
 	 */
 	let scroller = document.scrollingElement;
 
