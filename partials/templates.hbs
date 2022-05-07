@@ -1,0 +1,25 @@
+<template id="consent-template">
+    <div class="kg-consent-container">
+        <div class="kg-consent">
+            <strong><span data-service>Service</span>-DSGVO Auswahl</strong>
+            <p>Diese Website verwendet <span data-service>Service</span> um Inhalte zu ergänzen. Um Ihre Daten zu bestmöglich zu schützen ist
+                die
+                Anzeige standardmäßig deaktiviert.</p>
+            <p>Beim Click auf den Anzeigen-Button stimmen Sie der <a
+                    href="/datenschutzerklarung/#service-datenschutzerklaerung"
+                    target="_blank">Datenschutzerklärung</a>
+                von <span data-service>Service</span> zu, die Einstellung wird in einem Cookie gespeichert und seitenweit aktiviert. Die
+                Einstellung kann in der <a href="/datenschutzerklarung/" target="_blank">Datenschutzerklärung</a>
+                deaktiviert
+                werden.
+            </p>
+            <span class="kg-consent-interface">
+                <button class="consent-button" data-service="${lowerCaseService}">Inhalte anzeigen</button>
+                <a href="${link}" target="_blank"><button>In <span data-service>Service</span> öffnen</button></a>
+            </span>
+        </div>
+    </div>
+</template>
+<template id="instagram-script">
+    <script class="instagram" async src="//www.instagram.com/embed.js"></script>
+</template>
