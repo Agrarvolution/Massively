@@ -13,10 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="white"/>
     {{!-- Styles'n'Scripts --}}
-    <link rel="preload" href="{{asset "main/js/jquery.min.js"}}" as="script">
+    {{!-- <link rel="preload" href="{{asset "main/js/jquery.min.js"}}" as="script"> --}}
     <link rel="preload" href="{{asset "main/js/browser.min.js"}}" as="script">
     <link rel="preload" href="{{asset "main/js/breakpoints.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/util.js"}}" as="script">
     <link rel="preload" href="{{asset "main/js/main.js"}}" as="script">
 
     <link rel="preload" type="text/css" href="{{asset "main/css/main.css"}}" as="style" />
@@ -78,6 +77,7 @@
 
         {{!-- The footer at the very bottom of the screen --}}
         {{> "footer"}}
+        <div class="bg"></div>
         <a href="#navPanel" id="navPanelToggle" class="">Menu</a>
     </div>
 
@@ -85,10 +85,9 @@
 
 
     {{!-- Theme Scripts --}}
-    <script src="{{asset "main/js/jquery.min.js"}}"></script>
+    {{!-- <script src="{{asset "main/js/jquery.min.js"}}"></script> --}}
     <script src="{{asset "main/js/browser.min.js"}}"></script>
     <script src="{{asset "main/js/breakpoints.min.js"}}"></script>
-    <script src="{{asset "main/js/util.js"}}"></script>
     <script src="{{asset "main/js/main.js"}}"></script>
     <script src="{{asset "main/js/media.js"}}" async type="text/javascript"></script>
 
