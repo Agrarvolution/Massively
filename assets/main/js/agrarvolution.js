@@ -34,25 +34,27 @@ agrarvolution.consent = (() => {
         return null;
     }
 
-    [...document.querySelectorAll('.kg-consent-option button')].forEach(consentButton => {
-        toggleConsent(consentButton, IS_EVENT.no);
-        consentButton.addEventListener('click', toggleConsentListener);
-    });
+    function setupConsentButtons () {
+        [...document.querySelectorAll('.kg-consent-option button')].forEach(consentButton => {
+            toggleConsent(consentButton, IS_EVENT.no);
+            consentButton.addEventListener('click', toggleConsentListener);
+        });
+    }
 
     function toggleConsentListener(consentButton) {
-        toggleConsent(consentButton, IS_EVENT.yes);
+        toggleConsent(consentButton.target, IS_EVENT.yes);
     }
 
     function toggleConsent(button, isEvent) {
-        const SERVICE = button[0].getAttribute('data-service');
+        const SERVICE = button.getAttribute('data-service');
         const SERVICE_TEXT = SERVICE.charAt(0).toUpperCase() + SERVICE.slice(1);
 
         const COOKIE = getCookie(SERVICE + "-allowed");
         if (COOKIE) {
-            button.html(`${SERVICE_TEXT} deaktivieren`);
+            button.textContent = `${SERVICE_TEXT} deaktivieren`;
             isEvent ? setCookie(`${SERVICE}-allowed`, 0, -1) : '';
         } else {
-            button.html(`${SERVICE_TEXT} aktivieren`);
+            button.textContent = `${SERVICE_TEXT} aktivieren`;
             isEvent ? setCookie(`${SERVICE}-allowed`, COOKIE_VALUE, COOKIE_DAYS_ALIVE) : '';
         }
         //rest webpage
@@ -86,14 +88,23 @@ agrarvolution.consent = (() => {
         agrarvolution.parseText.updateService(event.target.getAttribute('data-service'), true, true);
     }
     function removeConsent(service) {
-        document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => consent.closest('.kg-consent-container').remove());
+        document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => {
+            const consentText = consent.closest('.kg-consent-container');
+            if (consentText) {
+                consentText.parentNode = null;
+            }
+        });
     }
 
     return {
         'generateEmbedConsentText': generateEmbedConsentText,
         'createConsentButtonListener': createConsentButtonListener,
         'removeConsent': removeConsent,
-        'getCookie': getCookie
+        'getCookie': getCookie,
+        'setCookie': setCookie,
+        'COOKIE_VALUE': COOKIE_VALUE,
+        'COOKIE_DAYS_ALIVE': COOKIE_DAYS_ALIVE,
+        'setupConsentButtons': setupConsentButtons
     }
 })();
 
@@ -413,6 +424,7 @@ agrarvolution.parseText = (() => {
      * Service embeds
      */
     function createInstagramEmbedFromLink(link) {
+        console.log(link.nextSibling);
         const extraData = parseExtraData(link.nextSibling);
         let instagramCard = instagramTemplate.content.cloneNode(true);
 
@@ -626,8 +638,8 @@ agrarvolution.parseText = (() => {
                 default:
                     break;
             }
-            agarvolution.consent.removeConsent(service);
-            setCookie(`${service}-allowed`, COOKIE_VALUE, COOKIE_DAYS_ALIVE);
+            agrarvolution.consent.removeConsent(service);
+            agrarvolution.consent.setCookie(`${service}-allowed`, agrarvolution.consent.COOKIE_VALUE, agrarvolution.consent.COOKIE_DAYS_ALIVE);
         } else {
             switch (service) {
                 case 'youtube':
@@ -647,14 +659,21 @@ agrarvolution.parseText = (() => {
     }
 
     function parseLinks() {
-        const links = document.querySelectorAll('.content > p a:only-child');
+        const links = [...document.querySelectorAll('.content > p > a:first-child')].filter(
+            node => {
+                if (node.previousSibling) {
+                    return false;
+                }
+                return true;
+            }
+        );
         const iframes = document.querySelectorAll('iframe');
 
         //disable link replacement on linktree
         const headline = document.querySelector('.major h1');
         if (headline != null && headline !== undefined && headline.textContent.toLowerCase() !== 'linktree') {
             /* Setup unconverted Youtube-Links as iFrame */
-            [...links].filter(link => {
+            links.filter(link => {
                 const url = new URL(link.href);
                 if (url.hostname === 'www.youtube.com' || url.hostname === 'www.youtube-nocookie.com') {
                     return true;
@@ -662,7 +681,7 @@ agrarvolution.parseText = (() => {
                 return false;
             }).forEach(link => createYoutubeEmbedFromLink(link));
             /*Setup unconverted Instagram-Link as Blockquote */
-            [...links].filter(link => {
+            links.filter(link => {
                 const url = new URL(link.href);
                 if (url.hostname === 'www.instagram.com') {
                     return true;
@@ -690,9 +709,11 @@ agrarvolution.parseText = (() => {
     }
 
     return {
-        parseLinks: parseLinks
+        parseLinks: parseLinks,
+        updateService: updateService
     }
 })();
 
+agrarvolution.consent.setupConsentButtons();
 agrarvolution.parseText.parseLinks();
 agrarvolution.videoHandling.setupBreakpoints(breakpoints);
