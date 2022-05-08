@@ -16,7 +16,7 @@
     {{!-- <link rel="preload" href="{{asset "main/js/jquery.min.js"}}" as="script"> --}}
     {{!-- <link rel="preload" href="{{asset "main/js/browser.min.js"}}" as="script"> --}}
     <link rel="preload" href="{{asset "main/js/breakpoints.min.js"}}" as="script">
-    <link rel="preload" href="{{asset "main/js/main.min.js"}}" as="script">
+    <link rel="preload" href="{{asset "main/js/main.js"}}" as="script">
 
     <link rel="preload" type="text/css" href="{{asset "main/css/main.css"}}" as="style" />
     <link rel="stylesheet" type="text/css" href="{{asset "main/css/main.css"}}" />
@@ -24,6 +24,7 @@
     <script>
         //Detect image support
         function F(a){document.documentElement.classList.add(a)}var A=new Image;A.src="data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=",A.onload=function(){F("avif")},A.onerror=function(){var a=new Image;a.src="data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",a.onload=function(){F("webp")}};
+        window.addEventListener("load",(e=>{window.setTimeout((function(){document.querySelector("body").classList.remove("is-preload")}),50)}));
     </script>
     <noscript>
         <link rel="stylesheet" href="{{asset "main/css/noscript.css"}}" />
@@ -87,7 +88,7 @@
     {{!-- <script src="{{asset "main/js/jquery.min.js"}}"></script> --}}
     {{!-- <script src="{{asset "main/js/browser.min.js"}}"></script> --}}
     <script src="{{asset "main/js/breakpoints.min.js"}}"></script>
-    <script src="{{asset "main/js/main.min.js"}}"></script>
+    <script src="{{asset "main/js/main.js"}}"></script>
     <script src="{{asset "main/js/media.min.js"}}" async type="text/javascript"></script>
 
     {{!-- Ghost outputs important scripts & data with the {ghost_foot} tag

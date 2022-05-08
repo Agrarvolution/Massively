@@ -25,13 +25,6 @@
 	}
 	breakpoints(breakPointSource);
 
-	// // Play initial animations on page load.
-	window.addEventListener('load', event => {
-		window.setTimeout(function () {
-			Body.classList.remove('is-preload');
-		}, 50);
-	});
-
 	// Nav Panel switch between portrait and landscape
 	breakpoints.on('>medium', function () {
 
