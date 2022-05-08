@@ -224,14 +224,6 @@
 		return true;
 	})
 
-	//Call aditional helper methods
-	if (agrarvolution && agrarvolution.videoHandling) {
-		agrarvolution.videoHandling.setupBreakpoints(breakpoints);
-	}
-	if (agrarvolution && agrarvolution.parseText) {
-		agrarvolution.parseText.parseLinks();
-	}
-
 	/**
 	 * Viewport width without scrollbar variable for css
 	 */
