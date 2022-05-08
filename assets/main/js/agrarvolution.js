@@ -303,43 +303,7 @@ agrarvolution.parseText = (() => {
     let youtubeNodes = [], instagramNodes = [];
     let fallBackFormats = {};
 
-    //Create responsive links for all images
-    [...document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img')]
-        .filter(image => {
-            if (image.closest('figure:not(.kg-responsive)')) {
-                return true;
-            }
-            return false;
-        }).forEach(image => {
-            const fileType = agrarvolution.util.getFileType(image.src);
 
-            if (!agrarvolution.util.isLinkOnsite(image.src) || fileType === 'svg') {
-                return false;
-            }
-
-            const parent = image.closest('figure.kg-card');
-            let type = 'normal';
-
-            if (parent.classList.contains('.kg-width-full')) {
-                type = 'full';
-            } else if (parent.classList.contains('.kg-width-half')) {
-                type = 'half';
-            } else if (parent.classList.contains('.kg-gallery-card')) {
-                type = 'gallery';
-            } else if (parent.classList.contains('.kg-partner-card')) {
-                type = 'partner';
-            } else if (parent.classList.contains('.kg-bookmark-card')) {
-                type = 'bookmark';
-            }
-
-            if (fallBackFormats[fileType]) {
-                image.parentNode.replaceChild(generatePictureElement(image.src, [fileType, fallBackFormats[fileType]], image.alt, type), image);
-            } else {
-                image.srcset = generateSrcSet(image.src, type);
-                image.sizes = imageSizeAttribute[type];
-            }
-
-        });
 
 
     //Generator methods
@@ -349,7 +313,10 @@ agrarvolution.parseText = (() => {
      */
     function generateEmbedFigure(extraClasses) {
         const figure = document.createElement('figure');
-        figure.classList.add('kg-card', 'kg-embed-card', ...extraClasses.trim().split(' '));
+        figure.classList.add('kg-card', 'kg-embed-card');
+        if (extraClasses && extraClasses !== '') {
+            figure.classList.add(...extraClasses.trim().split(' '));
+        }
         return figure;
     }
     function generateFigureCaption(caption) {
@@ -542,12 +509,11 @@ agrarvolution.parseText = (() => {
     }
 
     function updateInstagramLink(instagram) {
-        if (!instagram.parentNode.tagName === 'figure') {
+        if (instagram.parentNode.tagName !== 'FIGURE') {
             const embed = generateEmbedFigure('');
-            const next = instgram.next('script');
-            instagram.parentNode.insertBefore(embed);
+
+            instagram.parentNode.insertBefore(embed, instagram);
             embed.appendChild(instagram);
-            embed.appendChild(next);
         }
     }
     function unembedInstagramLink(href) {
@@ -643,7 +609,7 @@ agrarvolution.parseText = (() => {
                     youtubeNodes.forEach(iFrame => enableYoutube(iFrame));
                     break;
                 case 'instagram':
-                    body.appendChild(instagramScriptTemplate);
+                    body.appendChild(instagramScriptTemplate.content.cloneNode(true));
                     if (isEvent) {
                         location.reload(true);
                     }
@@ -669,6 +635,46 @@ agrarvolution.parseText = (() => {
         }
 
 
+    }
+
+    //Create responsive links for all images
+    function createReponsiveImages() {
+        [...document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img')]
+            .filter(image => {
+                if (image.closest('figure:not(.kg-responsive)')) {
+                    return true;
+                }
+                return false;
+            }).forEach(image => {
+                const fileType = agrarvolution.util.getFileType(image.src);
+
+                if (!agrarvolution.util.isLinkOnsite(image.src) || fileType === 'svg') {
+                    return false;
+                }
+
+                const parent = image.closest('figure.kg-card');
+                let type = 'normal';
+
+                if (parent.classList.contains('.kg-width-full')) {
+                    type = 'full';
+                } else if (parent.classList.contains('.kg-width-half')) {
+                    type = 'half';
+                } else if (parent.classList.contains('.kg-gallery-card')) {
+                    type = 'gallery';
+                } else if (parent.classList.contains('.kg-partner-card')) {
+                    type = 'partner';
+                } else if (parent.classList.contains('.kg-bookmark-card')) {
+                    type = 'bookmark';
+                }
+
+                if (fallBackFormats[fileType]) {
+                    image.parentNode.replaceChild(generatePictureElement(image.src, [fileType, fallBackFormats[fileType]], image.alt, type), image);
+                } else {
+                    image.srcset = generateSrcSet(image.src, type);
+                    image.sizes = imageSizeAttribute[type];
+                }
+
+            });
     }
 
     function parseLinks() {
@@ -719,6 +725,8 @@ agrarvolution.parseText = (() => {
         instagramNodes = [...document.querySelectorAll('blockquote.instagram-media')];
         instagramNodes.forEach(node => updateInstagramLink(node));
         updateService('instagram', agrarvolution.consent.getCookie(`instagram-allowed`), false);
+
+        createReponsiveImages();
     }
 
     return {
