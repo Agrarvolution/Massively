@@ -1,6 +1,6 @@
 var agrarvolution = agrarvolution || {};
 
-agrarvolution.consent = () => {
+agrarvolution.consent = (() => {
     /** 
      * Consent handling
      */
@@ -34,13 +34,13 @@ agrarvolution.consent = () => {
         return null;
     }
 
-    document.querySelectorAll('.kg-consent-option button').each(function () {
-        toggleConsent(this, IS_EVENT.no);
-        this.addEventListener('click', toggleConsentListener);
+    [...document.querySelectorAll('.kg-consent-option button')].forEach(consentButton => {
+        toggleConsent(consentButton, IS_EVENT.no);
+        consentButton.addEventListener('click', toggleConsentListener);
     });
 
-    function toggleConsentListener() {
-        toggleConsent(this, IS_EVENT.yes);
+    function toggleConsentListener(consentButton) {
+        toggleConsent(consentButton, IS_EVENT.yes);
     }
 
     function toggleConsent(button, isEvent) {
@@ -95,9 +95,9 @@ agrarvolution.consent = () => {
         'removeConsent': removeConsent,
         'getCookie': getCookie
     }
-}
+}) ();
 
-agrarvolution.videoHandling = () => {
+agrarvolution.videoHandling = (() => {
     let videos = [];
     const videoSizes = {
         'normal': {
@@ -178,11 +178,9 @@ agrarvolution.videoHandling = () => {
     return {
         'setupBreakpoints': setupBreakpoints
     }
-}
+})();
 
-
-
-agrarvolution.util = () => {
+agrarvolution.util = (() => {
     function getFileType(href) {
         try {
             if (href === undefined) {
@@ -233,14 +231,11 @@ agrarvolution.util = () => {
         'getFileType': getFileType,
         'isLinkOnsite': isLinkOnsite
     }
+})();
 
 
 
-}
-
-
-
-agrarvolution.parseText = () => {
+agrarvolution.parseText = (() => {
     const imageMimeTypes = {
         'gif': 'image/gif',
         'jpeg': 'image/jpeg',
@@ -683,4 +678,8 @@ agrarvolution.parseText = () => {
     return {
         parseLinks: parseLinks
     }
-}
+})();
+
+
+agrarvolution.parseText.parseLinks();
+agrarvolution.videoHandling.setupBreakpoints(breakpoints);
