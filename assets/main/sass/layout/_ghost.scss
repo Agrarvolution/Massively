@@ -8,6 +8,8 @@
 #wrapper > .bg {
     background-position: top center;
     background-size: auto, auto, cover;
+    height: 100vh;
+    position: fixed;
 }
 
 #intro {
