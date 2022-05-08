@@ -68,7 +68,7 @@ agrarvolution.consent = (() => {
         const consentTemplateClone = consentTemplate.content.cloneNode(true);
 
         consentTemplateClone.querySelectorAll('span[data-service]').forEach(node => {
-            node.textContent = service;
+            node.replaceWith(service);
         });
         consentTemplateClone.querySelector('.kg-consent p a').href = `${gdprLink}#${lowerCaseService}-datenschutzerklaerung`;
         consentTemplateClone.querySelector('.kg-consent-interface a').href = href;
@@ -83,7 +83,7 @@ agrarvolution.consent = (() => {
     }
 
     function consentGiven(event) {
-        updateService(event.target.getAttribute('data-service'), true, true);
+        agrarvolution.parseText.updateService(event.target.getAttribute('data-service'), true, true);
     }
     function removeConsent(service) {
         document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => consent.closest('.kg-consent-container').remove());
@@ -424,7 +424,7 @@ agrarvolution.parseText = (() => {
         }
 
         instagramCard.querySelector('blockquote').setAttribute('data-instgrm-permalink', `${link.href}?utm_source=ig_embed&amp;utm_campaign=loading`);
-        console.log(extraData.classes);
+
         instagramCard.classList.add(...(extraData.classes || []));
         if (extraData.caption) {
             instagramCard.classList.add('kg-card-hascaption');
@@ -456,14 +456,15 @@ agrarvolution.parseText = (() => {
         iFrame.src = generateNoCookieYoutubeLink(iFrame.src);
         const captionText = iFrame.getAttribute('data-figcaption');
         const captionClass = captionText !== '' ? "kg-card-hascaption" : '';
+        const figureParent = iFrame.closest('figure.kg-card');
+        const classes = iFrame.getAttribute('data-classes') || '' + ' ' + captionClass + " test";
 
-        if (iFrame.parentNode.tagName !== 'figure') {
-            const classes = iFrame.getAttribute('data-classes') || '' + ' ' + captionClass + " test";
+        if (figureParent) {   
+            figureParent.classList.add(...classes.trim().split(' '));
+        } else {
             const figure = generateEmbedFigure(classes.trim());
             iFrame.parentNode.insertBefore(figure, iFrame);
             figure.appendChild(iFrame);
-        } else {
-
         }
 
         iFrame.parentNode.classList.add('kg-video-card');
@@ -693,6 +694,5 @@ agrarvolution.parseText = (() => {
     }
 })();
 
-agrarvolution.consent.createConsentButtonListener();
 agrarvolution.parseText.parseLinks();
 agrarvolution.videoHandling.setupBreakpoints(breakpoints);
