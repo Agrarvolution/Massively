@@ -95,7 +95,7 @@ agrarvolution.consent = (() => {
         'removeConsent': removeConsent,
         'getCookie': getCookie
     }
-}) ();
+})();
 
 agrarvolution.videoHandling = (() => {
     let videos = [];
@@ -279,27 +279,31 @@ agrarvolution.parseText = (() => {
     let fallBackFormats = {};
 
     //Create responsive links for all images
-    document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img')
-        .filter(image => image.closest('figure:not(.kg-responsive)'))
-        .forEach(image => {
+    [...document.querySelectorAll('img.kg-image, .kg-gallery-image>img, .kg-partner-card img, .kg-bookmark-thumbnail img')]
+        .filter(image => {
+            if (image.closest('figure:not(.kg-responsive)')) {
+                return true;
+            }
+            return false;
+        }).forEach(image => {
             const fileType = agrarvolution.util.getFileType(image.src);
 
             if (!agrarvolution.util.isLinkOnsite(image.src) || fileType === 'svg') {
                 return false;
             }
 
-            var parent = image.closest('figure.kg-card');
-            var type = 'normal';
+            const parent = image.closest('figure.kg-card');
+            let type = 'normal';
 
-            if (parent.is('.kg-width-full')) {
+            if (parent.classList.contains('.kg-width-full')) {
                 type = 'full';
-            } else if (parent.is('.kg-width-half')) {
+            } else if (parent.classList.contains('.kg-width-half')) {
                 type = 'half';
-            } else if (parent.is('.kg-gallery-card')) {
+            } else if (parent.classList.contains('.kg-gallery-card')) {
                 type = 'gallery';
-            } else if (parent.is('.kg-partner-card')) {
+            } else if (parent.classList.contains('.kg-partner-card')) {
                 type = 'partner';
-            } else if (parent.is('.kg-bookmark-card')) {
+            } else if (parent.classList.contains('.kg-bookmark-card')) {
                 type = 'bookmark';
             }
 
@@ -320,7 +324,7 @@ agrarvolution.parseText = (() => {
      */
     function generateEmbedFigure(extraClasses) {
         const figure = document.createElement('figure');
-        figure.classList.add('kg-card', 'kg-embed-card', extraClasses);
+        figure.classList.add('kg-card', 'kg-embed-card', ...extraClasses.trim().split(' '));
         return figure;
     }
     function generateFigureCaption(caption) {
@@ -410,60 +414,69 @@ agrarvolution.parseText = (() => {
      */
     function createInstagramEmbedFromLink(link) {
         const extraData = parseExtraData(link.nextSibling);
-        const instagramCard = instagramTemplate.content.cloneNode(true);
+        let instagramCard = instagramTemplate.content.cloneNode(true);
 
-        var $this = $(this);
-        if (link.parentNode.tagName === 'p') {
-            link.parentNode.replaceWith(...link);
+        link.parentNode.prepend(instagramCard);
+        instagramCard = link.parentNode.querySelector('.kg-instagram');
+
+        if (link.parentNode.tagName === 'P') {
+            link.parentNode.replaceWith(instagramCard);
         }
 
-        instagramCard.firstChild.setAttribute('data-instgrm-permalink', `${link.href}?utm_source=ig_embed&amp;utm_campaign=loading`);
-        instagramCard.classList.add(...extraData.classes);
+        instagramCard.querySelector('blockquote').setAttribute('data-instgrm-permalink', `${link.href}?utm_source=ig_embed&amp;utm_campaign=loading`);
+        console.log(extraData.classes);
+        instagramCard.classList.add(...(extraData.classes || []));
         if (extraData.caption) {
             instagramCard.classList.add('kg-card-hascaption');
             instagramCard.appendChild(generateFigureCaption(extraData.caption));
         }
 
-        link.replaceWith(instagramCard);
+
     }
 
     function createYoutubeEmbedFromLink(link) {
         const extraData = parseExtraData(link.nextSibling);
-        const youtubeFrame = youtubeIFrameTemplate.content.cloneNode(true);
+        let youtubeFrame = youtubeIFrameTemplate.content.cloneNode(true);
 
-        if (link.parentNode.tagName === 'p') {
-            link.parentNode.replaceWith(...link);
+        link.parentNode.prepend(youtubeFrame);
+        youtubeFrame = link.parentNode.querySelector('iframe');
+
+        if (link.parentNode.tagName === 'P') {
+            link.parentNode.replaceWith(youtubeFrame);
         }
+
 
         youtubeFrame.src = generateYoutubeEmbedLink(link.href);
         youtubeFrame.setAttribute('data-figcaption', extraData.caption);
-        youtubeFrame.setAttribute('data-classes', extraClasses.classes);
-
-        link.youtubeFrame;
+        youtubeFrame.setAttribute('data-classes', extraData.classes);
     }
 
     // Youtube util methods
     function updateYoutubeLink(iFrame) {
         iFrame.src = generateNoCookieYoutubeLink(iFrame.src);
-        const captionText = this.getAttribute('data-figcaption');
+        const captionText = iFrame.getAttribute('data-figcaption');
         const captionClass = captionText !== '' ? "kg-card-hascaption" : '';
 
-
         if (iFrame.parentNode.tagName !== 'figure') {
-            const figure = generateEmbedFigure(this.getAttribute('data-classes') + captionClass);
+            const classes = iFrame.getAttribute('data-classes') || '' + ' ' + captionClass + " test";
+            const figure = generateEmbedFigure(classes.trim());
             iFrame.parentNode.insertBefore(figure, iFrame);
             figure.appendChild(iFrame);
+        } else {
+
         }
-        iFrame.parentNode.classListe.adds('kg-video-card');
+
+        iFrame.parentNode.classList.add('kg-video-card');
+
         if (!iFrame.parentNode.classList.contains('kg-video')) {
             const kgVideo = document.createElement('div');
             kgVideo.classList.add('kg-video');
-            iFrame.parentNode.insertBefore(kgVideo, iFrame);
-            figure.appendChild(kgVideo);
+            iFrame.parentNode.appendChild(kgVideo);
+            kgVideo.appendChild(iFrame);
         }
 
         if (captionText !== '') {
-            iFrame.parentNode.appendChild(generateFigureCaption(captionText));
+            iFrame.closest('.kg-video-card').appendChild(generateFigureCaption(captionText));
         }
     }
 
@@ -498,7 +511,7 @@ agrarvolution.parseText = (() => {
     function disableInstagram(instagram) {
         instagram.setAttribute('data-src', instagram.getAttribute('data-instgrm-permalink'));
         instagram.setAttribute('data-instgrm-permalink', '');
-        instagram.insertBefore(agarvolution.consent
+        instagram.parentNode.prepend(agrarvolution.consent
             .generateEmbedConsentText('Instagram', unembedInstagramLink(instagram.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
     }
 
@@ -529,14 +542,14 @@ agrarvolution.parseText = (() => {
     }
     //block external sources from loading -> setup for consent
     function disableYoutube(iFrame) {
-        iFrame.setAttribute('data-src', this.src);
+        iFrame.setAttribute('data-src', iFrame.src);
         iFrame.src = '';
 
-        const consent = agarvolution.consent.generateEmbedConsentText('Youtube', unembedYoutubeLink(iFrame.getAttribute('data-src')), "/datenschutzerklarung/");
-        if (iFrame.parentNode.classList.containes('.kg-video')) {
-            iFrame.parentNode.insertBefore(consent);
+        const consent = agrarvolution.consent.generateEmbedConsentText('Youtube', unembedYoutubeLink(iFrame.getAttribute('data-src')), "/datenschutzerklarung/");
+        if (iFrame.parentNode.classList.contains('.kg-video')) {
+            iFrame.parentNode.parentNode.prepend(consent);
         } else {
-            iFrame.insertBefore(consent);
+            iFrame.parentNode.prepend(consent);
         }
     }
 
@@ -601,7 +614,7 @@ agrarvolution.parseText = (() => {
         if (active) {
             switch (service) {
                 case 'youtube':
-                    youtube.forEach(iFrame => enableYoutube(iFrame));
+                    youtubeNodes.forEach(iFrame => enableYoutube(iFrame));
                     break;
                 case 'instagram':
                     body.appendChild(instagramScriptTemplate);
@@ -617,16 +630,16 @@ agrarvolution.parseText = (() => {
         } else {
             switch (service) {
                 case 'youtube':
-                    youtube.forEach(iFrame => disableYoutube(iFrame));
+                    youtubeNodes.forEach(iFrame => disableYoutube(iFrame));
                     break;
                 case 'instagram':
                     document.querySelectorAll('.instagram-media + script, script.instagram').forEach(node => node.remove());
-                    instagram.forEach(node => disableInstagram(node));
+                    instagramNodes.forEach(node => disableInstagram(node));
                     break;
                 default:
                     break;
             }
-            agarvolution.consent.createConsentButtonListener(service);
+            agrarvolution.consent.createConsentButtonListener(service);
         }
 
 
@@ -665,14 +678,14 @@ agrarvolution.parseText = (() => {
             }
             return false;
         })
-        youtubeNode.forEach(iFrame => updateYoutubeLink(iFrame));
+        youtubeNodes.forEach(iFrame => updateYoutubeLink(iFrame));
 
         updateService('youtube', agrarvolution.consent.getCookie(`youtube-allowed`), false);
 
         //get all unactivated instagram embeds
         instagramNodes = [...document.querySelectorAll('blockquote.instagram-media')];
         instagramNodes.forEach(node => updateInstagramLink(node));
-        updateService('instagram', getCookie(`instagram-allowed`), false);
+        updateService('instagram', agrarvolution.consent.getCookie(`instagram-allowed`), false);
     }
 
     return {
@@ -680,6 +693,6 @@ agrarvolution.parseText = (() => {
     }
 })();
 
-
+agrarvolution.consent.createConsentButtonListener();
 agrarvolution.parseText.parseLinks();
 agrarvolution.videoHandling.setupBreakpoints(breakpoints);
