@@ -91,7 +91,6 @@
 				return false;
 			}
 			let menuObserver = new IntersectionObserver(entries => {
-				console.log(entries[0]);
 				if (entries[0].isIntersecting) {
 					Nav.classList.remove('alt');
 					NavPanelToggle.classList.remove('alt');
