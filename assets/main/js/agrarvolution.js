@@ -92,7 +92,8 @@ agrarvolution.consent = () => {
     return {
         'generateEmbedConsentText': generateEmbedConsentText,
         'createConsentButtonListener': createConsentButtonListener,
-        'removeConsent': removeConsent
+        'removeConsent': removeConsent,
+        'getCookie': getCookie
     }
 };
 
@@ -135,7 +136,9 @@ agrarvolution.gdprExternalMedia = () => {
 
 
     }
-
+    return {
+        'updateService': updateService
+    }
 };
 
 agrarvolution.videoHandling = (() => {
@@ -315,6 +318,10 @@ agrarvolution.parseText = () => {
         'full': '(min-width: 2281px) 2000px, (min-width: 1681px) 1536px, (min-width: 1281px) 1152px, (min-width: 981px) 1056px, (min-width: 481px) 70vw, 100vw',
         'partner': '(min-width: 1681px) 300px, (min-width: 737px) 200px, (min-width: 567px) 35vw, 200px'
     }
+    const instagramTemplate = document.querySelector('#instagram-template-card');
+    const youtubeIFrameTemplate = document.querySelector('#youtube-iframe-template');
+    const youtubeNoCookieHost = "www.youtube-nocookie.com";
+    const youtubeSubpath = "/embed/";
 
     let fallBackFormats = {};
 
@@ -445,9 +452,154 @@ agrarvolution.parseText = () => {
         return img;
     }
 
+    /**
+     * Service embeds
+     */
+    function createInstagramEmbedFromLink(link) {
+        const extraData = parseExtraData(link.nextSibling);
+        const instagramCard = instagramTemplate.content.cloneNode(true);
+
+        var $this = $(this);
+        if (link.parentNode.tagName === 'p') {
+            link.parentNode.replaceWith(...link);
+        }
+
+        instagramCard.firstChild.setAttribute('data-instgrm-permalink', `${link.href}?utm_source=ig_embed&amp;utm_campaign=loading`);
+        instagramCard.classList.add(...extraData.classes);
+        if (extraData.caption) {
+            instagramCard.classList.add('kg-card-hascaption');
+            instagramCard.appendChild(generateFigureCaption(extraData.caption));
+        }
+
+        link.replaceWith(instagramCard);
+    }
+
+    function createYoutubeEmbedFromLink(link) {
+        const extraData = parseExtraData(link.nextSibling);
+        const youtubeFrame = youtubeIFrameTemplate.content.cloneNode(true);
+
+        if (link.parentNode.tagName === 'p') {
+            link.parentNode.replaceWith(...link);
+        }
+
+        youtubeFrame.src = generateYoutubeEmbedLink(link.href);
+        youtubeFrame.setAttribute('data-figcaption', extraData.caption);
+        youtubeFrame.setAttribute('data-classes', extraClasses.classes);
+
+        link.youtubeFrame;
+    }
+
+    // Youtube util methods
+    function updateYoutubeLink(iFrame) {
+        iFrame.src = generateNoCookieYoutubeLink(iFrame.src);
+        const captionText = this.getAttribute('data-figcaption');
+        const captionClass = captionText !== '' ? "kg-card-hascaption" : '';
 
 
+        if (iFrame.parentNode.tagName !== 'figure') {
+            const figure = generateEmbedFigure(this.getAttribute('data-classes') + captionClass);
+            iFrame.parentNode.insertBefore(figure, iFrame);
+            figure.appendChild(iFrame);
+        }
+        iFrame.parentNode.classListe.adds('kg-video-card');
+        if (!iFrame.parentNode.classList.contains('kg-video')) {
+            const kgVideo = document.createElement('div');
+            kgVideo.classList.add('kg-video');
+            iFrame.parentNode.insertBefore(kgVideo, iFrame);
+            figure.appendChild(kgVideo);
+        }
 
+        if (captionText !== '') {
+            iFrame.parentNode.appendChild(generateFigureCaption(captionText));
+        }
+    }
+
+    function generateYoutubeEmbedLink(href) {
+        if (href === undefined || href == null) {
+            return false;
+        }
+
+        const url = new URL(href);
+
+        if (!url.pathname.match(youtubeSubpath)) {
+            url.pathname = youtubeSubpath + url.searchParams.get('v');
+            url.searchParams.delete('v');
+        }
+        return url.href;
+    }
+    function generateNoCookieYoutubeLink(src) {
+        if (src === undefined || src == null) {
+            return false;
+        }
+        const url = new URL(src);
+        if (url.host !== youtubeNoCookieHost) {
+            url.host = youtubeNoCookieHost;
+        }
+        return url.href;
+    }
+
+    /**
+     * Setup methods
+     */
+    //Instagram
+    function disableInstagram(instagram) {
+        instagram.setAttribute('data-src', instagram.getAttribute('data-instgrm-permalink'));
+        instagram.setAttribute('data-instgrm-permalink', '');
+        instagram.insertBefore(agarvolution.consent
+            .generateEmbedConsentText('Instagram', unembedInstagramLink(instagram.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
+    }
+
+    function updateInstagramLink(instagram) {
+        if (!instagram.parentNode.tagName === 'figure') {
+            const embed = generateEmbedFigure('');
+            const next = instgram.next('script');
+            instagram.parentNode.insertBefore(embed);
+            embed.appendChild(instagram);
+            embed.appendChild(next);
+        }
+    }
+    function unembedInstagramLink(href) {
+        if (href && href !== false) {
+            const url = new URL(href);
+            url.search = '';
+            return url.href
+        }
+        return href;
+    }
+
+    //Youtube
+    /** Youtube specific setup methods */
+    function enableYoutube(iFrame) {
+        if (iFrame.hasAttribute('data-src')) {
+            iFrame.src = iFrame.getAttribute('data-src');
+        }
+    }
+    //block external sources from loading -> setup for consent
+    function disableYoutube(iFrame) {
+        iFrame.setAttribute('data-src', this.src);
+        iFrame.src = '';
+
+        const consent = agarvolution.consent.generateEmbedConsentText('Youtube', unembedYoutubeLink(iFrame.getAttribute('data-src')), "/datenschutzerklarung/");
+        if (iFrame.parentNode.classList.containes('.kg-video')) {
+            iFrame.parentNode.insertBefore(consent);
+        } else {
+            iFrame.insertBefore(consent);
+        }
+    }
+
+    function unembedYoutubeLink(href) {
+        if (href && href !== false) {
+            const url = new URL(href);
+            url.host = 'www.youtube.com'
+            const id = url.pathname.replace("/embed/", '');
+            url.pathname = "/watch";
+            url.search = "";
+            url.searchParams.set('v', id);
+
+            return (url.href);
+        }
+        return href;
+    }
 
     //Util methods
 
@@ -490,178 +642,49 @@ agrarvolution.parseText = () => {
             return href.replace('/images/', '/images/size' + size);
         }
     }
-}
 
+    function parseLinks() {
+        const links = document.querySelectorAll('.content > p a:only-child');
+        const iframes = document.querySelectorAll('iframe');
 
+        //disable link replacement on linktree
+        const headline = document.querySelector('.major h1');
+        if (headline != null && headline !== undefined && headline.textContent.toLowerCase() !== 'linktree') {
+            /* Setup unconverted Youtube-Links as iFrame */
+            [...links].filter(link => {
+                const url = new URL(link.href);
+                if (url.hostname === 'www.youtube.com' || url.hostname === 'www.youtube-nocookie.com') {
+                    return true;
+                }
+                return false;
+            }).forEach(link => createYoutubeEmbedFromLink(link));
+            /*Setup unconverted Instagram-Link as Blockquote */
+            [...links].filter(link => {
+                const url = new URL(link.href);
+                if (url.hostname === 'www.instagram.com') {
+                    return true;
+                }
+                return false;
+            }).forEach(link => createInstagramEmbedFromLink(link));
+        }
 
+        //get all youtube video iframes
+        [...iframes].filter(iFrame => {
+            const url = new URL(iFrame.src);
+            if (url.hostname === 'www.youtube.com' || url.hostname === 'www.youtube-nocookie.com') {
+                return true;
+            }
+            return false;
+        }).forEach(iFrame => updateYoutubeLink(iFrame));
 
+        agrarvolution.gdprExternalMedia.updateService('youtube', agrarvolution.consent.getCookie(`youtube-allowed`), false);
 
-
-//get all free links
-var links = $('.content > p a:only-child');
-
-//disable link replacement on linktree
-var headline = document.querySelector('.major h1');
-if (headline != null && headline !== undefined && headline.textContent !== 'Linktree') {
-    /* Setup unconverted Youtube-Links as iFrame */
-    links.filter("[href*='https://www.youtube.com'], [href*='https://www.youtube-nocookie.com']")
-        .each(createYoutubeEmbedFromLink);
-    /*Setup unconverted Instagram-Link as Blockquote */
-    links.filter("[href*='https://www.instagram.com']").each(createInstagramEmbedFromLink);
-}
-
-
-
-var iframes = $('iframe');
-//get all youtube video iframes
-var youtube = iframes.filter("[src*='https://www.youtube.com'], [src*='https://www.youtube-nocookie.com']")
-    .each(updateYoutubeLink);
-updateService('youtube', getCookie(`youtube-allowed`), false);
-//get all unactivated instagram embeds
-var instagram = $('blockquote.instagram-media').each(updateInstagramLink);
-updateService('instagram', getCookie(`instagram-allowed`), false);
-
-
-
-
-/** 
- * Instagram specific setup methods 
- * */
-function disableInstagram() {
-    this.setAttribute('data-src', this.getAttribute('data-instgrm-permalink'));
-    this.setAttribute('data-instgrm-permalink', '');
-    $(this).before(agarvolution.consent.generateEmbedConsentText('Instagram', unembedInstagramLink(this.getAttribute('data-instgrm-permalink')), "/datenschutzerklarung/"));
-}
-
-function createInstagramEmbedFromLink() {
-    var href = this.href;
-    var $this = $(this);
-    if ($this.parent().is('p')) {
-        $this.unwrap();
+        //get all unactivated instagram embeds
+        [...document.querySelectorAll('blockquote.instagram-media')].forEach(node => updateInstagramLink(node));
+        agrarvolution.gdprExternalMedia.updateService('instagram', getCookie(`instagram-allowed`), false);
     }
 
-    var extraData = parseExtraData(this.nextSibling);
-    var caption = extraData.caption ? extraData.caption : '';
-    var classes = extraData.classes ? extraData.classes : '';
-
-    var newBlockquote = `<figure class="kg-card kg-embed-card kg-instagram ${classes} ${caption !== '' ? "kg-card-hascaption" : ''}">
-				<blockquote class="instagram-media"
-					data-instgrm-permalink="${href}?utm_source=ig_embed&amp;utm_campaign=loading"
-					data-instgrm-version="13">
-				</blockquote>
-				${caption !== '' ? generateFigureCaption(caption) : ''}
-			</figure>`;
-
-    $this.replaceWith(newBlockquote);
-}
-function updateInstagramLink() {
-    var $this = $(this);
-    if (!$this.parent().is('figure')) {
-        var next = $this.next('script');
-        $this.add(next).wrapAll(generateEmbedFigure(''));
+    return {
+        parseLinks: parseLinks
     }
 }
-function unembedInstagramLink(href) {
-    if (href && href !== false) {
-        var url = new URL(href);
-        url.search = '';
-        return url.href
-    }
-    return href;
-}
-/** Youtube specific setup methods */
-function enableYoutube() {
-    if (this.hasAttribute('data-src')) {
-        this.src = this.getAttribute('data-src');
-    }
-}
-//block external sources from loading -> setup for consent
-function disableYoutube() {
-    this.setAttribute('data-src', this.src);
-    this.src = '';
-    var $this = $(this);
-
-    var consent = agarvolution.consent.generateEmbedConsentText('Youtube', unembedYoutubeLink(this.getAttribute('data-src')), "/datenschutzerklarung/");
-    if ($this.parent().is('.kg-video')) {
-        $this.parent().before(consent);
-    } else {
-        $this.before(consent);
-    }
-}
-
-function updateYoutubeLink() {
-    this.src = generateNoCookieYoutubeLink(this.src);
-    var caption = this.getAttribute('data-figcaption');
-    var captionClass = caption && caption !== '' ? "kg-card-hascaption" : '';
-    var $this = $(this);
-
-    if (!$this.parent().is('figure')) {
-        $this.wrap(generateEmbedFigure(this.getAttribute('data-classes') + captionClass));
-    }
-    $this.parent().addClass('kg-video-card');
-    if (!$this.parent().is('kg-video')) {
-        $this.wrap('<div class="kg-video"</div>');
-    }
-
-    if (caption && caption !== '') {
-        $this.parent().append(generateFigureCaption(caption));
-    }
-}
-
-function unembedYoutubeLink(href) {
-    if (href && href !== false) {
-        var url = new URL(href);
-        url.host = 'www.youtube.com'
-        var id = url.pathname.replace("/embed/", '');
-        url.pathname = "/watch";
-        url.search = "";
-        url.searchParams.set('v', id);
-
-        return (url.href);
-    }
-    return href;
-}
-function createYoutubeEmbedFromLink() {
-    var href = generateYoutubeEmbedLink(this.href);
-    var $this = $(this);
-    if ($this.parent().is('p')) {
-        $this.unwrap();
-    }
-
-    var extraData = parseExtraData(this.nextSibling);
-    var caption = extraData.caption ? extraData.caption : '';
-    var classes = extraData.classes ? extraData.classes : '';
-
-    var newIFrame = `<iframe width="1920" height="1080" src="${href}" title="YouTube video player" frameborder="0" 
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-				allowfullscreen data-figcaption="${caption}" data-classes="${classes}">
-			</iframe>`;
-    $this.replaceWith(newIFrame);
-
-}
-function generateYoutubeEmbedLink(href) {
-    if (href === undefined || href == null) {
-        return false;
-    }
-    var subpath = "/embed/";
-    var url = new URL(href);
-    if (!url.pathname.match(subpath)) {
-        url.pathname = subpath + url.searchParams.get('v');
-        url.searchParams.delete('v');
-    }
-    return url.href;
-}
-function generateNoCookieYoutubeLink(src) {
-    if (src === undefined || src == null) {
-        return false;
-    }
-
-    var noCookieHost = "www.youtube-nocookie.com";
-
-    var url = new URL(src);
-    if (url.host !== noCookieHost) {
-        url.host = noCookieHost;
-    }
-    return url.href;
-}
-
