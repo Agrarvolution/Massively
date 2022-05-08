@@ -34,7 +34,7 @@ agrarvolution.consent = (() => {
         return null;
     }
 
-    function setupConsentButtons () {
+    function setupConsentButtons() {
         [...document.querySelectorAll('.kg-consent-option button')].forEach(consentButton => {
             toggleConsent(consentButton, IS_EVENT.no);
             consentButton.addEventListener('click', toggleConsentListener);
@@ -90,8 +90,9 @@ agrarvolution.consent = (() => {
     function removeConsent(service) {
         document.querySelectorAll(`[data-service="${service}"]`).forEach(consent => {
             const consentText = consent.closest('.kg-consent-container');
+
             if (consentText) {
-                consentText.parentNode = null;
+                consentText.parentNode.removeChild(consentText);
             }
         });
     }
@@ -126,32 +127,42 @@ agrarvolution.videoHandling = (() => {
             'xlarge': '/content/images/videos/225/'
         },
     };
-    function setupBreakpoints(breakpoints) {
+    function setupBreakpoints() {
         videos = document.querySelectorAll('video');
+        breakpoints({
+            default: ['2281px', null],
+            xxlarge: ['1681px', '2280px'],
+            xlarge: ['1281px', '1680px'],
+            large: ['981px', '1280px'],
+            medium: ['737px', '980px'],
+            small: ['481px', '736px'],
+            xsmall: ['361px', '480px'],
+            xxsmall: [null, '360px']
+        });
 
-        breakpoints.on('<=xsmall', function () {
+        breakpoints.on('<=xsmall', () => {
             updateVideoSize('xsmall');
         });
-        breakpoints.on('<=small', function () {
+        breakpoints.on('<=small', () => {
             updateVideoSize('small');
         });
-        breakpoints.on('<=medium', function () {
+        breakpoints.on('<=medium', () => {
             updateVideoSize('medium');
         });
-        breakpoints.on('<=xlarge', function () {
+        breakpoints.on('<=xlarge', () => {
             updateVideoSize('large');
         });
 
-        breakpoints.on('>xsmall', function () {
+        breakpoints.on('>xsmall', () => {
             updateVideoSize('small');
         });
-        breakpoints.on('>small', function () {
+        breakpoints.on('>small', () => {
             updateVideoSize('medium');
         });
-        breakpoints.on('>medium', function () {
+        breakpoints.on('>medium', () => {
             updateVideoSize('large');
         });
-        breakpoints.on('>xlarge', function () {
+        breakpoints.on('>xlarge', () => {
             updateVideoSize('xlarge');
         });
     }
@@ -173,7 +184,10 @@ agrarvolution.videoHandling = (() => {
         if (video.closest('kg-width-half')) {
             layoutType = 'half'
         }
-        video.children[0].src = replaceLink(videoSizes[layoutType], size, videos[i].children[0].src);
+        for (let i = 0; i < video.children.length; i++) {
+            video.children[i].src = replaceLink(videoSizes[layoutType], size, video.children[i].src);
+        }
+
         video.load();
     }
 
@@ -424,7 +438,6 @@ agrarvolution.parseText = (() => {
      * Service embeds
      */
     function createInstagramEmbedFromLink(link) {
-        console.log(link.nextSibling);
         const extraData = parseExtraData(link.nextSibling);
         let instagramCard = instagramTemplate.content.cloneNode(true);
 
@@ -471,7 +484,7 @@ agrarvolution.parseText = (() => {
         const figureParent = iFrame.closest('figure.kg-card');
         const classes = iFrame.getAttribute('data-classes') || '' + ' ' + captionClass + " test";
 
-        if (figureParent) {   
+        if (figureParent) {
             figureParent.classList.add(...classes.trim().split(' '));
         } else {
             const figure = generateEmbedFigure(classes.trim());
@@ -716,4 +729,4 @@ agrarvolution.parseText = (() => {
 
 agrarvolution.consent.setupConsentButtons();
 agrarvolution.parseText.parseLinks();
-agrarvolution.videoHandling.setupBreakpoints(breakpoints);
+agrarvolution.videoHandling.setupBreakpoints();
