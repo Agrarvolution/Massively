@@ -80,8 +80,8 @@
 
 		const ScrollTimeout = 500; //ms
 		const Intro = document.querySelector('#intro');
-
-		const LogoImage = document.querySelector('#header img')
+		const Main = document.querySelector('#main');
+		const LogoImage = document.querySelector('#header img');
 		altMenuObserver();
 		fadeInObserver();
 
@@ -109,29 +109,18 @@
 			if (!Intro) {
 				return false;
 			}
-			let previousY = 0, previousTime = 0;
+
 			let introObserver = new IntersectionObserver(entries => {
-				if (entries[0].boundingClientRect.y >= 0) {
-					return false;
-				}
-				if ((entries[0].time - previousTime) < ScrollTimeout && Math.floor((previousY - entries[0].boundingClientRect.y) / 20) === 0) {
-					previousTime = entries[0].time;
-					return false;
-				}
-
 				if (entries[0].isIntersecting) {
-					Intro.classList.remove('hidden');
+					Intro.classList.remove('hidden');					
 				} else {
-					Intro.classList.add('hidden');
+					Intro.classList.add('hidden');			
 				}
-				previousY = entries[0].boundingClientRect.y;
-				previousTime = entries[0].time;
-
 			}, {
-				rootMargin: '0px',
-				threshold: 0.5
+				rootMargin: '-50% 0px 25% 0px',
+				threshold: 0
 			});
-			introObserver.observe(Intro);
+			introObserver.observe(LogoImage);
 		}
 	}
 
