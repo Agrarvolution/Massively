@@ -187,8 +187,9 @@
 			}
 			if (HasFolder) {
 				href.replace(/\/w\d+\//g, size);
+				return href.replace('/images/', '/images/size' + size);
 			}
-			return href.replace('/images/', '/images/size' + size);
+			return href;
 		}
 	}
 
