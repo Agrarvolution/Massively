@@ -137,7 +137,7 @@
 .main-content--headline,
 .major,
 .content p {
-	hyphens: auto;
+	@include vendor("hyphens", "auto");
 }
 
 @supports (display: grid) {
