@@ -6,136 +6,132 @@
 
 /* Nav */
 
-	#nav {
-		@include color-list(invert);
-		@include color-typography(invert);
-		@include vendor('display', 'flex');
-		@include vendor('transition', (
-			'transform 1s ease',
-			'opacity 1s ease'
-		));
-		@include vendor('backdrop-filter', (
-			'blur(2px)'
-		));
-		@include vendor('transition', (
-			'background-color #{_duration(transition)} ease-in-out',
-			'color #{_duration(transition)} ease-in-out'
-		));
-		background: rgba(255, 255, 255, 0.125);
-		height: 4rem;
-		line-height: 4rem;
-		margin: -4rem auto 0 auto;
-		overflow: hidden;
-		padding: 0 2rem 0 0;
-		position: relative;
-		width: calc(100% - #{_size(padding) * 2});
-		max-width: _size(wrapper);
-		position: sticky;
-		position: -webkit-sticky;
-		top: 0;
-		z-index: 5;
+#nav {
+	@include color-list(invert);
+	@include color-typography(invert);
+	@include vendor("display", "flex");
+	@include vendor("transition", ("transform 1s ease", "opacity 1s ease"));
+	@include vendor("backdrop-filter", ("blur(2px)"));
+	@include vendor(
+		"transition",
+		("background-color #{_duration(transition)} ease-in-out", "color #{_duration(transition)} ease-in-out")
+	);
+	background: rgba(255, 255, 255, 0.125);
+	height: 4rem;
+	line-height: 4rem;
+	margin: -4rem auto 0 auto;
+	overflow: hidden;
+	padding: 0 2rem 0 0;
+	position: relative;
+	width: calc(100% - #{_size(padding) * 2});
+	max-width: _size(wrapper);
+	position: sticky;
+	position: -webkit-sticky;
+	top: 0;
+	z-index: 5;
 
-		@include breakpoint('>xxlarge') {
-			max-width: #{_size(wrapper) * 1.3};
-		}	
-		
-		&.alt {
-			background: rgb(255, 255, 255);
-			background-color: lighten(_palette(fg), 78%);
-			ul.links li {
-				a {
-					color: _palette(fg-light);					
-					
-					&:hover {
-						background-color: transparentize(_palette(fg), 0.8);
-					}
-					&:focus, &:focus-visible {
-						    color: inherit !important;
-						background-color: transparentize(_palette(fg), 0.7);
-					}
-				}
-				&.active a:hover {
-					background-color: _palette(invert, fg);
-				}
-			}
-			ul.icons li a {
-				color: _palette(fg-light);
-			}
-		}
-
-		ul {
-			&.links {
-				@include vendor('display', 'flex');
-				@include vendor('flex-grow', '1');
-				@include vendor('flex-shrink', '1');
-				font-family: _font(family-heading);
-				font-weight: _font(weight-heading);
-				letter-spacing: 0.075em;
-				list-style: none;
-				margin-bottom: 0;
-				padding-left: 0;
-				text-transform: uppercase;
-
-				li {
-					display: block;
-					padding-left: 0;
-
-					a {
-						@include vendor('transition', (
-							'background-color #{_duration(transition)} ease-in-out',
-							'color #{_duration(transition)} ease-in-out'
-						));
-						display: flex;
-						height: 100%;
-						align-items: center;
-						font-size: 0.8rem;
-						outline: none;
-						padding: 0 2rem;
-
-						span {
-							line-height: 1.5;
-						}
-
-						&:hover {
-							color: inherit !important;
-							background-color: transparentize(_palette(invert, fg), 0.9);
-						}
-						&:focus, &:focus-visible {
-							background-color: transparentize(_palette(invert, fg), 0.5);
-						}
-					}
-
-					&.active {
-						background-color: _palette(invert, fg);
-
-						a {
-							color: _palette(invert, bg);
-
-							&:hover {
-								color: _palette(invert, accent) !important;
-							}
-							&:focus, &:focus-visible {
-								background-color: darken(_palette(invert, fg), 20%);
-							}
-						}
-					}
-
-					
-				}
-			}
-
-			&.icons {
-				@include vendor('flex-grow', '0');
-				@include vendor('flex-shrink', '0');
-				margin-bottom: 0;
-			}
-		}
-
-		@include breakpoint('<=medium') {
-			display: none;
-		}
-
-
+	@include breakpoint(">xxlarge") {
+		max-width: #{_size(wrapper) * 1.3};
 	}
 
-	
+	&.alt {
+		background: rgb(255, 255, 255);
+		background-color: lighten(_palette(fg), 78%);
+		ul.links li {
+			a {
+				color: _palette(fg-light);
+
+				&:hover {
+					background-color: transparentize(_palette(fg), 0.8);
+				}
+				&:focus,
+				&:focus-visible {
+					color: inherit !important;
+					background-color: transparentize(_palette(fg), 0.7);
+				}
+			}
+			&.active a:hover {
+				background-color: _palette(invert, fg);
+			}
+		}
+		ul.icons li a {
+			color: _palette(fg-light);
+		}
+	}
+
+	ul {
+		&.links {
+			@include vendor("display", "flex");
+			@include vendor("flex-grow", "1");
+			@include vendor("flex-shrink", "1");
+			font-family: _font(family-heading);
+			font-weight: _font(weight-heading);
+			letter-spacing: 0.075em;
+			list-style: none;
+			margin-bottom: 0;
+			padding-left: 0;
+			text-transform: uppercase;
+
+			li {
+				display: block;
+				padding-left: 0;
+
+				a {
+					@include vendor(
+						"transition",
+						(
+							"background-color #{_duration(transition)} ease-in-out",
+							"color #{_duration(transition)} ease-in-out"
+						)
+					);
+					display: flex;
+					height: 100%;
+					align-items: center;
+					font-size: 0.8rem;
+					outline: none;
+					padding: 0 2rem;
+					border: none;
+
+					span {
+						line-height: 1.5;
+					}
+
+					&:hover {
+						color: inherit !important;
+						background-color: transparentize(_palette(invert, fg), 0.9);
+					}
+					&:focus,
+					&:focus-visible {
+						background-color: transparentize(_palette(invert, fg), 0.5);
+					}
+				}
+
+				&.active {
+					background-color: _palette(invert, fg);
+
+					a {
+						color: _palette(invert, bg);
+
+						&:hover {
+							color: _palette(invert, accent) !important;
+						}
+						&:focus,
+						&:focus-visible {
+							background-color: darken(_palette(invert, fg), 20%);
+						}
+					}
+				}
+			}
+		}
+
+		&.icons {
+			@include vendor("flex-grow", "0");
+			@include vendor("flex-shrink", "0");
+			margin-bottom: 0;
+		}
+	}
+
+	@include breakpoint("<=medium") {
+		display: none;
+	}
+}
