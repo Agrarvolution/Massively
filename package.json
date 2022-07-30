@@ -104,6 +104,11 @@
                 "width": 1600
             }
         },
+        "card_assets": {
+            "exclude": [
+                "nft"
+            ]
+        },
         "custom": {
             "background_image_link": {
                 "type": "text",
