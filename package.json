@@ -106,8 +106,17 @@
         },
         "card_assets": {
             "exclude": [
-                "nft"
-            ]
+                "audio",
+                "before-after",
+                "blockquote",
+                "bookmark",
+                "button",
+                "gallery",
+                "nft",
+                "product",
+                "toggle",
+                "video"
+              ]
         },
         "custom": {
             "background_image_link": {
