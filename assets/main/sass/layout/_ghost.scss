@@ -738,6 +738,10 @@ figure img:hover {
     display: none;
 }
 
+.kg-video-thumbnail {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%23303e46' d='M0 0h24v24H0z'/%3E%3Cpath fill='%233e515b' d='M0 0h12v12H0zm12 12h12v12H12z'/%3E%3C/g%3E%3C/svg%3E")
+}
+
 // Special
 // --------------------------------------------
 .kg-column-all {
@@ -839,6 +843,17 @@ figure img:hover {
         font-size: 1rem;
     }
 }
+
+// Blockquote
+// --------------------------------------------
+.kg-blockquote-alt {
+    font-size: 1.5em;
+    font-style: italic;
+    line-height: 1.7em;
+    text-align: center;
+    padding: 0 2.5em;
+  }
+  
 
 // NFT
 // --------------------------------------------
