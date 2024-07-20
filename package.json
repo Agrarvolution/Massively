@@ -2,7 +2,7 @@
     "name": "massively-agrarvolution",
     "description": "This is Massively, a text-heavy, article-oriented theme for Ghost.",
     "demo": "https://massively.ghost.io",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "engines": {
         "ghost": ">=4.0.0"
     },

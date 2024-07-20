@@ -186,6 +186,7 @@
 // Content
 // --------------------------------------------
 .post div.content,
+.article div.content,
 form {
     @include breakpoint(">=large") {
         /*column-count: 2;

@@ -6,7 +6,7 @@
 
 /* Main */
 
-#main {
+#main, #site-main {
 	background-color: _palette(bg);
 	position: relative;
 	margin: 0 auto;
@@ -30,19 +30,19 @@
 		text-align: center;
 	}
 
-	> .post {
+	> .post, .article {
 		@include padding((_size(padding) * 2), (_size(padding) * 4));
 
 		header {
-			&.major {
+			&.major, &.article-header {
 				> .date {
 					margin-top: -2rem;
 				}
 			}
 		}
 
-		header > h1,
-		> .post header h2,
+		.article-title,
+		header h2,
 		.kg-header-card-header {
 			font-size: 4rem;
 			line-height: 1.1;
@@ -61,7 +61,7 @@
 			@include padding((_size(padding) * 1.5), (_size(padding) * 1));
 
 			header {
-				&.major {
+				&.major, &.article-header {
 					> .date {
 						margin-top: -1rem;
 						margin-bottom: _size(element-margin);
@@ -69,8 +69,8 @@
 				}
 			}
 
-			header > h1,
-			> .post header h2,
+			.article-title,
+			header h2,
 			.kg-header-card-header {
 				font-size: 2.5rem;
 				line-height: 1.2;
@@ -135,7 +135,7 @@
 	}
 }
 .main-content--headline,
-.major,
+.major, .article-header
 .content p {
 	@include vendor("hyphens", "auto");
 }

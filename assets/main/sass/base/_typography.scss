@@ -165,7 +165,7 @@
 		border-bottom: solid 2px;
 		margin: (_size(element-margin) * 1.5) 0;
 
-		&.major {
+		&.major, &.article-header {
 			margin: (_size(element-margin) * 2.5) 0;
 		}
 	}

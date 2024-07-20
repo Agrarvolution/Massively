@@ -5,14 +5,14 @@ into the {body} of the default.hbs template --}}
 {{#post}}
 {{!-- Everything inside the #post tags pulls data from the post --}}
 
-<main id="main">
+<main id="site-main" class="site-main">
 
-    <section class="post">
+    <article class="article {{post_class}}">
 
-        <header class="major">
-            <h1>{{title}}</h1>
+        <header class="article-header gh-canvas">
+            <h1 class="article-title">{{title}}</h1>
             {{#if custom_excerpt}}
-                <p class="content">{{custom_excerpt}}</p>
+                <p class="article-excerpt">{{custom_excerpt}}</p>
             {{/if}}
         </header>
 
@@ -29,7 +29,7 @@ into the {body} of the default.hbs template --}}
             {{subscribe_form placeholder="youremail@example.com"}}
         </section>
         {{/if}}
-    </section>
+    </article>
 
 </main>
 {{> templates}}

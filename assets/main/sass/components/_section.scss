@@ -48,7 +48,7 @@
 			margin-top: -0.75rem;
 		}
 
-		&.major {
+		&.major, &.article-header {
 			margin: 0 0 (_size(element-margin) * 2) 0;
 			text-align: center;
 
@@ -91,7 +91,7 @@
 		}
 
 		@include breakpoint('<=small') {
-			&.major {
+			&.major, &.article-header {
 				margin: 0 0 _size(element-margin) 0;
 			}
 		}
@@ -99,7 +99,7 @@
 
 	@mixin color-section($p: null) {
 		header {
-			&.major {
+			&.major, &.article-header {
 				.date {
 					&:before, &:after {
 						border-top-color: _palette($p, border);
