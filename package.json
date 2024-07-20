@@ -49,14 +49,14 @@
         }
     ],
     "devDependencies": {
-        "beeper": "2.1.0",
-        "gscan": "4.38.0",
-        "gulp": "4.0.2",
+        "beeper": "^2.0.0",
+        "gscan": "^4.43.1",
+        "gulp": "^5.0.0",
         "gulp-livereload": "4.0.2",
-        "gulp-sass": "5.1.0",
+        "gulp-sass": "^5.1.0",
         "gulp-sourcemaps": "3.0.0",
-        "gulp-watch": "5.0.1",
-        "gulp-zip": "5.1.0",
+        "gulp-watch": "^5.0.1",
+        "gulp-zip": "^5.0.0",
         "node-sass": "9.0.0",
         "sass": "^1.67.0"
     },
@@ -115,7 +115,7 @@
                 "product",
                 "toggle",
                 "video"
-              ]
+            ]
         },
         "custom": {
             "background_image_link": {
