@@ -32,6 +32,7 @@
 
 	> .post, .article {
 		@include padding((_size(padding) * 2), (_size(padding) * 4));
+		display: block !important;
 
 		header {
 			&.major, &.article-header {
